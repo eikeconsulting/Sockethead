@@ -2,17 +2,17 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <Version>0.0.1-alpha</Version>
+    <Version>0.0.2</Version>
     <Authors>Randall Eike</Authors>
     <Company>Eike Consulting, LLC</Company>
     <Product>Sockethead.EFCore</Product>
-    <Description>A set of utilities for Entity Framework Core.</Description>
+    <Description>A set of utilities for Entity Framework Core including Audit Logging.</Description>
     <Copyright>Copyright © 2021</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageProjectUrl>https://github.com/eikeconsulting/Sockethead</PackageProjectUrl>
     <RepositoryUrl>https://github.com/eikeconsulting/Sockethead</RepositoryUrl>
-    <PackageTags>EntityFramework, .Net Core, Utilities, Audit Log</PackageTags>
+    <PackageTags>Entity Framework Core, Audit Log, Utilities</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
