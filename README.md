@@ -36,7 +36,7 @@ Then register Dependency Injection in your startup:
 Note that you must replace "&lt;your assembly namespace&gt;" 
 with the assembly where you want to create and run your migrations
 
-#### Add and Run Migration
+#### Add and Run Migrations
 Add the AuditLog Migrations to your project.  You want to create the migrations as it may differ based on your database driver.
 
     add-migration -context AuditLogDbContext -name AuditLog -OutputDir "AuditLog/Migrations"
@@ -68,7 +68,11 @@ and instead of calling "SaveChangesAsync" call "CommitAsync" and (optionally) pa
 an IAuditMetaData to provide the email and name of the user that made the change.
 
 #### AuditLogger TODOs
-1. We need a mechanism to flush out AuditLogs either by age or some filter.
+1. Audit Log UI!
+1. Unit Tests
+1. Integration Tests
+1. Mechanism to flush out AuditLogs either by age or a filter.
+
 
 
 # License
