@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using Sockethead.Web.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,16 +11,18 @@ namespace Sockethead.Web.Pages
 {
     public class IndexModel : PageModel
     {
-        private readonly ILogger<IndexModel> _logger;
-
-        public IndexModel(ILogger<IndexModel> logger)
+        public IndexModel(MyRepo myRepo)
         {
-            _logger = logger;
+            MyRepo = myRepo;
         }
+
+        public MyRepo MyRepo { get; }
+
+        public string Message { get; set; }
 
         public void OnGet()
         {
-
+            Message = $"There are {MyRepo.Db.Users.Count()} users";
         }
     }
 }

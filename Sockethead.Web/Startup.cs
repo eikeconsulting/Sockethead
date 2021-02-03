@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Sockethead.EFCore.AuditLogging;
 using Sockethead.Web.Data;
 using System;
 using System.Collections.Generic;
@@ -31,12 +32,15 @@ namespace Sockethead.Web
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddDbContext<Sockethead.EFCore.AuditLogging.AuditLogDbContext>(options =>
+            services.AddDbContext<AuditLogDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("AuditLogConnection"), 
                     b => b.MigrationsAssembly("Sockethead.Web")));
 
-            services.AddScoped<Sockethead.EFCore.AuditLogging.AuditedRepo<ApplicationDbContext>>();
+            services
+                .AddScoped<AuditLogGenerator>()
+                .AddScoped<AuditLogger>()
+                .AddScoped<MyRepo>();
 
             services.AddDatabaseDeveloperPageExceptionFilter();
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
