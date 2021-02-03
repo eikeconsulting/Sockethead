@@ -13,8 +13,8 @@ namespace Sockethead.EFCore.AuditLogging
             AuditLogger = auditLogger;
         }
 
-        private TDbContext Db { get; }
-        private AuditLogger AuditLogger { get; }
+        public TDbContext Db { get; }
+        public AuditLogger AuditLogger { get; }
 
         /// <summary>
         /// Will do the following:

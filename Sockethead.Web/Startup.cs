@@ -30,6 +30,14 @@ namespace Sockethead.Web
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddDbContext<Sockethead.EFCore.AuditLogging.AuditLogDbContext>(options =>
+                options.UseSqlServer(
+                    Configuration.GetConnectionString("AuditLogConnection"), 
+                    b => b.MigrationsAssembly("Sockethead.Web")));
+
+            services.AddScoped<Sockethead.EFCore.AuditLogging.AuditedRepo<ApplicationDbContext>>();
+
             services.AddDatabaseDeveloperPageExceptionFilter();
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
