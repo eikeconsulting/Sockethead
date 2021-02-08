@@ -1,0 +1,50 @@
+﻿using System;
+using System.Linq;
+using System.Linq.Expressions;
+
+namespace Sockethead.Razor.Grid
+{
+    public enum SortOrder
+    { 
+        Ascending,
+        Descending,
+    }
+
+    public class SimpleGridSort<T> where T : class
+    {
+        public Expression<Func<T, string>> Expression { get; set; }
+
+        public SortOrder SortOrder { get; set; } = SortOrder.Ascending;
+
+        public SimpleGridSort<T> Flip() { SortOrder = SortOrderFlipped; return this; }
+
+        private SortOrder SortOrderFlipped
+            => SortOrder switch
+            {
+                SortOrder.Ascending => SortOrder.Descending,
+                SortOrder.Descending => SortOrder.Ascending,
+                _ => throw new ArgumentException($"Unexpected SortOrder {SortOrder}"),
+            };
+
+        public IQueryable<T> ApplyTo(IQueryable<T> source, bool isThenBy)
+        {
+            if (Expression == null)
+                return source;
+
+            return isThenBy && source is IOrderedQueryable<T> orderedSource
+                ? SortOrder switch
+                {
+                    SortOrder.Ascending => orderedSource.ThenBy(Expression),
+                    SortOrder.Descending => orderedSource.ThenByDescending(Expression),
+                    _ => throw new ArgumentException($"Unexpected SortOrder {SortOrder}"),
+                }
+                :
+                SortOrder switch
+                {
+                    SortOrder.Ascending => source.OrderBy(Expression),
+                    SortOrder.Descending => source.OrderByDescending(Expression),
+                    _ => throw new ArgumentException($"Unexpected SortOrder {SortOrder}"),
+                };
+        }
+    }
+}

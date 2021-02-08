@@ -75,5 +75,83 @@ an IAuditMetaData to provide the email and name of the user that made the change
 
 
 
+## Sockethead.Razor
+A library of Razor utilities.
+
+### Installation
+
+    install-package Sockethead.Razor
+
+### Alerts
+This allows you to add an alert to an MVC page in the Controller.
+
+Add the following to your _Layout.cshtml page:
+
+    <partial name="_Alerts" />
+
+Then the Extensions in your Controller:
+
+    using Sockethead.Razor.Alert.Extensions;
+
+    public IActionResult Index()
+    {
+        return View().Success("My cool success message!");
+    }
+
+You may want to customize your Alert and create your own partial view, here is the source:
+
+    @using Sockethead.Razor.Alert.Extensions
+
+    @foreach (string key in Alerts.ALL)
+    {
+        if (TempData.ContainsKey(key))
+        {
+            <div class="alert alert-@key">
+                <button type="button" class="close" data-dismiss="alert">x</button>
+                @Html.Raw(TempData[key])
+            </div>
+        }
+    }
+    @if (ViewData.ModelState.Any(x => x.Value.Errors.Any()))
+    {
+        <div class="alert alert-error">
+            <a class="close" data-dismiss="alert">&times;</a>
+            <h5>Oops!  We had a problem processing the form:</h5>
+            @Html.ValidationSummary(false)
+        </div>
+    }
+
+### TinyTable
+TinyTable takes a Dictionary<string, object> and renders a pretty Bootstrap Table:
+
+    <partial name="_TinyTable" model="<your dictionary>" />
+
+### RazorViewRenderer (for Email Generation)
+This is a utility function to render a Razor view to a string 
+which is useful for constructing Emails to be sent by your website.
+
+Register in your DI:
+
+    using Sockethead.Razor.Utilities;
+    ...
+    services.AddScoped<IRazorViewRenderer, RazorViewRenderer>();
+
+Then inject and use in your Controller:
+
+    public async Task<IActionResult> TestEmail([FromServices] IRazorViewRenderer renderer)
+    {
+        return new ContentResult
+        {
+            ContentType = "text/html",
+            StatusCode = (int)System.Net.HttpStatusCode.OK,
+            Content = await renderer.RenderViewToStringAsync("Email/TestEmail", "Wow, this is cool"),
+        };
+    }
+
+
+
+   
+
+
 # License
 [MIT](https://opensource.org/licenses/MIT)

@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>0.0.1</Version>
+    <Authors>Randall Eike</Authors>
+    <Company>Eike Consulting, LLC</Company>
+    <Description>Razor Utilities for .Net Core 5.
+</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/eikeconsulting/Sockethead</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/eikeconsulting/Sockethead</RepositoryUrl>
+    <RepositoryType>GIT</RepositoryType>
+    <PackageTags>ASP.Net Core, MVC, Razor</PackageTags>
+    <Copyright>Copyright (c) 2021</Copyright>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Linq.Expressions" Version="4.3.0" />
+  </ItemGroup>
+  
+
+
+</Project>

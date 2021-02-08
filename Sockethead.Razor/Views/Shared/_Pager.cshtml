@@ -1,0 +1,13 @@
+﻿@model Sockethead.Razor.Pager.PagerModel
+@{ 
+    string IsDisabled(string s) => string.IsNullOrEmpty(s) ? "disabled" : "";
+}
+<nav aria-label="Pager">
+    <ul class="pagination justify-content-center">
+        <li class="page-item @IsDisabled(Model.FirstUrl)"><a class="page-link" href="@Model.FirstUrl">First</a></li>
+        <li class="page-item @IsDisabled(Model.PrevUrl)"><a class="page-link" href="@Model.PrevUrl">Prev</a></li>
+        <li class="page-item"><span class="page-link page-item" style="color:black">Page @Model.CurrentPage of @Model.TotalPages</span></li>
+        <li class="page-item @IsDisabled(Model.NextUrl)"><a class="page-link" href="@Model.NextUrl">Next</a></li>
+        <li class="page-item @IsDisabled(Model.LastUrl)"><a class="page-link" href="@Model.LastUrl">Last</a></li>
+    </ul>
+</nav>
