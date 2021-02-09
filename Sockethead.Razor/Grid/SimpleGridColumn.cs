@@ -13,12 +13,12 @@ namespace Sockethead.Razor.Grid
 
     public class SimpleGridColumn<T> : SimpleGridBase, ISimpleGridColumn where T : class
     {
-        private Expression<Func<T, string>> Expression { get; set; }
-        private Func<T, string> CompiledExpression { get; set; }
+        internal Expression<Func<T, object>> Expression { get; set; }
+        private Func<T, object> CompiledExpression { get; set; }
         internal SimpleGridSort<T> Sort { get; set; } = new SimpleGridSort<T>();
         private string LabelValue { get; set; } = null;
-        private Func<T, string> DisplayBuilder { get; set; } = model => null;
-        private Func<T, string> LinkBuilder { get; set; } = null;
+        private Func<T, object> DisplayBuilder { get; set; } = model => null;
+        private Func<T, object> LinkBuilder { get; set; } = null;
         private string LinkTarget { get; set; }
         internal bool IsEncoded { get; set; } = true;
 
@@ -26,7 +26,8 @@ namespace Sockethead.Razor.Grid
 
         public string DisplayRender(object model)
         {
-            string display = DisplayBuilder((T)model);
+            object result = DisplayBuilder((T)model);
+            string display = result == null ? "" : result.ToString();
 
             if (IsEncoded)
                 display = HttpUtility.HtmlEncode(display);
@@ -43,7 +44,7 @@ namespace Sockethead.Razor.Grid
             return this; 
         }
 
-        public SimpleGridColumn<T> DisplayAs(Func<T, string> displayBuilder) 
+        public SimpleGridColumn<T> DisplayAs(Func<T, object> displayBuilder) 
         { 
             DisplayBuilder = displayBuilder; 
             return this; 
@@ -76,14 +77,14 @@ namespace Sockethead.Razor.Grid
             return SortableBy(Expression, sortOrder);
         }
 
-        public SimpleGridColumn<T> SortableBy(Expression<Func<T, string>> expression, SortOrder sortOrder = SortOrder.Ascending)
+        public SimpleGridColumn<T> SortableBy(Expression<Func<T, object>> expression, SortOrder sortOrder = SortOrder.Ascending)
         {
             Sort.Expression = expression;
             Sort.SortOrder = sortOrder;
             return this;
         }
 
-        public SimpleGridColumn<T> For(Expression<Func<T, string>> expression)
+        public SimpleGridColumn<T> For(Expression<Func<T, object>> expression)
         {
             Expression = expression;
             Label(expression.FriendlyName());

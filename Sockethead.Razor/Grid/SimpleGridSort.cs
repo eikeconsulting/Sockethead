@@ -12,7 +12,7 @@ namespace Sockethead.Razor.Grid
 
     public class SimpleGridSort<T> where T : class
     {
-        public Expression<Func<T, string>> Expression { get; set; }
+        public Expression<Func<T, object>> Expression { get; set; }
 
         public bool IsSortable => Expression != null;
 

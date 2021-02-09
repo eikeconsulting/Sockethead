@@ -16,13 +16,13 @@ namespace Sockethead.Web.Areas.Samples.Controllers
         [DisplayName("Movie Genre")]
         public string Genre { get; set; } = "";
 
-        public int Released { get; set; }
+        public int? Released { get; set; }
     }
 
     [Area("Samples")]
     public class PagerController : Controller
     {
-        private static List<Movie> _Movies = new List<Movie>
+        private static readonly List<Movie> _Movies = new List<Movie>
         {
             new Movie { Name = "Star Wars", Director = "George Lucas", Genre = "Sci-Fi", Released = 1997 },
             new Movie { Name = "Terminator", Genre = "Action", Director = "James Cameron", Released = 1984 },
@@ -43,10 +43,18 @@ namespace Sockethead.Web.Areas.Samples.Controllers
         };
 
         [HttpGet]
-        public IActionResult Movies()
+        public IActionResult Movies1()
         {
             ViewData["Title"] = "Movies!";
             return View(_Movies.AsQueryable());
         }
+
+        [HttpGet]
+        public IActionResult Movies2()
+        {
+            ViewData["Title"] = "Movies!";
+            return View(_Movies.AsQueryable());
+        }
+
     }
 }

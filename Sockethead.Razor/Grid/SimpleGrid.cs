@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Sockethead.Razor.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,11 +41,18 @@ namespace Sockethead.Razor.Grid
             return this;
         }
 
-        public SimpleGrid<T> AddColumnFor(Expression<Func<T, string>> expression)
+        public SimpleGrid<T> AddColumnFor(Expression<Func<T, object>> expression)
         {
             var column = new SimpleGridColumn<T>();
             column.For(expression);
             Columns.Add(column);
+            return this;
+        }
+
+        public SimpleGrid<T> AddColumnsFromModel()
+        {
+            foreach (var property in typeof(T).GetProperties())
+                AddColumnFor(ExpressionHelpers.GenerateGetterLambda<T>(property));
             return this;
         }
 
@@ -70,10 +78,27 @@ namespace Sockethead.Razor.Grid
             return this;
         }
 
-        public SimpleGrid<T> DefaultSortBy(Expression<Func<T, string>> expression, SortOrder sortOrder = SortOrder.Ascending)
+        public SimpleGrid<T> DefaultSortBy(Expression<Func<T, object>> expression, SortOrder sortOrder = SortOrder.Ascending)
         {
             Sort.Expression = expression;
             Sort.SortOrder = sortOrder;
+            return this;
+        }
+
+        public SimpleGrid<T> Sortable(bool enable = true)
+        {
+            foreach (var column in Columns)
+            {
+                if (enable)
+                {
+                    if (!column.Sort.IsSortable && column.Expression != null)
+                        column.Sortable(true);
+                }
+                else
+                {
+                    column.Sortable(false);
+                }
+            }
             return this;
         }
 

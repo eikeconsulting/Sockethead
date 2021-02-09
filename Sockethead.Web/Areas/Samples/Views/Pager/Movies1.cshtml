@@ -1,0 +1,9 @@
+﻿@using Sockethead.Razor.Grid;
+@model IQueryable<Sockethead.Web.Areas.Samples.Controllers.Movie>
+
+@(await Html
+    .SimpleGrid(Model)
+    .AddColumnsFromModel()
+    .Sortable()
+    .RenderAsync()
+)

@@ -43,5 +43,43 @@ namespace Sockethead.Razor.Helpers
 
             return body.Member.Name;
         }
+
+        public static Expression<Func<TModel, bool>> BuildWhere<TModel>(string propertyName, string inputText)
+        {
+            ParameterExpression parameter = Expression.Parameter(typeof(TModel), "x");
+            Expression property = Expression.Property(parameter, propertyName);
+            Expression target = Expression.Constant(inputText);
+            Expression equalsMethod = Expression.Call(property, "Equals", null, target);
+            Expression<Func<TModel, bool>> lambda =
+               Expression.Lambda<Func<TModel, bool>>(equalsMethod, parameter);
+            return lambda;
+        }
+
+        /*
+        public static Expression<Func<TModel, T>> BuildExpression<TModel, T>(string propertyName)
+        {
+            ParameterExpression parameter = Expression.Parameter(typeof(TModel), "x");
+            Expression property = Expression.Property(parameter, propertyName);
+            Expression<Func<TModel, bool>> lambda =
+               Expression.Lambda<Func<TModel, T>>();
+            return lambda;
+        }
+        */
+
+        public static Expression<Func<TModel, object>> GenerateGetterLambda<TModel>(PropertyInfo property)
+        {
+            // Define our instance parameter, which will be the input of the Func
+            var objParameterExpr = Expression.Parameter(typeof(object), "instance");
+            // 1. Cast the instance to the correct type
+            var instanceExpr = Expression.TypeAs(objParameterExpr, property.DeclaringType);
+            // 2. Call the getter and retrieve the value of the property
+            var propertyExpr = Expression.Property(instanceExpr, property);
+            // 3. Convert the property's value to object
+            var propertyObjExpr = Expression.Convert(propertyExpr, typeof(object));
+            // Create a lambda expression of the latest call & compile it
+            return Expression.Lambda<Func<TModel, object>>(propertyObjExpr, objParameterExpr);
+        }
+
+
     }
 }

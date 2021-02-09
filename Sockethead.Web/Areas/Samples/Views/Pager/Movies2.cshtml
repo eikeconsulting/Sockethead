@@ -1,6 +1,5 @@
 ﻿@using Sockethead.Razor.Grid;
-@using Sockethead.Web.Areas.Samples.Controllers;
-@model IQueryable<Movie>
+@model IQueryable<Sockethead.Web.Areas.Samples.Controllers.Movie>
 
 @(await Html
     .SimpleGrid(Model)
@@ -8,26 +7,28 @@
     .AddColumn(column => column
         .For(model => model.Name)
         .Sortable()
-        .AddCssStyle("width:25%"))
+        .AddCssStyle("width:21%"))
 
     .AddColumn(column => column
         .For(model => model.Director)
         .Sortable()
-        .AddCssStyle("width:25%"))
+        .AddCssStyle("width:21%"))
 
     .AddColumn(column => column
         .Label("Genre")
         .DisplayAs(model => model.Genre.ToUpper())
         .LinkTo(model => "https://www.google.com", target: "_blank")
         .SortableBy(model => model.Genre)
-        .AddCssStyle("width:25%")
+        .AddCssStyle("width:21%")
         .AddCssStyle("font-weight:bold"))
 
     .AddColumn(column => column
         .Label("Name not Encoded")
         .DisplayAs(model => model.Name)
         .Encoded(false)
-        .AddCssStyle("width:25%"))
+        .AddCssStyle("width:21%"))
+
+    .AddColumnFor(model => model.Released)
 
     .AddCssClass("table-striped")
     .AddCssClass("table-sm")
@@ -65,4 +66,3 @@
 
     .RenderAsync()
 )
-
