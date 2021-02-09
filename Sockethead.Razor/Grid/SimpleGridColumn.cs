@@ -10,9 +10,8 @@ namespace Sockethead.Razor.Grid
         private Expression<Func<T, string>> Expression { get; set; }
         private Func<T, string> CompiledExpression { get; set; }
         internal SimpleGridSort<T> Sort { get; set; } = new SimpleGridSort<T>();
-        internal bool IsSortable => Sort.Expression != null;
-        internal string LabelValue { get; set; } = null;
-        internal Func<T, string> DisplayBuilder { get; set; } = model => null;
+        private string LabelValue { get; set; } = null;
+        private Func<T, string> DisplayBuilder { get; set; } = model => null;
         private Func<T, string> LinkBuilder { get; set; } = null;
         private string LinkTarget { get; set; }
         internal bool IsEncoded { get; set; } = true;
@@ -32,11 +31,23 @@ namespace Sockethead.Razor.Grid
             return display;
         }
 
-        public SimpleGridColumn<T> Label(string label) { LabelValue = label; return this; }
+        public SimpleGridColumn<T> Label(string label) 
+        { 
+            LabelValue = label; 
+            return this; 
+        }
 
-        public SimpleGridColumn<T> DisplayAs(Func<T, string> displayBuilder) { DisplayBuilder = displayBuilder; return this; }
+        public SimpleGridColumn<T> DisplayAs(Func<T, string> displayBuilder) 
+        { 
+            DisplayBuilder = displayBuilder; 
+            return this; 
+        }
 
-        public SimpleGridColumn<T> Encoded(bool isEncoded) { IsEncoded = isEncoded; return this; }
+        public SimpleGridColumn<T> Encoded(bool isEncoded) 
+        { 
+            IsEncoded = isEncoded; 
+            return this; 
+        }
 
         public SimpleGridColumn<T> LinkTo(Func<T, string> linkBuilder, string target = "_self") 
         { 
@@ -56,10 +67,10 @@ namespace Sockethead.Razor.Grid
                 return this;
             }
 
-            return SortableAs(Expression, sortOrder);
+            return SortableBy(Expression, sortOrder);
         }
 
-        public SimpleGridColumn<T> SortableAs(Expression<Func<T, string>> expression, SortOrder sortOrder = SortOrder.Ascending)
+        public SimpleGridColumn<T> SortableBy(Expression<Func<T, string>> expression, SortOrder sortOrder = SortOrder.Ascending)
         {
             Sort.Expression = expression;
             Sort.SortOrder = sortOrder;

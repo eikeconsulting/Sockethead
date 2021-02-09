@@ -1,9 +1,6 @@
 ﻿@using Sockethead.Razor.Grid;
 @using Sockethead.Web.Areas.Samples.Controllers;
-@using Sockethead.Razor.Pager;
-@model SimpleGridViewModel<Movie>
-
-<partial name="_Pager" model="new PagerModel()" />
+@model IQueryable<Movie>
 
 <table class="table table-striped table-sm">
     <tr>
@@ -12,7 +9,7 @@
         <th>Genre</th>
     </tr>
 
-    @foreach (var movie in Model.Source)
+    @foreach (var movie in Model)
     {
         <tr>
             <td>@movie.Name</td>
@@ -25,7 +22,7 @@
 <hr />
 
 @(Html
-    .SimpleGrid<Movie>(Model)
+    .SimpleGrid(Model)
     //.AddColumnFor(model => model.Name)
     .AddColumn(column => column
         .For(model => model.Name)
@@ -40,8 +37,8 @@
     .AddColumn(column => column
         .Label("Genre")
         .DisplayAs(model => model.Genre.ToUpper())
-        .LinkTo(model => "https://www.google.com")
-        .SortableAs(model => model.Genre)
+        .LinkTo(model => "https://www.google.com", target: "_blank")
+        .SortableBy(model => model.Genre)
         .AddCssStyle("width:25%")
         .AddCssStyle("font-weight:bold"))
 
@@ -53,7 +50,13 @@
 
     .AddCssClass("table-striped")
     .AddCssClass("table-sm")
-    .DefaultSortBy(model => model.Name, SortOrder.Ascending)
+    //.DefaultSortBy(model => model.Name, SortOrder.Ascending)
+
+    .AddSearch((source, query) => source.Where(model => model.Genre.ToLower().Contains(query.ToLower())), name: "Genre")
+    .AddSearch((source, query) => source.Where(model => 
+        model.Name.Contains(query) || 
+        (model.Director != null && model.Director.Contains(query))), name: "Name and Director Search")
+
     .AddPager(options => options.RowsPerPage = 3)
     .Render()
 )

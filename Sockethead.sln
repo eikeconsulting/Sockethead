@@ -13,9 +13,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentat
 		Sockethead.EFCore\Sockethead.EFCore.nuspec = Sockethead.EFCore\Sockethead.EFCore.nuspec
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sockethead.Razor", "Sockethead.Razor\Sockethead.Razor.csproj", "{159F26FA-800C-4234-8FF5-CFCE16019B9E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sockethead.Razor", "Sockethead.Razor\Sockethead.Razor.csproj", "{159F26FA-800C-4234-8FF5-CFCE16019B9E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sockethead.EFCore.UI", "Sockethead.EFCore.UI\Sockethead.EFCore.UI.csproj", "{D8CD1BDD-FA66-4049-B9B8-465930CF3BA0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sockethead.EFCore.UI", "Sockethead.EFCore.UI\Sockethead.EFCore.UI.csproj", "{D8CD1BDD-FA66-4049-B9B8-465930CF3BA0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0C2C0A72-4EB9-436B-AEAE-0A6E17CC94DD}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

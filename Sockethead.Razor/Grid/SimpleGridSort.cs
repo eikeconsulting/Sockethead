@@ -14,17 +14,25 @@ namespace Sockethead.Razor.Grid
     {
         public Expression<Func<T, string>> Expression { get; set; }
 
+        public bool IsSortable => Expression != null;
+
         public SortOrder SortOrder { get; set; } = SortOrder.Ascending;
 
-        public SimpleGridSort<T> Flip() { SortOrder = SortOrderFlipped; return this; }
+        public SortOrder SortOrderFlipped => Flip(SortOrder);
 
-        private SortOrder SortOrderFlipped
-            => SortOrder switch
+        public static SortOrder Flip(SortOrder sortOrder)
+            => sortOrder switch
             {
                 SortOrder.Ascending => SortOrder.Descending,
                 SortOrder.Descending => SortOrder.Ascending,
-                _ => throw new ArgumentException($"Unexpected SortOrder {SortOrder}"),
+                _ => throw new ArgumentException($"Unexpected SortOrder {sortOrder}"),
             };
+
+        public SimpleGridSort<T> Flip()
+        {
+            SortOrder = SortOrderFlipped;
+            return this;
+        }
 
         public IQueryable<T> ApplyTo(IQueryable<T> source, bool isThenBy)
         {

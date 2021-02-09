@@ -9,11 +9,5 @@ namespace Sockethead.Razor.Grid
             this IHtmlHelper html, 
             IQueryable<T> source) where T : class
                 => new SimpleGrid<T>(html, source);
-
-        public static SimpleGrid<T> SimpleGrid<T>(
-            this IHtmlHelper html,
-            SimpleGridViewModel<T> vm) where T : class
-                => new SimpleGrid<T>(html, vm.Source, vm.State);
-
     }
 }

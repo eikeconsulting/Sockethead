@@ -1,11 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Sockethead.Razor.Grid;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Sockethead.Web.Areas.Samples.Controllers
 {
@@ -36,19 +33,10 @@ namespace Sockethead.Web.Areas.Samples.Controllers
             new Movie { Name = "Movie to be <encoded> html", Director = "This Guy", Genre = "Test" },
         };
 
-        public IActionResult Movies(int page = 1, int sort = 0)
+        public IActionResult Movies()
         {
-            return View(new SimpleGridViewModel<Movie>
-            {
-                Source = _Movies.AsQueryable(),
-                State = new SimpleGridState
-                {
-                    PageNum = page,
-                    SortColumnId = sort,
-                    Search = null,
-                    SearchId = 0,
-                }
-            });
+            ViewData["Title"] = "Movies!";
+            return View(_Movies.AsQueryable());
         }
     }
 }

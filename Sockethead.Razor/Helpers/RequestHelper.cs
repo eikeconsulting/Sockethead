@@ -10,6 +10,9 @@ namespace Sockethead.Razor.Helpers
         public static string UrlWithoutQuery(this HttpRequest request)
             => string.Format($"{request.Scheme}://{request.Host}{request.PathBase}{request.Path}");
 
+        public static Dictionary<string, string> QueryParamDictionary(this HttpRequest request)
+            => request.Query.ToDictionary(q => q.Key, q => q.Value.ToString());
+
         public static string UrlUpdateQuery(this HttpRequest request, Dictionary<string, string> queryParams)
         {
             // original query
@@ -17,7 +20,17 @@ namespace Sockethead.Razor.Helpers
 
             // update query with new params
             foreach (var kvp in queryParams)
-                query[kvp.Key] = kvp.Value;
+            {
+                if (string.IsNullOrEmpty(kvp.Value))
+                {
+                    if (query.ContainsKey(kvp.Key))
+                        query.Remove(kvp.Key);
+                }
+                else
+                {
+                    query[kvp.Key] = kvp.Value;
+                }
+            }
 
             // rebuild url with new query
             return QueryHelpers.AddQueryString(request.UrlWithoutQuery(), query);

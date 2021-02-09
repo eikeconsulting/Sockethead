@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Sockethead.Razor.Helpers;
-using Sockethead.Razor.Pager;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,23 +15,22 @@ namespace Sockethead.Razor.Grid
         /// </summary>
         /// <param name="html">HTML Helper</param>
         /// <param name="source">Data Source</param>
-        public SimpleGrid(IHtmlHelper html, IQueryable<T> source, SimpleGridState state = null)
+        public SimpleGrid(IHtmlHelper html, IQueryable<T> source)
         {
             CssClasses.Add("table");
             Html = html;
             Source = source;
-            State = state ?? new SimpleGridState();
+            State = new SimpleGridState(Html.ViewContext.HttpContext.Request);
         }
 
-        public SimpleGridState State { get; }
-        private SimpleGridOptions Options { get; set; } = new SimpleGridOptions();
+        private SimpleGridState State { get; }
+        private SimpleGridOptions Options { get; } = new SimpleGridOptions();
         private SimpleGridPagerOptions PagerOptions { get; set; } = null;
-        private SimpleGridSort<T> Sort { get; set; } = new SimpleGridSort<T>();
-        public int PageNum => State.PageNum;
-        public int SortColumnId => State.SortColumnId;
+        private SimpleGridSort<T> Sort { get; } = new SimpleGridSort<T>();
         private IHtmlHelper Html { get; set; }
         private IQueryable<T> Source { get; set; }
         private List<SimpleGridColumn<T>> Columns { get; } = new List<SimpleGridColumn<T>>();
+        private List<SimpleGridSearch> SimpleGridSearches { get; } = new List<SimpleGridSearch>();
 
         public SimpleGrid<T> AddColumn(Action<SimpleGridColumn<T>> columnBuilder)
         {
@@ -48,6 +45,16 @@ namespace Sockethead.Razor.Grid
             var column = new SimpleGridColumn<T>();
             column.For(expression);
             Columns.Add(column);
+            return this;
+        }
+
+        public SimpleGrid<T> AddSearch(Func<IQueryable<T>, string, IQueryable<T>> searchFilter, string name = null)
+        {
+            SimpleGridSearches.Add(new SimpleGridSearch
+            {
+                SearchFilter = searchFilter,
+                Name = name
+            });
             return this;
         }
 
@@ -87,25 +94,45 @@ namespace Sockethead.Razor.Grid
         {
             var sb = new StringBuilder();
 
-            var sortColumn = SortColumnId > 0 && SortColumnId <= Columns.Count ? Columns[SortColumnId - 1] : null;
-            if (sortColumn != null && sortColumn.IsSortable)
+            // searching
+            if (!string.IsNullOrEmpty(State.SearchQuery))
             {
+                if (State.SearchNdx > 0 && State.SearchNdx <= SimpleGridSearches.Count)
+                {
+                    var search = SimpleGridSearches[State.SearchNdx - 1];
+                    Source = search.SearchFilter.Invoke(Source, State.SearchQuery);
+                }
+            }
+
+            // sorting
+            var sortColumn = State.SortColumn > 0 && State.SortColumn <= Columns.Count ? Columns[State.SortColumn - 1] : null;
+            if (sortColumn != null && sortColumn.Sort.IsSortable)
+            {
+                sortColumn.Sort.SortOrder = State.SortOrder; // kludge
                 Source = sortColumn.Sort.ApplyTo(Source, isThenBy: false);
                 Source = Sort.ApplyTo(Source, isThenBy: true);
             }
             else
             {
-                Source = Sort.ApplyTo(Source, isThenBy: false);
+                if (Sort.IsSortable)
+                    Source = Sort.ApplyTo(Source, isThenBy: false);
             }
 
-            if (PagerOptions != null)
-            {
-                var pagerModel = BuildPagerModel(
-                    totalPages: (int)Math.Ceiling((float)Source.Count() / (float)PagerOptions.RowsPerPage));
+            // pager
+            var pagerModel = PagerOptions == null 
+                ?  null 
+                : State.BuildPagerModel(totalPages: (int)Math.Ceiling((float)Source.Count() / (float)PagerOptions.RowsPerPage));
 
+            if (PagerOptions != null && PagerOptions.DisplayPagerTop)
                 Html.RenderPartial(Options.PagerViewName, pagerModel);
+
+
+            if (SimpleGridSearches.Any())
+            {
+                Html.RenderPartial("_Search");
             }
 
+            // render table
             sb.Append($"<table{Css()}>\n");
 
             sb.Append("<tr>\n");
@@ -113,8 +140,13 @@ namespace Sockethead.Razor.Grid
             foreach (var col in Columns)
             {
                 string label = col.LabelRender();
-                if (col.IsSortable)
-                    label = $"<a href='{BuildSortUrl(columnId)}'>{label}</a>";
+                if (col.Sort.IsSortable)
+                {
+                    SortOrder sortOrder = columnId == State.SortColumn
+                        ? SimpleGridSort<T>.Flip(State.SortOrder)
+                        : col.Sort.SortOrder;
+                    label = $"<a href='{State.BuildSortUrl(columnId, sortOrder)}'>{label}</a>";
+                }
                 sb.Append($"<th>{label}</th>\n");
                 columnId++;
             }
@@ -122,7 +154,7 @@ namespace Sockethead.Razor.Grid
 
             int rowsToTake = PagerOptions == null ? Options.MaxRows : PagerOptions.RowsPerPage;
 
-            foreach (T item in Source.Skip((PageNum - 1) * rowsToTake).Take(rowsToTake).ToList())
+            foreach (T item in Source.Skip((State.PageNum - 1) * rowsToTake).Take(rowsToTake).ToList())
             {
                 sb.Append("<tr>\n");
                 foreach (var col in Columns)
@@ -132,34 +164,17 @@ namespace Sockethead.Razor.Grid
 
             sb.Append("</table>\n");
 
+            if (PagerOptions != null && PagerOptions.DisplayPagerBottom)
+                Html.RenderPartial(Options.PagerViewName, pagerModel);
+
             return new HtmlString(sb.ToString());
         }
 
-        private string BuildPageUrl(int pageNum)
-            => Html.ViewContext.HttpContext.Request.UrlUpdateQuery(
-                new Dictionary<string, string>
-                {
-                    ["page"] = pageNum.ToString()
-                });
-
-        private string BuildSortUrl(int columnId)
-            => Html.ViewContext.HttpContext.Request.UrlUpdateQuery(
-                new Dictionary<string, string>
-                {
-                    ["page"] = "1",
-                    ["sort"] = columnId.ToString(),
-                });
-
-        private PagerModel BuildPagerModel(int totalPages)
-            => new PagerModel
-            {
-                FirstUrl = PageNum > 1 ? BuildPageUrl(1) : null,
-                PrevUrl = PageNum > 1 ? BuildPageUrl(PageNum - 1) : null,
-                NextUrl = PageNum < totalPages ? BuildPageUrl(PageNum + 1) : null,
-                LastUrl = PageNum < totalPages ? BuildPageUrl(totalPages) : null,
-                CurrentPage = PageNum,
-                TotalPages = totalPages,
-            };
+        public class SimpleGridSearch
+        {
+            public Func<IQueryable<T>, string, IQueryable<T>> SearchFilter { get; set; }
+            public string Name { get; set; }
+        }
 
         public class SimpleGridOptions
         {
@@ -170,6 +185,8 @@ namespace Sockethead.Razor.Grid
         public class SimpleGridPagerOptions
         {
             public int RowsPerPage { get; set; } = 20;
+            public bool DisplayPagerTop { get; set; } = true;
+            public bool DisplayPagerBottom { get; set; } = false;
         }
     }
 }
