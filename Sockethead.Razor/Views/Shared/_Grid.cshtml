@@ -1,1 +1,34 @@
-﻿
+﻿@model Sockethead.Razor.Grid.SimpleGridViewModel
+
+@if (Model.PagerOptions != null && Model.PagerOptions.DisplayPagerTop)
+{
+    <partial name="@Model.Options.PagerViewName" model="Model.PagerModel" />
+}
+
+@if (Model.SimpleGridSearchViewModel != null)
+{
+    <partial name="_Search" model="Model.SimpleGridSearchViewModel" />
+}
+
+<table @Html.Raw(Model.Css)>
+    <tr>
+        @foreach (string label in Model.ColumnLabels)
+        {
+            <th>@Html.Raw(label)</th>
+        }
+    </tr>
+    @foreach (object item in Model.Rows)
+    {
+        <tr>
+            @foreach (var col in Model.Columns)
+            {
+                <td @Html.Raw(col.Css())>@Html.Raw(col.DisplayRender(item))</td>
+            }
+        </tr>
+    }
+</table>
+
+@if (Model.PagerOptions != null && Model.PagerOptions.DisplayPagerBottom)
+{
+    <partial name="@Model.Options.PagerViewName" model="Model.PagerModel" />
+}

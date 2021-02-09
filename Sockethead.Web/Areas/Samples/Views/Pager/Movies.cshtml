@@ -2,28 +2,9 @@
 @using Sockethead.Web.Areas.Samples.Controllers;
 @model IQueryable<Movie>
 
-<table class="table table-striped table-sm">
-    <tr>
-        <th>Name</th>
-        <th>Directory</th>
-        <th>Genre</th>
-    </tr>
-
-    @foreach (var movie in Model)
-    {
-        <tr>
-            <td>@movie.Name</td>
-            <td>@movie.Director</td>
-            <td>@movie.Genre</td>
-        </tr>
-    }
-</table>
-
-<hr />
-
-@(Html
+@(await Html
     .SimpleGrid(Model)
-    //.AddColumnFor(model => model.Name)
+
     .AddColumn(column => column
         .For(model => model.Name)
         .Sortable()
@@ -50,16 +31,38 @@
 
     .AddCssClass("table-striped")
     .AddCssClass("table-sm")
-    //.DefaultSortBy(model => model.Name, SortOrder.Ascending)
 
-    .AddSearch((source, query) => source.Where(model => model.Genre.ToLower().Contains(query.ToLower())), name: "Genre")
-    .AddSearch((source, query) => source.Where(model => 
-        model.Name.Contains(query) || 
-        (model.Director != null && model.Director.Contains(query))), name: "Name and Director Search")
+    .DefaultSortBy(model => model.Name, SortOrder.Ascending)
 
-    .AddPager(options => options.RowsPerPage = 3)
-    .Render()
+    .AddSearch(
+        name: "Name and Director",
+        searchFilter: (source, query) =>
+        {
+            return source.Where(model =>
+                model.Name.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+                (model.Director != null && model.Director.Contains(query, StringComparison.OrdinalIgnoreCase)));
+        })
+
+    .AddSearch(
+        name: "Genre",
+        searchFilter: (source, query) =>
+        {
+            query = query.Trim();
+            return source.Where(model => model.Genre.Contains(query, StringComparison.OrdinalIgnoreCase));
+        })
+
+    .SetOptions(options =>
+    {
+        options.MaxRows = 1000;
+    })
+
+    .AddPager(options =>
+    {
+        options.RowsPerPage = 5;
+        options.DisplayPagerTop = true;
+        options.DisplayPagerBottom = true;
+    })
+
+    .RenderAsync()
 )
-
-<hr />
 

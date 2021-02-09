@@ -1,3 +1,20 @@
-﻿@{ 
-}
-<div>Hello from search</div>
+﻿@model Sockethead.Razor.Grid.SimpleGridSearchViewModel
+
+<form class="form-inline" method="post" asp-area="Sockethead" asp-controller="SimpleGrid" asp-action="SearchHandler">
+
+    <input type="hidden" asp-for="RedirectUrl" />
+
+    <label class="sr-only" for="inlineFormInputGroupUsername2">Query</label>
+    <div class="input-group mb-2 mr-sm-2">
+        <input type="text" class="form-control" asp-for="Query" placeholder="">
+    </div>
+
+    <div class="form-check mb-2 mr-sm-2">
+        <select class="custom-select my-1 mr-sm-2" asp-for="SearchNdx" asp-items="Model.SearchFilterNames">
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary mb-2">Search</button>
+    &nbsp;
+    <a class="btn btn-secondary mb-2" href="@Model.RedirectUrl">Clear</a>
+</form>

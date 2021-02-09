@@ -1,0 +1,21 @@
+﻿@using Sockethead.Razor.Grid;
+@using Sockethead.Web.Areas.Samples.Controllers;
+@model IQueryable<Movie>
+
+<table class="table table-striped table-sm">
+    <tr>
+        <th>Name</th>
+        <th>Director</th>
+        <th>Genre</th>
+    </tr>
+
+    @foreach (var movie in Model)
+    {
+        <tr>
+            <td>@movie.Name</td>
+            <td>@movie.Director</td>
+            <td>@movie.Genre</td>
+        </tr>
+    }
+</table>
+

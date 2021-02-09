@@ -8,31 +8,41 @@ namespace Sockethead.Web.Areas.Samples.Controllers
 {
     public class Movie
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = "";
 
         [Display(Name = "Movie Director")]
-        public string Director { get; set; }
+        public string Director { get; set; } = "";
 
         [DisplayName("Movie Genre")]
-        public string Genre { get; set; }
+        public string Genre { get; set; } = "";
+
+        public int Released { get; set; }
     }
 
     [Area("Samples")]
     public class PagerController : Controller
     {
-        public List<Movie> _Movies = new List<Movie>
+        private static List<Movie> _Movies = new List<Movie>
         {
-            new Movie { Name = "Star Wars", Director = "George Lucas", Genre = "Sci-Fi" },
-            new Movie { Name = "Terminator", Genre = "Action" },
-            new Movie { Name = "Wonder Woman", Genre = "Action" },
-            new Movie { Name = "Reservoir Dogs", Director="Quentin Tarantino", Genre = "Thriller" },
-            new Movie { Name = "Airplane!", Genre = "Slapstick" },
-            new Movie { Name = "Close Encounters of the Third Kind", Director = "Steven Spielberg", Genre = "Sci-Fi" },
+            new Movie { Name = "Star Wars", Director = "George Lucas", Genre = "Sci-Fi", Released = 1997 },
+            new Movie { Name = "Terminator", Genre = "Action", Director = "James Cameron", Released = 1984 },
+            new Movie { Name = "Terminator 2: Judgement Day", Genre = "Action", Director = "James Cameron", Released = 1991 },
+            new Movie { Name = "Wonder Woman 1984", Genre = "Action", Director = "", Released = 2020 },
+            new Movie { Name = "Reservoir Dogs", Director="Quentin Tarantino", Genre = "Thriller", Released = 1992 },
+            new Movie { Name = "Airplane!", Genre = "Slapstick", Director="David and Jerry Zucker and Jim Abrahams", Released = 1980 },
+            new Movie { Name = "Close Encounters of the Third Kind", Director = "Steven Spielberg", Genre = "Sci-Fi", Released = 1997 },
             new Movie { Name = "Rocky", Director = "John G. Avildsen", Genre = "Action" },
             new Movie { Name = "Brave Heart", Director = "Mel Gibson", Genre = "Action" },
-            new Movie { Name = "Movie to be <encoded> html", Director = "This Guy", Genre = "Test" },
+            new Movie { Name = "Movie with <b>bold</b>", Director = "This Guy", Genre = "Test" },
+            new Movie { Name = "The Godfather", Director = "The Godfather", Genre = "Mob", Released = 1972 },
+            new Movie { Name = "Citizen Kane", Director = "Orson Welles", Genre = "Drama", Released = 1941 },
+            new Movie { Name = "The Shawshank Redemption", Director = "Frank Drabont", Genre = "Drama", Released = 1994 },
+            new Movie { Name = "Pulp Fiction", Director = "Quentin Tarantino", Genre = "Action", Released = 1994 },
+            new Movie { Name = "Casablanca", Director = "Michael Curtiz", Genre = "Drama", Released = 1942 },
+            new Movie { Name = "2001: A Space Odyssey", Director = "Stanley Kubrick", Genre = "Sci-Fi", Released = 1968 },
         };
 
+        [HttpGet]
         public IActionResult Movies()
         {
             ViewData["Title"] = "Movies!";

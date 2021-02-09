@@ -5,7 +5,13 @@ using System.Web;
 
 namespace Sockethead.Razor.Grid
 {
-    public class SimpleGridColumn<T> : SimpleGridBase where T : class
+    public interface ISimpleGridColumn
+    {
+        string Css();
+        string DisplayRender(object model);
+    }
+
+    public class SimpleGridColumn<T> : SimpleGridBase, ISimpleGridColumn where T : class
     {
         private Expression<Func<T, string>> Expression { get; set; }
         private Func<T, string> CompiledExpression { get; set; }
@@ -18,15 +24,15 @@ namespace Sockethead.Razor.Grid
 
         internal string LabelRender() => HttpUtility.HtmlEncode(LabelValue);
 
-        internal string DisplayRender(T model)
+        public string DisplayRender(object model)
         {
-            string display = DisplayBuilder(model);
+            string display = DisplayBuilder((T)model);
 
             if (IsEncoded)
                 display = HttpUtility.HtmlEncode(display);
 
             if (LinkBuilder != null)
-                display = $"<a href='{LinkBuilder.Invoke(model)}' target='{LinkTarget}'>{display}</a>";
+                display = $"<a href='{LinkBuilder.Invoke((T)model)}' target='{LinkTarget}'>{display}</a>";
 
             return display;
         }

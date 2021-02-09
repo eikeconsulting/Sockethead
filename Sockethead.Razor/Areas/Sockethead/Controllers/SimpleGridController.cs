@@ -1,8 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Sockethead.Razor.Grid;
 
 namespace Sockethead.Razor.Areas.Sockethead.Controllers
 {
@@ -11,6 +8,8 @@ namespace Sockethead.Razor.Areas.Sockethead.Controllers
     {
         public IActionResult Ping() => Content("Hello World!");
 
-
+        [HttpPost, ValidateAntiForgeryToken]
+        public IActionResult SearchHandler(SimpleGridSearchViewModel vm)
+            => Redirect(SimpleGridState.AppendSearchParameters(vm.RedirectUrl, vm.Query, vm.SearchNdx));
     }
 }

@@ -77,8 +77,11 @@ namespace Sockethead.Razor.Grid
                 [SearchNdxName] = null,
             };
 
-        public PagerModel BuildPagerModel(int totalPages)
-            => new PagerModel
+        public PagerModel BuildPagerModel(int totalRecords, int rowsPerPage)
+        {
+            int totalPages = (int)System.Math.Ceiling(totalRecords / (float)rowsPerPage);
+
+            return new PagerModel
             {
                 FirstUrl = PageNum > 1 ? BuildPageUrl(1) : null,
                 PrevUrl = PageNum > 1 ? BuildPageUrl(PageNum - 1) : null,
@@ -87,5 +90,12 @@ namespace Sockethead.Razor.Grid
                 CurrentPage = PageNum,
                 TotalPages = totalPages,
             };
+        }
+
+        public static string AppendSearchParameters(string url, string query, string searchNdx)
+        {
+            string separator = url.Contains('?') ? "&" : "?";
+            return $"{url}{separator}{SearchQueryName}={query}&{SearchNdxName}={searchNdx}";
+        }
     }
 }
