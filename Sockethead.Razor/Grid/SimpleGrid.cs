@@ -24,12 +24,12 @@ namespace Sockethead.Razor.Grid
             State = new SimpleGridState(Html.ViewContext.HttpContext.Request);
         }
 
+        private IHtmlHelper Html { get; set; }
+        private IQueryable<T> Source { get; }
         private SimpleGridState State { get; }
         private SimpleGridOptions Options { get; } = new SimpleGridOptions();
-        private SimpleGridPagerOptions PagerOptions { get; set; } = null;
+        private SimpleGridPagerOptions PagerOptions { get; } = new SimpleGridPagerOptions();
         private SimpleGridSort<T> Sort { get; } = new SimpleGridSort<T>();
-        private IHtmlHelper Html { get; set; }
-        private IQueryable<T> Source { get; set; }
         private List<SimpleGridColumn<T>> Columns { get; } = new List<SimpleGridColumn<T>>();
         private List<SimpleGridSearch> SimpleGridSearches { get; } = new List<SimpleGridSearch>();
 
@@ -110,7 +110,7 @@ namespace Sockethead.Razor.Grid
 
         public SimpleGrid<T> AddPager(Action<SimpleGridPagerOptions> pagerOptionsSetter = null)
         {
-            PagerOptions = new SimpleGridPagerOptions();
+            PagerOptions.Enabled = true;
             pagerOptionsSetter?.Invoke(PagerOptions);
             return this;
         }
@@ -146,7 +146,7 @@ namespace Sockethead.Razor.Grid
             }
 
             // pager
-            if (vm.PagerOptions != null)
+            if (vm.PagerOptions.Enabled)
                 vm.PagerModel = State.BuildPagerModel(totalRecords: src.Count(), rowsPerPage: vm.PagerOptions.RowsPerPage);
 
             if (SimpleGridSearches.Any())
@@ -177,7 +177,7 @@ namespace Sockethead.Razor.Grid
                 return $"<a href='{State.BuildSortUrl(ndx + 1, sortOrder)}'>{label}</a>";
             }).ToArray();
 
-            int rowsToTake = vm.PagerOptions == null ? vm.Options.MaxRows : vm.PagerOptions.RowsPerPage;
+            int rowsToTake = vm.PagerOptions.Enabled ? vm.PagerOptions.RowsPerPage : vm.Options.MaxRows;
             vm.Rows = src
                 .Skip((State.PageNum - 1) * rowsToTake)
                 .Take(rowsToTake)
@@ -204,6 +204,7 @@ namespace Sockethead.Razor.Grid
 
     public class SimpleGridPagerOptions
     {
+        public bool Enabled { get; set; } = false;
         public int RowsPerPage { get; set; } = 20;
         public bool DisplayPagerTop { get; set; } = true;
         public bool DisplayPagerBottom { get; set; } = false;

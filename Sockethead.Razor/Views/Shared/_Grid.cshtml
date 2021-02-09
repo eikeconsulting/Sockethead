@@ -1,6 +1,6 @@
 ﻿@model Sockethead.Razor.Grid.SimpleGridViewModel
 
-@if (Model.PagerOptions != null && Model.PagerOptions.DisplayPagerTop)
+@if (Model.PagerOptions.Enabled && Model.PagerOptions.DisplayPagerTop)
 {
     <partial name="@Model.Options.PagerViewName" model="Model.PagerModel" />
 }
@@ -28,7 +28,7 @@
     }
 </table>
 
-@if (Model.PagerOptions != null && Model.PagerOptions.DisplayPagerBottom)
+@if (Model.PagerOptions.Enabled && Model.PagerOptions.DisplayPagerBottom)
 {
     <partial name="@Model.Options.PagerViewName" model="Model.PagerModel" />
 }

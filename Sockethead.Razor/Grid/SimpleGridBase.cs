@@ -23,23 +23,3 @@ namespace Sockethead.Razor.Grid
         }
     }
 }
-
-/*
-public static IHtmlGrid<T> Pageable<T>(this IHtmlGrid<T> html, IQueryable<T> model, int rowsPerPage = 25)
-   => model.Count() <= rowsPerPage
-        ? html
-        : html
-            .Pageable(pager =>
-            {
-                pager.PageSizes = new Dictionary<int, string>
-                    {
-                        { 10, "10" },
-                        { 25, "25" },
-                        { 100, "100" },
-                        { 1000, "1,000" },
-                        { 5000, "5,000" },
-                    };
-                pager.ShowPageSizes = true;
-                pager.RowsPerPage = rowsPerPage;
-            });
-*/
