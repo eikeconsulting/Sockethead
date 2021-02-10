@@ -4,7 +4,7 @@
     <TargetFramework>net5.0</TargetFramework>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.0.1</Version>
+    <Version>0.0.2</Version>
     <Authors>Randall Eike</Authors>
     <Company>Eike Consulting, LLC</Company>
     <Description>Razor Utilities for .Net Core 5.
@@ -13,8 +13,9 @@
     <PackageProjectUrl>https://github.com/eikeconsulting/Sockethead</PackageProjectUrl>
     <RepositoryUrl>https://github.com/eikeconsulting/Sockethead</RepositoryUrl>
     <RepositoryType>GIT</RepositoryType>
-    <PackageTags>ASP.Net Core, MVC, Razor</PackageTags>
+    <PackageTags>ASP.Net Core, MVC, Razor, Grid Control</PackageTags>
     <Copyright>Copyright (c) 2021</Copyright>
+    <PackageReleaseNotes>Added Grid control.</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
