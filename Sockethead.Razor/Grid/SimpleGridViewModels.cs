@@ -18,8 +18,6 @@ namespace Sockethead.Razor.Grid
 
         public List<object> Rows { get; set; }
 
-        public string[] ColumnLabels { get; set; }
-
         public ISimpleGridColumn[] Columns { get; set; }
     }
 

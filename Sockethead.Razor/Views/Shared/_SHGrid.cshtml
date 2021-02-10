@@ -1,0 +1,18 @@
+﻿@model Sockethead.Razor.Grid.SimpleGridViewModel
+
+@if (Model.PagerOptions.Enabled && Model.PagerOptions.DisplayPagerTop)
+{
+    <partial name="@Model.Options.PagerViewName" model="Model.PagerModel" />
+}
+
+@if (Model.SimpleGridSearchViewModel != null)
+{
+    <partial name="@Model.Options.SearchViewName" model="Model.SimpleGridSearchViewModel" />
+}
+
+<partial name="@Model.Options.TableViewName" model="Model" />
+
+@if (Model.PagerOptions.Enabled && Model.PagerOptions.DisplayPagerBottom)
+{
+    <partial name="@Model.Options.PagerViewName" model="Model.PagerModel" />
+}

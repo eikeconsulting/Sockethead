@@ -9,6 +9,15 @@ namespace Sockethead.Razor.Grid
     {
         string Css();
         string DisplayRender(object model);
+
+        SimpleGridColumnLabel LabelDetails { get; }
+    }
+
+    public class SimpleGridColumnLabel : SimpleGridBase
+    {
+        public string Display { get; set; }
+        public string SortUrl { get; set; }
+        public SortOrder CurrentSortOrder { get; set; }
     }
 
     public class SimpleGridColumn<T> : SimpleGridBase, ISimpleGridColumn where T : class
@@ -16,11 +25,13 @@ namespace Sockethead.Razor.Grid
         internal Expression<Func<T, object>> Expression { get; set; }
         private Func<T, object> CompiledExpression { get; set; }
         internal SimpleGridSort<T> Sort { get; set; } = new SimpleGridSort<T>();
-        private string LabelValue { get; set; } = null;
         private Func<T, object> DisplayBuilder { get; set; } = model => null;
         private Func<T, object> LinkBuilder { get; set; } = null;
         private string LinkTarget { get; set; }
         internal bool IsEncoded { get; set; } = true;
+        private string LabelValue { get; set; } = null;
+
+        public SimpleGridColumnLabel LabelDetails { get; } = new SimpleGridColumnLabel();
 
         internal string LabelRender() => HttpUtility.HtmlEncode(LabelValue);
 
@@ -66,7 +77,7 @@ namespace Sockethead.Razor.Grid
         public SimpleGridColumn<T> Sortable(bool enable = true, SortOrder sortOrder = SortOrder.Ascending)
         {
             if (enable && Expression == null)
-                throw new ArgumentException("You must pass an Expression into sort if not already specified");
+                throw new ArgumentException("You must pass an Expression into sort if not already specified.");
 
             if (!enable)
             {
@@ -93,16 +104,29 @@ namespace Sockethead.Razor.Grid
             return this;
         }
 
-        public SimpleGridColumn<T> AddCssClass(string cssClass)
+        public SimpleGridColumn<T> AddLabelCssClass(string cssClass)
+        {
+            LabelDetails.CssClasses.Add(cssClass);
+            return this;
+        }
+
+        public SimpleGridColumn<T> AddLabelCssStyle(string cssStyle)
+        {
+            LabelDetails.CssStyles.Add(cssStyle);
+            return this;
+        }
+
+        public SimpleGridColumn<T> AddItemCssClass(string cssClass)
         {
             CssClasses.Add(cssClass);
             return this;
         }
 
-        public SimpleGridColumn<T> AddCssStyle(string cssStyle)
+        public SimpleGridColumn<T> AddItemCssStyle(string cssStyle)
         {
             CssStyles.Add(cssStyle);
             return this;
         }
+
     }
 }

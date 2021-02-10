@@ -24,7 +24,7 @@ namespace Sockethead.Razor.Grid
             State = new SimpleGridState(Html.ViewContext.HttpContext.Request);
         }
 
-        private IHtmlHelper Html { get; set; }
+        private IHtmlHelper Html { get; }
         private IQueryable<T> Source { get; }
         private SimpleGridState State { get; }
         private SimpleGridOptions Options { get; } = new SimpleGridOptions();
@@ -117,7 +117,7 @@ namespace Sockethead.Razor.Grid
 
         public async Task<IHtmlContent> RenderAsync()
         {
-            IQueryable<T> src = Source;
+            IQueryable<T> query = Source;
 
             var vm = new SimpleGridViewModel
             {
@@ -126,29 +126,30 @@ namespace Sockethead.Razor.Grid
                 PagerOptions = PagerOptions,
             };
 
-            // search
+            // apply search to query
             if (!string.IsNullOrEmpty(State.SearchQuery) &&
                 State.SearchNdx > 0 && 
                 State.SearchNdx <= SimpleGridSearches.Count)
-                src = SimpleGridSearches[State.SearchNdx - 1].SearchFilter(src, State.SearchQuery);
+                query = SimpleGridSearches[State.SearchNdx - 1].SearchFilter(query, State.SearchQuery);
 
-            // sort
+            // apply sort(s) to query
             var sortColumn = State.SortColumn > 0 && State.SortColumn <= Columns.Count ? Columns[State.SortColumn - 1] : null;
             if (sortColumn != null && sortColumn.Sort.IsSortable)
             {
                 sortColumn.Sort.SortOrder = State.SortOrder; // kludge
-                src = sortColumn.Sort.ApplyTo(src, isThenBy: false);
-                src = Sort.ApplyTo(src, isThenBy: true);
+                query = sortColumn.Sort.ApplyTo(query, isThenBy: false);
+                query = Sort.ApplyTo(query, isThenBy: true);
             }
             else
             {
-                src = Sort.ApplyTo(src, isThenBy: false);
+                query = Sort.ApplyTo(query, isThenBy: false);
             }
 
-            // pager
+            // build pager view model
             if (vm.PagerOptions.Enabled)
-                vm.PagerModel = State.BuildPagerModel(totalRecords: src.Count(), rowsPerPage: vm.PagerOptions.RowsPerPage);
+                vm.PagerModel = State.BuildPagerModel(totalRecords: query.Count(), rowsPerPage: vm.PagerOptions.RowsPerPage);
 
+            // build search view model
             if (SimpleGridSearches.Any())
             {
                 vm.SimpleGridSearchViewModel = new SimpleGridSearchViewModel
@@ -164,29 +165,40 @@ namespace Sockethead.Razor.Grid
                 };
             }
 
-            vm.ColumnLabels = Columns.Select((col, ndx) =>
+            // build column labels
+            int ndx = 0;
+            foreach (var col in Columns)
             {
-                string label = col.LabelRender();
+                ndx++;
+
+                col.LabelDetails.Display = col.LabelRender();
                 if (!col.Sort.IsSortable)
-                    return label;
+                    continue;
 
-                SortOrder sortOrder = ndx + 1 == State.SortColumn
-                    ? SimpleGridSort<T>.Flip(State.SortOrder)
-                    : col.Sort.SortOrder;
+                SortOrder sortOrder = col.Sort.SortOrder;
 
-                return $"<a href='{State.BuildSortUrl(ndx + 1, sortOrder)}'>{label}</a>";
-            }).ToArray();
+                if (ndx == State.SortColumn)
+                {
+                    col.LabelDetails.CurrentSortOrder = State.SortOrder;
+                    sortOrder = SimpleGridSort<T>.Flip(State.SortOrder);
+                }
 
+                col.LabelDetails.SortUrl = State.BuildSortUrl(ndx, sortOrder);
+            }
+
+            // resolve the data (rows)
             int rowsToTake = vm.PagerOptions.Enabled ? vm.PagerOptions.RowsPerPage : vm.Options.MaxRows;
-            vm.Rows = src
+            vm.Rows = query
                 .Skip((State.PageNum - 1) * rowsToTake)
                 .Take(rowsToTake)
                 .Cast<object>()
                 .ToList();
 
+            // build array of generic columns (not tied to the type of the model)
             vm.Columns = Columns.Cast<ISimpleGridColumn>().ToArray();
 
-            return await Html.PartialAsync("_Grid", vm);
+            // render it!
+            return await Html.PartialAsync("_SHGrid", vm);
         }
 
         public class SimpleGridSearch
@@ -194,19 +206,5 @@ namespace Sockethead.Razor.Grid
             public Func<IQueryable<T>, string, IQueryable<T>> SearchFilter { get; set; }
             public string Name { get; set; }
         }
-    }
-
-    public class SimpleGridOptions
-    {
-        public string PagerViewName { get; set; } = "_Pager";
-        public int MaxRows { get; set; } = 5000;
-    }
-
-    public class SimpleGridPagerOptions
-    {
-        public bool Enabled { get; set; } = false;
-        public int RowsPerPage { get; set; } = 20;
-        public bool DisplayPagerTop { get; set; } = true;
-        public bool DisplayPagerBottom { get; set; } = false;
     }
 }

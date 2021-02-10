@@ -6,6 +6,7 @@ namespace Sockethead.Razor.Grid
 {
     public enum SortOrder
     { 
+        None,
         Ascending,
         Descending,
     }
@@ -25,7 +26,7 @@ namespace Sockethead.Razor.Grid
             {
                 SortOrder.Ascending => SortOrder.Descending,
                 SortOrder.Descending => SortOrder.Ascending,
-                _ => throw new ArgumentException($"Unexpected SortOrder {sortOrder}"),
+                _ => SortOrder.Ascending,
             };
 
         public SimpleGridSort<T> Flip()
@@ -44,14 +45,14 @@ namespace Sockethead.Razor.Grid
                 {
                     SortOrder.Ascending => orderedSource.ThenBy(Expression),
                     SortOrder.Descending => orderedSource.ThenByDescending(Expression),
-                    _ => throw new ArgumentException($"Unexpected SortOrder {SortOrder}"),
+                    _ => orderedSource.ThenBy(Expression),
                 }
                 :
                 SortOrder switch
                 {
                     SortOrder.Ascending => source.OrderBy(Expression),
                     SortOrder.Descending => source.OrderByDescending(Expression),
-                    _ => throw new ArgumentException($"Unexpected SortOrder {SortOrder}"),
+                    _ => source.OrderBy(Expression),
                 };
         }
     }

@@ -1,0 +1,36 @@
+﻿@using Sockethead.Razor.Grid
+@model SimpleGridViewModel
+@{ 
+    string RenderLabel(SimpleGridColumnLabel cl)
+    {
+        if (cl.SortUrl == null)
+            return cl.Display;
+
+        string arrow = cl.CurrentSortOrder switch
+        {
+            SortOrder.Ascending => "&#8593;",  // up arrow
+            SortOrder.Descending => "&#8595;", // down arrow
+            _ => ""
+        };
+
+        return $"<a href='{cl.SortUrl}'>{cl.Display}</a>{arrow}";
+    }
+}
+<table @Html.Raw(Model.Css)>
+    <tr>
+        @foreach (var col in Model.Columns)
+        {
+            <th @Html.Raw(col.LabelDetails.Css())>@Html.Raw(RenderLabel(col.LabelDetails))</th>
+        }
+    </tr>
+    @foreach (object item in Model.Rows)
+    {
+        <tr>
+            @foreach (var col in Model.Columns)
+            {
+                <td @Html.Raw(col.Css())>@Html.Raw(col.DisplayRender(item))</td>
+            }
+        </tr>
+    }
+</table>
+
