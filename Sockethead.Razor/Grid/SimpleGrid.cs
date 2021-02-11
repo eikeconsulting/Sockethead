@@ -91,7 +91,9 @@ namespace Sockethead.Razor.Grid
             {
                 if (enable)
                 {
-                    if (!column.Sort.IsSortable && column.Expression != null)
+                    if (column.Sort.IsEnabled && 
+                        column.Sort.Expression == null && 
+                        column.Expression != null)
                         column.Sortable(true);
                 }
                 else
@@ -134,16 +136,14 @@ namespace Sockethead.Razor.Grid
 
             // apply sort(s) to query
             var sortColumn = State.SortColumn > 0 && State.SortColumn <= Columns.Count ? Columns[State.SortColumn - 1] : null;
-            if (sortColumn != null && sortColumn.Sort.IsSortable)
+            var sorts = new List<SimpleGridSort<T>>();
+            if (sortColumn != null && sortColumn.Sort.IsActive)
             {
                 sortColumn.Sort.SortOrder = State.SortOrder; // kludge
-                query = sortColumn.Sort.ApplyTo(query, isThenBy: false);
-                query = Sort.ApplyTo(query, isThenBy: true);
+                sorts.Add(sortColumn.Sort);
             }
-            else
-            {
-                query = Sort.ApplyTo(query, isThenBy: false);
-            }
+            sorts.Add(Sort);
+            query = SimpleGridSort<T>.ApplySorts(sorts, query);
 
             // build pager view model
             if (vm.PagerOptions.Enabled)
@@ -172,7 +172,7 @@ namespace Sockethead.Razor.Grid
                 ndx++;
 
                 col.LabelDetails.Display = col.LabelRender();
-                if (!col.Sort.IsSortable)
+                if (!col.Sort.IsActive)
                     continue;
 
                 SortOrder sortOrder = col.Sort.SortOrder;

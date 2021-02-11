@@ -76,20 +76,20 @@ namespace Sockethead.Razor.Grid
 
         public SimpleGridColumn<T> Sortable(bool enable = true, SortOrder sortOrder = SortOrder.Ascending)
         {
+            Sort.IsEnabled = enable;
+
             if (enable && Expression == null)
                 throw new ArgumentException("You must pass an Expression into sort if not already specified.");
 
             if (!enable)
-            {
-                Sort.Expression = null;
                 return this;
-            }
 
             return SortableBy(Expression, sortOrder);
         }
 
         public SimpleGridColumn<T> SortableBy(Expression<Func<T, object>> expression, SortOrder sortOrder = SortOrder.Ascending)
         {
+            Sort.IsEnabled = true;
             Sort.Expression = expression;
             Sort.SortOrder = sortOrder;
             return this;
