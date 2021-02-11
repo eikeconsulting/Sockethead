@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -17,6 +18,45 @@ namespace Sockethead.Web.Areas.Samples.Controllers
         public string Genre { get; set; } = "";
 
         public int? Released { get; set; }
+    }
+
+    public enum SampleEnum
+    {
+        Zero, One, Two, Three, Four
+    }
+
+    public class SampleModel
+    {
+        [Display(Name = "Unique ID")]
+        public int Id { get; set; } = NextId++;
+
+        [DisplayName("First Name")]
+        public string First { get; set; }
+
+        [Display(Name = "Last Name")]
+        public string Last { get; set; }
+
+        public string JobTitle { get; set; }
+
+        public DateTime RandomDate { get; set; } = GetRandomDate();
+
+        public bool Flag { get; set; } = GetRandomBool();
+
+        public SampleEnum SampleEnum { get; set; } = GetRandomEnum();
+
+
+        private static int NextId = 1001;
+
+        private static readonly Random Random = new Random(DateTime.Now.Millisecond);
+
+        private static DateTime GetRandomDate()
+            => DateTime.UtcNow
+                .AddDays(-Random.NextDouble() * 10000)
+                .AddMinutes(Random.NextDouble() * 24 * 60);
+
+        private static bool GetRandomBool() => Random.NextDouble() > 0.5;
+
+        private static SampleEnum GetRandomEnum() => (SampleEnum)Random.Next((int)SampleEnum.Zero, (int)SampleEnum.Four + 1);
     }
 
     [Area("Samples")]
@@ -42,6 +82,20 @@ namespace Sockethead.Web.Areas.Samples.Controllers
             new Movie { Name = "2001: A Space Odyssey", Director = "Stanley Kubrick", Genre = "Sci-Fi", Released = 1968 },
         };
 
+        private static readonly List<SampleModel> _SampleData = new List<SampleModel>
+        {
+            new SampleModel { First = "John", Last = "Smith", JobTitle = "President" },
+            new SampleModel { First = "Jane", Last = "Smith", JobTitle = "CEO" },
+            new SampleModel { First = "Jim", Last = "Smith", JobTitle = "Secretary" },
+            new SampleModel { First = "Aaron", Last = "Green", JobTitle = "Engineer" },
+            new SampleModel { First = "Aaron", Last = "Smith", JobTitle = "Trainer" },
+            new SampleModel { First = "Sally", Last = "Green", JobTitle = "Clerk" },
+            new SampleModel { First = "Francis", Last = "Jones", JobTitle = "Engineer" },
+            new SampleModel { First = "Frank", Last = "Jones", JobTitle = "Engineer" },
+            new SampleModel { First = "Mike", Last = "Block", JobTitle = "Helper" },
+            new SampleModel { First = "Boomer", Last = "Blow", JobTitle = "Director of Operations" },
+        };
+
         [HttpGet]
         public IActionResult Movies1()
         {
@@ -54,6 +108,13 @@ namespace Sockethead.Web.Areas.Samples.Controllers
         {
             ViewData["Title"] = "Movies!";
             return View(_Movies.AsQueryable());
+        }
+
+        [HttpGet]
+        public IActionResult Sample1()
+        {
+            ViewData["Title"] = "Sample Data Example";
+            return View(_SampleData.AsQueryable());
         }
 
     }

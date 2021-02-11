@@ -1,0 +1,15 @@
+﻿@using Sockethead.Razor.Grid;
+@model IQueryable<Sockethead.Web.Areas.Samples.Controllers.SampleModel>
+
+@(await Html
+    .SimpleGrid(Model)
+    .AddColumnsFromModel()
+    .AddColumn(column => column.For(model => model.First).Sortable(false))
+    .AddColumn(column => column.Label("First").DisplayAs(model => model.First)/*.SortableBy(model => model.First)*/)
+    .AddColumn(column => column
+        .Label("Full Name")
+        .DisplayAs(model => $"{model.Last}, {model.First}"))
+    .Sortable()
+    .DefaultSortBy(model => model.RandomDate)
+    .RenderAsync()
+)
