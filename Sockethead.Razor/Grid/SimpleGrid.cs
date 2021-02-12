@@ -21,21 +21,21 @@ namespace Sockethead.Razor.Grid
             CssClasses.Add("table");
             Html = html;
             Source = source;
-            State = new SimpleGridState(Html.ViewContext.HttpContext.Request);
+            State = new State(Html.ViewContext.HttpContext.Request);
         }
 
         private IHtmlHelper Html { get; }
         private IQueryable<T> Source { get; }
-        private SimpleGridState State { get; }
-        private SimpleGridOptions Options { get; } = new SimpleGridOptions();
+        private State State { get; }
+        private Options Options { get; } = new Options();
         private SimpleGridPagerOptions PagerOptions { get; } = new SimpleGridPagerOptions();
-        private SimpleGridSort<T> Sort { get; } = new SimpleGridSort<T>();
-        private List<SimpleGridColumn<T>> Columns { get; } = new List<SimpleGridColumn<T>>();
+        private Sort<T> Sort { get; } = new Sort<T>();
+        private List<Column<T>> Columns { get; } = new List<Column<T>>();
         private List<SimpleGridSearch> SimpleGridSearches { get; } = new List<SimpleGridSearch>();
 
-        public SimpleGrid<T> AddColumn(Action<SimpleGridColumn<T>> columnBuilder)
+        public SimpleGrid<T> AddColumn(Action<Column<T>> columnBuilder)
         {
-            var column = new SimpleGridColumn<T>();
+            var column = new Column<T>();
             columnBuilder.Invoke(column);
             Columns.Add(column);
             return this;
@@ -43,7 +43,7 @@ namespace Sockethead.Razor.Grid
 
         public SimpleGrid<T> AddColumnFor(Expression<Func<T, object>> expression)
         {
-            var column = new SimpleGridColumn<T>();
+            var column = new Column<T>();
             column.For(expression);
             Columns.Add(column);
             return this;
@@ -104,7 +104,7 @@ namespace Sockethead.Razor.Grid
             return this;
         }
 
-        public SimpleGrid<T> SetOptions(Action<SimpleGridOptions> optionsSetter)
+        public SimpleGrid<T> SetOptions(Action<Options> optionsSetter)
         {
             optionsSetter.Invoke(Options);
             return this;
@@ -136,14 +136,14 @@ namespace Sockethead.Razor.Grid
 
             // apply sort(s) to query
             var sortColumn = State.SortColumn > 0 && State.SortColumn <= Columns.Count ? Columns[State.SortColumn - 1] : null;
-            var sorts = new List<SimpleGridSort<T>>();
+            var sorts = new List<Sort<T>>();
             if (sortColumn != null && sortColumn.Sort.IsActive)
             {
                 sortColumn.Sort.SortOrder = State.SortOrder; // kludge
                 sorts.Add(sortColumn.Sort);
             }
             sorts.Add(Sort);
-            query = SimpleGridSort<T>.ApplySorts(sorts, query);
+            query = Sort<T>.ApplySorts(sorts, query);
 
             // build pager view model
             if (vm.PagerOptions.Enabled)
@@ -180,7 +180,7 @@ namespace Sockethead.Razor.Grid
                 if (ndx == State.SortColumn)
                 {
                     col.LabelDetails.CurrentSortOrder = State.SortOrder;
-                    sortOrder = SimpleGridSort<T>.Flip(State.SortOrder);
+                    sortOrder = Sort<T>.Flip(State.SortOrder);
                 }
 
                 col.LabelDetails.SortUrl = State.BuildSortUrl(ndx, sortOrder);

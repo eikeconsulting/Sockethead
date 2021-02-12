@@ -20,11 +20,11 @@ namespace Sockethead.Razor.Grid
         public SortOrder CurrentSortOrder { get; set; }
     }
 
-    public class SimpleGridColumn<T> : SimpleGridBase, ISimpleGridColumn where T : class
+    public class Column<T> : SimpleGridBase, ISimpleGridColumn where T : class
     {
         internal Expression<Func<T, object>> Expression { get; set; }
         private Func<T, object> CompiledExpression { get; set; }
-        internal SimpleGridSort<T> Sort { get; set; } = new SimpleGridSort<T>();
+        internal Sort<T> Sort { get; set; } = new Sort<T>();
         private Func<T, object> DisplayBuilder { get; set; } = model => null;
         private Func<T, object> LinkBuilder { get; set; } = null;
         private string LinkTarget { get; set; }
@@ -49,32 +49,32 @@ namespace Sockethead.Razor.Grid
             return display;
         }
 
-        public SimpleGridColumn<T> Label(string label) 
+        public Column<T> Label(string label) 
         { 
             LabelValue = label; 
             return this; 
         }
 
-        public SimpleGridColumn<T> DisplayAs(Func<T, object> displayBuilder) 
+        public Column<T> DisplayAs(Func<T, object> displayBuilder) 
         { 
             DisplayBuilder = displayBuilder; 
             return this; 
         }
 
-        public SimpleGridColumn<T> Encoded(bool isEncoded) 
+        public Column<T> Encoded(bool isEncoded) 
         { 
             IsEncoded = isEncoded; 
             return this; 
         }
 
-        public SimpleGridColumn<T> LinkTo(Func<T, string> linkBuilder, string target = "_self") 
+        public Column<T> LinkTo(Func<T, string> linkBuilder, string target = "_self") 
         { 
             LinkBuilder = linkBuilder; 
             LinkTarget = target; 
             return this; 
         }
 
-        public SimpleGridColumn<T> Sortable(bool enable = true, SortOrder sortOrder = SortOrder.Ascending)
+        public Column<T> Sortable(bool enable = true, SortOrder sortOrder = SortOrder.Ascending)
         {
             Sort.IsEnabled = enable;
 
@@ -87,7 +87,7 @@ namespace Sockethead.Razor.Grid
             return SortableBy(Expression, sortOrder);
         }
 
-        public SimpleGridColumn<T> SortableBy(Expression<Func<T, object>> expression, SortOrder sortOrder = SortOrder.Ascending)
+        public Column<T> SortableBy(Expression<Func<T, object>> expression, SortOrder sortOrder = SortOrder.Ascending)
         {
             Sort.IsEnabled = true;
             Sort.Expression = expression;
@@ -95,7 +95,7 @@ namespace Sockethead.Razor.Grid
             return this;
         }
 
-        public SimpleGridColumn<T> For(Expression<Func<T, object>> expression)
+        public Column<T> For(Expression<Func<T, object>> expression)
         {
             Expression = expression;
             Label(expression.FriendlyName());
@@ -104,25 +104,25 @@ namespace Sockethead.Razor.Grid
             return this;
         }
 
-        public SimpleGridColumn<T> AddLabelCssClass(string cssClass)
+        public Column<T> AddLabelCssClass(string cssClass)
         {
             LabelDetails.CssClasses.Add(cssClass);
             return this;
         }
 
-        public SimpleGridColumn<T> AddLabelCssStyle(string cssStyle)
+        public Column<T> AddLabelCssStyle(string cssStyle)
         {
             LabelDetails.CssStyles.Add(cssStyle);
             return this;
         }
 
-        public SimpleGridColumn<T> AddItemCssClass(string cssClass)
+        public Column<T> AddItemCssClass(string cssClass)
         {
             CssClasses.Add(cssClass);
             return this;
         }
 
-        public SimpleGridColumn<T> AddItemCssStyle(string cssStyle)
+        public Column<T> AddItemCssStyle(string cssStyle)
         {
             CssStyles.Add(cssStyle);
             return this;

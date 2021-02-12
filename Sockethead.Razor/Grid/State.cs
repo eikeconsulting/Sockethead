@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Sockethead.Razor.Grid
 {
-    public class SimpleGridState
+    public class State
     {
         public int PageNum { get; set; } = 1;
         public int SortColumn { get; set; } = 0;
@@ -14,7 +14,7 @@ namespace Sockethead.Razor.Grid
         public int SearchNdx { get; set; } = 0;
         private HttpRequest Request { get; }
 
-        public SimpleGridState(HttpRequest request)
+        public State(HttpRequest request)
         {
             Request = request;
 

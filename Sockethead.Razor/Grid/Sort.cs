@@ -12,7 +12,7 @@ namespace Sockethead.Razor.Grid
         Descending,
     }
 
-    public class SimpleGridSort<T> where T : class
+    public class Sort<T> where T : class
     {
         public Expression<Func<T, object>> Expression { get; set; }
 
@@ -32,7 +32,7 @@ namespace Sockethead.Razor.Grid
                 _ => SortOrder.Ascending,
             };
 
-        public SimpleGridSort<T> Flip()
+        public Sort<T> Flip()
         {
             SortOrder = SortOrderFlipped;
             return this;
@@ -59,7 +59,7 @@ namespace Sockethead.Razor.Grid
                 };
         }
 
-        public static IQueryable<T> ApplySorts(IEnumerable<SimpleGridSort<T>> sorts, IQueryable<T> query)
+        public static IQueryable<T> ApplySorts(IEnumerable<Sort<T>> sorts, IQueryable<T> query)
         {
             int i = 0;
             foreach (var sort in sorts)

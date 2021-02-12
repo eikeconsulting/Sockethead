@@ -1,6 +1,6 @@
 ﻿namespace Sockethead.Razor.Grid
 {
-    public class SimpleGridOptions
+    public class Options
     {
         public string GridViewName { get; set; } = "_SHGrid";
         public string PagerViewName { get; set; } = "_SHPager";

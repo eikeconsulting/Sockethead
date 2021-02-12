@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Sockethead.Razor.Grid
 {
-    public static class SimpleGridExtensions
+    public static class Extensions
     {
         public static SimpleGrid<T> SimpleGrid<T>(
             this IHtmlHelper html, 
