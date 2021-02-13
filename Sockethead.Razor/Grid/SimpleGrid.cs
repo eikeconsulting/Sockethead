@@ -27,8 +27,8 @@ namespace Sockethead.Razor.Grid
         private IHtmlHelper Html { get; }
         private IQueryable<T> Source { get; }
         private State State { get; }
-        private Options Options { get; } = new Options();
-        private SimpleGridPagerOptions PagerOptions { get; } = new SimpleGridPagerOptions();
+        private GridOptions Options { get; } = new GridOptions();
+        private PagerOptions PagerOptions { get; } = new PagerOptions();
         private Sort<T> Sort { get; } = new Sort<T>();
         private List<Column<T>> Columns { get; } = new List<Column<T>>();
         private List<Search<T>> SimpleGridSearches { get; } = new List<Search<T>>();
@@ -113,13 +113,13 @@ namespace Sockethead.Razor.Grid
             return this;
         }
 
-        public SimpleGrid<T> SetOptions(Action<Options> optionsSetter)
+        public SimpleGrid<T> SetOptions(Action<GridOptions> optionsSetter)
         {
             optionsSetter.Invoke(Options);
             return this;
         }
 
-        public SimpleGrid<T> AddPager(Action<SimpleGridPagerOptions> pagerOptionsSetter = null)
+        public SimpleGrid<T> AddPager(Action<PagerOptions> pagerOptionsSetter = null)
         {
             PagerOptions.Enabled = true;
             pagerOptionsSetter?.Invoke(PagerOptions);

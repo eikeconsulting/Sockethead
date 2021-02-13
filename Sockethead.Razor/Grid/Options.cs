@@ -1,6 +1,6 @@
 ﻿namespace Sockethead.Razor.Grid
 {
-    public class Options
+    public class GridOptions
     {
         public string GridViewName { get; set; } = "_SHGrid";
         public string PagerViewName { get; set; } = "_SHPager";
@@ -9,7 +9,7 @@
         public int MaxRows { get; set; } = 5000;
     }
 
-    public class SimpleGridPagerOptions
+    public class PagerOptions
     {
         public bool Enabled { get; set; } = false;
         public int RowsPerPage { get; set; } = 20;

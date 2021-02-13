@@ -8,9 +8,9 @@ namespace Sockethead.Razor.Grid
     {
         public string Css { get; set; }
 
-        public Options Options { get; set; }
+        public GridOptions Options { get; set; }
 
-        public SimpleGridPagerOptions PagerOptions { get; set; }
+        public PagerOptions PagerOptions { get; set; }
 
         public PagerModel PagerModel { get; set; }
 
