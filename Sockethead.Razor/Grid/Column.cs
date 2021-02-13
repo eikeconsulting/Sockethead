@@ -12,7 +12,7 @@ namespace Sockethead.Razor.Grid
         SimpleGridColumnHeader HeaderDetails { get; }
     }
 
-    public class SimpleGridColumnHeader : SimpleGridBase
+    public class SimpleGridColumnHeader : GridBase
     {
         public string Display { get; set; }
         public string SortUrl { get; set; }
@@ -38,7 +38,7 @@ namespace Sockethead.Razor.Grid
         public string Display(object model) => Column.DisplayRender(model);
     }
 
-    internal class Column<T> : SimpleGridBase, ISimpleGridColumn where T : class
+    internal class Column<T> : GridBase, ISimpleGridColumn where T : class
     {
         internal Expression<Func<T, object>> Expression { get; set; }
         internal Func<T, object> CompiledExpression { get; set; }
@@ -48,7 +48,6 @@ namespace Sockethead.Razor.Grid
         internal string LinkTarget { get; set; }
         internal bool IsEncoded { get; set; } = true;
         internal string HeaderValue { get; set; } = null;
-
 
         public SimpleGridColumnHeader HeaderDetails { get; } = new SimpleGridColumnHeader();
 

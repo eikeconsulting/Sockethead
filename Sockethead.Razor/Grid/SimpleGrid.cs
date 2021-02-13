@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Sockethead.Razor.Grid
 {
-    public class SimpleGrid<T> : SimpleGridBase where T : class
+    public class SimpleGrid<T> : GridBase where T : class
     {
         /// <summary>
         /// Constructor

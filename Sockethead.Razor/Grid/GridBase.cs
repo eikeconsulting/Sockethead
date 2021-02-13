@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Sockethead.Razor.Grid
 {
-    public class SimpleGridBase
+    public class GridBase
     {
         public List<string> CssClasses { get; } = new List<string>();
         public List<string> CssStyles { get; } = new List<string>();
