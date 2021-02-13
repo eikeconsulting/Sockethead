@@ -11,5 +11,13 @@
         .DisplayAs(model => $"{model.Last}, {model.First}"))
     .Sortable()
     .DefaultSortBy(model => model.RandomDate)
+    .AddSearch(
+        name: "Name",
+        searchFilter: (source, query) => source.Where(model =>
+            model.First.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+            model.Last.Contains(query, StringComparison.OrdinalIgnoreCase) ))
+    .AddSearch(
+        name: "First Name Match",
+        modelFilter: (model, query) => model.First.Equals(query, StringComparison.OrdinalIgnoreCase))
     .RenderAsync()
 )

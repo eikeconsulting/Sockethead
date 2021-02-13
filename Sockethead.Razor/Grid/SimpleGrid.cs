@@ -56,6 +56,11 @@ namespace Sockethead.Razor.Grid
             return this;
         }
 
+        public SimpleGrid<T> AddSearch(string name, Expression<Func<T, string, bool>> modelFilter)
+            => AddSearch(name, searchFilter: (source, query) 
+                => source.Where(model 
+                    => modelFilter.Compile().Invoke(model, query)));
+
         public SimpleGrid<T> AddSearch(string name, Func<IQueryable<T>, string, IQueryable<T>> searchFilter)
         {
             SimpleGridSearches.Add(new SimpleGridSearch
