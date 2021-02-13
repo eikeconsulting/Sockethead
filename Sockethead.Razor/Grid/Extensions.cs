@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Sockethead.Razor.Grid
@@ -9,5 +10,11 @@ namespace Sockethead.Razor.Grid
             this IHtmlHelper html, 
             IQueryable<T> source) where T : class
                 => new SimpleGrid<T>(html, source);
+
+        public static SimpleGrid<T> SimpleGrid<T>(
+            this IHtmlHelper html,
+            IEnumerable<T> source) where T : class
+                => new SimpleGrid<T>(html, source.AsQueryable());
+
     }
 }

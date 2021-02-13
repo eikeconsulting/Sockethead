@@ -10,14 +10,30 @@ namespace Sockethead.Razor.Grid
         string Css();
         string DisplayRender(object model);
 
-        SimpleGridColumnLabel LabelDetails { get; }
+        SimpleGridColumnHeader HeaderDetails { get; }
     }
 
-    public class SimpleGridColumnLabel : SimpleGridBase
+    public class SimpleGridColumnHeader : SimpleGridBase
     {
         public string Display { get; set; }
         public string SortUrl { get; set; }
         public SortOrder CurrentSortOrder { get; set; }
+    }
+
+    public class ColumnViewModel
+    {
+        private ISimpleGridColumn Column { get; }
+
+        public ColumnViewModel(ISimpleGridColumn column)
+        {
+            Column = column;
+        }
+
+        public string Css => Column.Css();
+        public string HeaderDisplay => Column.HeaderDetails.Display;
+        public string HeaderSortUrl => Column.HeaderDetails.SortUrl;
+        public SortOrder HeaderSortOrder => Column.HeaderDetails.CurrentSortOrder;
+        public string Display(object model) => Column.DisplayRender(model);
     }
 
     public class Column<T> : SimpleGridBase, ISimpleGridColumn where T : class
@@ -29,11 +45,11 @@ namespace Sockethead.Razor.Grid
         private Func<T, object> LinkBuilder { get; set; } = null;
         private string LinkTarget { get; set; }
         internal bool IsEncoded { get; set; } = true;
-        private string LabelValue { get; set; } = null;
+        private string HeaderValue { get; set; } = null;
 
-        public SimpleGridColumnLabel LabelDetails { get; } = new SimpleGridColumnLabel();
+        public SimpleGridColumnHeader HeaderDetails { get; } = new SimpleGridColumnHeader();
 
-        internal string LabelRender() => HttpUtility.HtmlEncode(LabelValue);
+        internal string HeaderRender() => HttpUtility.HtmlEncode(HeaderValue);
 
         public string DisplayRender(object model)
         {
@@ -49,9 +65,9 @@ namespace Sockethead.Razor.Grid
             return display;
         }
 
-        public Column<T> Label(string label) 
+        public Column<T> Header(string header) 
         { 
-            LabelValue = label; 
+            HeaderValue = header; 
             return this; 
         }
 
@@ -98,21 +114,21 @@ namespace Sockethead.Razor.Grid
         public Column<T> For(Expression<Func<T, object>> expression)
         {
             Expression = expression;
-            Label(expression.FriendlyName());
+            Header(expression.FriendlyName());
             CompiledExpression = expression.Compile();
             DisplayAs(model => CompiledExpression.Invoke(model));
             return this;
         }
 
-        public Column<T> AddLabelCssClass(string cssClass)
+        public Column<T> AddHeaderCssClass(string cssClass)
         {
-            LabelDetails.CssClasses.Add(cssClass);
+            HeaderDetails.CssClasses.Add(cssClass);
             return this;
         }
 
-        public Column<T> AddLabelCssStyle(string cssStyle)
+        public Column<T> AddHeaderCssStyle(string cssStyle)
         {
-            LabelDetails.CssStyles.Add(cssStyle);
+            HeaderDetails.CssStyles.Add(cssStyle);
             return this;
         }
 

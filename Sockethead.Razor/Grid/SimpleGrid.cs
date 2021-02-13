@@ -170,13 +170,13 @@ namespace Sockethead.Razor.Grid
                 };
             }
 
-            // build column labels
+            // build column headers
             int ndx = 0;
             foreach (var col in Columns)
             {
                 ndx++;
 
-                col.LabelDetails.Display = col.LabelRender();
+                col.HeaderDetails.Display = col.HeaderRender();
                 if (!col.Sort.IsActive)
                     continue;
 
@@ -184,11 +184,11 @@ namespace Sockethead.Razor.Grid
 
                 if (ndx == State.SortColumn)
                 {
-                    col.LabelDetails.CurrentSortOrder = State.SortOrder;
+                    col.HeaderDetails.CurrentSortOrder = State.SortOrder;
                     sortOrder = Sort<T>.Flip(State.SortOrder);
                 }
 
-                col.LabelDetails.SortUrl = State.BuildSortUrl(ndx, sortOrder);
+                col.HeaderDetails.SortUrl = State.BuildSortUrl(ndx, sortOrder);
             }
 
             // resolve the data (rows)

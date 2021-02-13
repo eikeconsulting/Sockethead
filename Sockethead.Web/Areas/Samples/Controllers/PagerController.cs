@@ -57,6 +57,8 @@ namespace Sockethead.Web.Areas.Samples.Controllers
         private static bool GetRandomBool() => Random.NextDouble() > 0.5;
 
         private static SampleEnum GetRandomEnum() => (SampleEnum)Random.Next((int)SampleEnum.Zero, (int)SampleEnum.Four + 1);
+
+        public override string ToString() => $"Sample Data for {First} {Last}, {JobTitle}";
     }
 
     [Area("Samples")]
@@ -112,6 +114,13 @@ namespace Sockethead.Web.Areas.Samples.Controllers
 
         [HttpGet]
         public IActionResult Sample1()
+        {
+            ViewData["Title"] = "Sample Data Example";
+            return View(_SampleData.AsQueryable());
+        }
+
+        [HttpGet]
+        public IActionResult Sample2()
         {
             ViewData["Title"] = "Sample Data Example";
             return View(_SampleData.AsQueryable());

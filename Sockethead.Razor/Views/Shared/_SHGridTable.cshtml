@@ -1,7 +1,7 @@
 ﻿@using Sockethead.Razor.Grid
 @model SimpleGridViewModel
 @{ 
-    string RenderLabel(SimpleGridColumnLabel cl)
+    string RenderLabel(SimpleGridColumnHeader cl)
     {
         if (cl.SortUrl == null)
             return cl.Display;
@@ -20,7 +20,7 @@
     <tr>
         @foreach (var col in Model.Columns)
         {
-            <th @Html.Raw(col.LabelDetails.Css())>@Html.Raw(RenderLabel(col.LabelDetails))</th>
+            <th @Html.Raw(col.HeaderDetails.Css())>@Html.Raw(RenderLabel(col.HeaderDetails))</th>
         }
     </tr>
     @foreach (object item in Model.Rows)

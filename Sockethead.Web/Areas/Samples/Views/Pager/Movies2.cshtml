@@ -8,24 +8,24 @@
         .For(model => model.Name)
         .LinkTo(model => $"https://www.google.com/search?q={System.Web.HttpUtility.UrlEncode(model.Name)}", target: "_blank")
         .Sortable()
-        .AddLabelCssStyle("width:21%"))
+        .AddHeaderCssStyle("width:21%"))
 
     .AddColumn(column => column
         .For(model => model.Director)
-        .AddLabelCssStyle("width:21%"))
+        .AddHeaderCssStyle("width:21%"))
 
     .AddColumn(column => column
-        .Label("Genre")
+        .Header("Genre")
         .DisplayAs(model => model.Genre.ToUpper())
         .SortableBy(model => model.Genre)
-        .AddLabelCssStyle("width:21%")
+        .AddHeaderCssStyle("width:21%")
         .AddItemCssStyle("font-weight:bold"))
 
     .AddColumn(column => column
-        .Label("Name not Encoded")
+        .Header("Name not Encoded")
         .DisplayAs(model => model.Name)
         .Encoded(false)
-        .AddLabelCssStyle("width:21%"))
+        .AddHeaderCssStyle("width:21%"))
 
     .AddColumnFor(model => model.Released)
 

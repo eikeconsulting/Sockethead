@@ -1,0 +1,9 @@
+﻿@using Sockethead.Razor.Grid;
+@model IQueryable<Sockethead.Web.Areas.Samples.Controllers.SampleModel>
+
+@(await Html
+    .SimpleGrid(Model)
+    .AddColumnFor(model => model.First)
+    .AddColumnFor(model => model)
+    .RenderAsync()
+)
