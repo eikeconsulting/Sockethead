@@ -33,10 +33,11 @@ namespace Sockethead.Razor.Grid
         private List<Column<T>> Columns { get; } = new List<Column<T>>();
         private List<SimpleGridSearch> SimpleGridSearches { get; } = new List<SimpleGridSearch>();
 
-        public SimpleGrid<T> AddColumn(Action<Column<T>> columnBuilder)
+        public SimpleGrid<T> AddColumn(Action<ColumnBuilder<T>> action)
         {
             var column = new Column<T>();
-            columnBuilder.Invoke(column);
+            var builder = new ColumnBuilder<T>(column);
+            action.Invoke(builder);
             Columns.Add(column);
             return this;
         }
@@ -44,7 +45,8 @@ namespace Sockethead.Razor.Grid
         public SimpleGrid<T> AddColumnFor(Expression<Func<T, object>> expression)
         {
             var column = new Column<T>();
-            column.For(expression);
+            var builder = new ColumnBuilder<T>(column);
+            builder.For(expression);
             Columns.Add(column);
             return this;
         }
@@ -94,16 +96,18 @@ namespace Sockethead.Razor.Grid
         {
             foreach (var column in Columns)
             {
+                var builder = new ColumnBuilder<T>(column);
+
                 if (enable)
                 {
                     if (column.Sort.IsEnabled && 
                         column.Sort.Expression == null && 
                         column.Expression != null)
-                        column.Sortable(true);
+                        builder.Sortable(true);
                 }
                 else
                 {
-                    column.Sortable(false);
+                    builder.Sortable(false);
                 }
             }
             return this;
