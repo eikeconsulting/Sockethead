@@ -8,7 +8,6 @@ namespace Sockethead.Razor.Grid
     {
         string Css();
         string DisplayRender(object model);
-
         SimpleGridColumnHeader HeaderDetails { get; }
     }
 

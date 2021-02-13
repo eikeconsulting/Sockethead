@@ -31,7 +31,7 @@ namespace Sockethead.Razor.Grid
         private SimpleGridPagerOptions PagerOptions { get; } = new SimpleGridPagerOptions();
         private Sort<T> Sort { get; } = new Sort<T>();
         private List<Column<T>> Columns { get; } = new List<Column<T>>();
-        private List<SimpleGridSearch> SimpleGridSearches { get; } = new List<SimpleGridSearch>();
+        private List<Search<T>> SimpleGridSearches { get; } = new List<Search<T>>();
 
         public SimpleGrid<T> AddColumn(Action<ColumnBuilder<T>> action)
         {
@@ -65,7 +65,7 @@ namespace Sockethead.Razor.Grid
 
         public SimpleGrid<T> AddSearch(string name, Func<IQueryable<T>, string, IQueryable<T>> searchFilter)
         {
-            SimpleGridSearches.Add(new SimpleGridSearch
+            SimpleGridSearches.Add(new Search<T>
             {
                 SearchFilter = searchFilter,
                 Name = name
@@ -126,20 +126,13 @@ namespace Sockethead.Razor.Grid
             return this;
         }
 
-        public async Task<IHtmlContent> RenderAsync()
+        private IQueryable<T> BuildQuery()
         {
             IQueryable<T> query = Source;
 
-            var vm = new SimpleGridViewModel
-            {
-                Css = Css(),
-                Options = Options,
-                PagerOptions = PagerOptions,
-            };
-
             // apply search to query
             if (!string.IsNullOrEmpty(State.SearchQuery) &&
-                State.SearchNdx > 0 && 
+                State.SearchNdx > 0 &&
                 State.SearchNdx <= SimpleGridSearches.Count)
                 query = SimpleGridSearches[State.SearchNdx - 1].SearchFilter(query, State.SearchQuery);
 
@@ -152,27 +145,41 @@ namespace Sockethead.Razor.Grid
                 sorts.Add(sortColumn.Sort);
             }
             sorts.Add(Sort);
-            query = Sort<T>.ApplySorts(sorts, query);
+            return Sort<T>.ApplySorts(sorts, query);
+        }
 
-            // build pager view model
-            if (vm.PagerOptions.Enabled)
-                vm.PagerModel = State.BuildPagerModel(totalRecords: query.Count(), rowsPerPage: vm.PagerOptions.RowsPerPage);
+        public async Task<IHtmlContent> RenderAsync()
+        {
+            IQueryable<T> query = BuildQuery();
 
-            // build search view model
-            if (SimpleGridSearches.Any())
+            var vm = new SimpleGridViewModel
             {
-                vm.SimpleGridSearchViewModel = new SimpleGridSearchViewModel
-                {
-                    RedirectUrl = State.BuildResetUrl(),
-                    SearchFilterNames = SimpleGridSearches.Select((search, i) => new SelectListItem
+                Css = Css(),
+                Options = Options,
+
+                // build pager view model
+                PagerOptions = PagerOptions,
+                PagerModel = PagerOptions.Enabled
+                    ? State.BuildPagerModel(
+                        totalRecords: query.Count(), 
+                        rowsPerPage: PagerOptions.RowsPerPage)
+                    : null,
+
+                // build search view model
+                SimpleGridSearchViewModel = SimpleGridSearches.Any()
+                    ? new SimpleGridSearchViewModel
                     {
-                        Text = search.Name,
-                        Value = (i + 1).ToString(),
-                        Selected = State.SearchNdx == i + 1,
-                    }).ToList(),
-                    SearchNdx = State.SearchNdx.ToString(),
-                };
-            }
+                        RedirectUrl = State.BuildResetUrl(),
+                        SearchFilterNames = SimpleGridSearches.Select((search, i) => new SelectListItem
+                        {
+                            Text = search.Name,
+                            Value = (i + 1).ToString(),
+                            Selected = State.SearchNdx == i + 1,
+                        }).ToList(),
+                        SearchNdx = State.SearchNdx.ToString(),
+                    }
+                    : null,
+            };
 
             // build column headers
             int ndx = 0;
@@ -196,7 +203,7 @@ namespace Sockethead.Razor.Grid
             }
 
             // resolve the data (rows)
-            int rowsToTake = vm.PagerOptions.Enabled ? vm.PagerOptions.RowsPerPage : vm.Options.MaxRows;
+            int rowsToTake = PagerOptions.Enabled ? PagerOptions.RowsPerPage : Options.MaxRows;
             vm.Rows = query
                 .Skip((State.PageNum - 1) * rowsToTake)
                 .Take(rowsToTake)
@@ -208,12 +215,6 @@ namespace Sockethead.Razor.Grid
 
             // render it!
             return await Html.PartialAsync("_SHGrid", vm);
-        }
-
-        public class SimpleGridSearch
-        {
-            public Func<IQueryable<T>, string, IQueryable<T>> SearchFilter { get; set; }
-            public string Name { get; set; }
         }
     }
 }

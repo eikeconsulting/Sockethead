@@ -12,7 +12,7 @@ namespace Sockethead.Razor.Grid
         Descending,
     }
 
-    public class Sort<T> where T : class
+    internal class Sort<T> where T : class
     {
         public Expression<Func<T, object>> Expression { get; set; }
 
