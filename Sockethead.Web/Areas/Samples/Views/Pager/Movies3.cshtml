@@ -1,0 +1,16 @@
+﻿@using Sockethead.Razor.Grid;
+@model IQueryable<Sockethead.Web.Areas.Samples.Controllers.Movie>
+
+<div class="container">
+    @foreach (var movie in Model)
+    {
+        var dict = Sockethead.Razor.Helpers.ExpressionHelpers.ModelToDictionary(movie);
+
+    <div class="row">
+        <div class="col-md-5">
+            <partial name="_TinyTable" model="dict" />
+            <hr />
+        </div>
+    </div>
+    }
+</div>

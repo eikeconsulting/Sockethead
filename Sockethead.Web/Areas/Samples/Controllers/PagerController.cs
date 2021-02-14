@@ -44,6 +44,7 @@ namespace Sockethead.Web.Areas.Samples.Controllers
 
         public SampleEnum SampleEnum { get; set; } = GetRandomEnum();
 
+        public string FooBarBazBBBlah { get; set; }
 
         private static int NextId = 1001;
 
@@ -107,6 +108,13 @@ namespace Sockethead.Web.Areas.Samples.Controllers
 
         [HttpGet]
         public IActionResult Movies2()
+        {
+            ViewData["Title"] = "Movies!";
+            return View(_Movies.AsQueryable());
+        }
+
+        [HttpGet]
+        public IActionResult Movies3()
         {
             ViewData["Title"] = "Movies!";
             return View(_Movies.AsQueryable());

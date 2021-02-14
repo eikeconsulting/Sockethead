@@ -4,8 +4,8 @@
         @foreach (var kvp in Model)
         {
             <tr>
-                <td style="width: 120px;"><div class="pull-right"><strong>@kvp.Key</strong></div></td>
-                <td class="wrapword"> @Html.Raw(@kvp.Value?.ToString())</td>
+                <td style="width: 140px;"><div class="text-right"><strong>@kvp.Key</strong></div></td>
+                <td class="wrapword"> @kvp.Value?.ToString()</td>
             </tr>
         }
     </table>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -36,7 +37,7 @@ namespace Sockethead.Razor.Helpers
         /// Returns the name associated with the expression:
         /// 1. DisplayName attribute
         /// 2. Display.Name attribute
-        /// 3. The underlying name of the field if no Display attribute
+        /// 3. The underlying name of the field if no Display attribute adding spaces
         /// </summary>
         public static string FriendlyName<T, V>(this Expression<Func<T, V>> expression)
         {
@@ -52,7 +53,7 @@ namespace Sockethead.Razor.Helpers
             if (dna != null && !string.IsNullOrEmpty(dna.DisplayName))
                 return dna.DisplayName;
 
-            return body.Member.Name;
+            return body.Member.Name?.PascalCaseAddSpaces();
         }
 
         public static Expression<Func<TModel, bool>> BuildWhere<TModel>(string propertyName, string inputText)
@@ -91,6 +92,12 @@ namespace Sockethead.Razor.Helpers
             return Expression.Lambda<Func<TModel, object>>(propertyObjExpr, objParameterExpr);
         }
 
-
+        public static Dictionary<string, object> ModelToDictionary<T>(T model)
+            => typeof(T)
+                .GetProperties()
+                .Select(pi => new { pi, lambda = GenerateGetterLambda<T>(pi) })
+                .ToDictionary(
+                    x => FriendlyName(x.lambda), 
+                    x => x.lambda.Compile().Invoke(model));
     }
 }
