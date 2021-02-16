@@ -2,7 +2,7 @@
 
 @if (Model.PagerOptions.Enabled && Model.PagerOptions.DisplayPagerTop)
 {
-    <partial name="@Model.Options.PagerViewName" model="Model.PagerModel" />
+    <partial name="@Model.PagerOptions.PagerViewName" model="Model.PagerModel" />
 }
 
 @if (Model.SimpleGridSearchViewModel != null)
@@ -14,5 +14,5 @@
 
 @if (Model.PagerOptions.Enabled && Model.PagerOptions.DisplayPagerBottom)
 {
-    <partial name="@Model.Options.PagerViewName" model="Model.PagerModel" />
+    <partial name="@Model.PagerOptions.PagerViewName" model="Model.PagerModel" />
 }

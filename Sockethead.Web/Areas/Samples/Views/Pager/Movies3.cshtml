@@ -1,16 +1,74 @@
 ﻿@using Sockethead.Razor.Grid;
 @model IQueryable<Sockethead.Web.Areas.Samples.Controllers.Movie>
 
-<div class="container">
-    @foreach (var movie in Model)
-    {
-        var dict = Sockethead.Razor.Helpers.ExpressionHelpers.ModelToDictionary(movie);
+<div class="row">
+    <div class="col-md-6">
 
-    <div class="row">
-        <div class="col-md-5">
-            <partial name="_TinyTable" model="dict" />
-            <hr />
-        </div>
+        <h2>Tiny Table</h2>
+        <hr />
+
+        @foreach (var movie in Model.Take(3))
+        {
+            var dict = Sockethead.Razor.Helpers.ExpressionHelpers.ModelToDictionary(movie);
+
+        <partial name="_TinyTable" model="dict" />
+        <hr />
+        }
     </div>
-    }
+
+    <div class="col-md-6">
+
+        <h2>Two Column Grid</h2>
+        <hr />
+
+        @{
+            var movie2 = Model.First();
+        }
+
+        @(await Html
+            .TwoColumnGrid()
+            .Add(movie2)
+            .RenderAsync())
+
+        <hr />
+
+        <h4>Duplicate Test</h4>
+
+        @foreach (bool b in new[] { true, false })
+        {
+            <div>Allow Dupes: @b</div>
+            @(await Html
+                .TwoColumnGrid()
+                .Add(movie2)
+                .Add(movie2)
+                .Options(options => options.AllowDuplicates = b)
+                .RenderAsync());
+        }
+
+        <hr />
+
+        <h4>Description List Format</h4>
+
+        @(await Html
+            .TwoColumnGrid()
+            .Options(options =>
+            {
+                options.TwoColumnGridStyle = TwoColumnGridStyle.DescriptionList;
+                options.LabelWidth = 150;
+            })
+            .Add(movie2)
+            .RenderAsync())
+
+        <hr />
+
+        @(await Html
+            .TwoColumnGrid()
+            .Add("First Row", "Boom")
+            .Add(movie2)
+            .Add("Another", "Row here")
+            .Add(new Dictionary<string, object> { ["Dict 1"] = 1 })
+            .Add(new Dictionary<string, string> { ["Dict 2"] = "2" })
+            .RenderAsync())
+
+    </div>
 </div>

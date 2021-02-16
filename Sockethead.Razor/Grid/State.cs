@@ -80,6 +80,8 @@ namespace Sockethead.Razor.Grid
         public PagerModel BuildPagerModel(int totalRecords, int rowsPerPage)
         {
             int totalPages = (int)System.Math.Ceiling(totalRecords / (float)rowsPerPage);
+            if (totalPages < 1)
+                totalPages = 1;
 
             return new PagerModel
             {

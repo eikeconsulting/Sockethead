@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Sockethead.Razor.Helpers;
+using Sockethead.Razor.Pager;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,7 +28,7 @@ namespace Sockethead.Razor.Grid
         private IHtmlHelper Html { get; }
         private IQueryable<T> Source { get; }
         private State State { get; }
-        private GridOptions Options { get; } = new GridOptions();
+        private SimpleGridOptions Options { get; } = new SimpleGridOptions();
         private PagerOptions PagerOptions { get; } = new PagerOptions();
         private Sort<T> Sort { get; } = new Sort<T>();
         private List<Column<T>> Columns { get; } = new List<Column<T>>();
@@ -113,7 +114,7 @@ namespace Sockethead.Razor.Grid
             return this;
         }
 
-        public SimpleGrid<T> SetOptions(Action<GridOptions> optionsSetter)
+        public SimpleGrid<T> SetOptions(Action<SimpleGridOptions> optionsSetter)
         {
             optionsSetter.Invoke(Options);
             return this;
@@ -152,6 +153,10 @@ namespace Sockethead.Razor.Grid
         {
             IQueryable<T> query = BuildQuery();
 
+            int totalRecords = query.Count();
+            PagerOptions.Enabled = PagerOptions.Enabled && 
+                (PagerOptions.RowsPerPage < totalRecords || !PagerOptions.HideIfTooFewRows);
+
             var vm = new SimpleGridViewModel
             {
                 Css = Css(),
@@ -161,7 +166,7 @@ namespace Sockethead.Razor.Grid
                 PagerOptions = PagerOptions,
                 PagerModel = PagerOptions.Enabled
                     ? State.BuildPagerModel(
-                        totalRecords: query.Count(), 
+                        totalRecords: totalRecords, 
                         rowsPerPage: PagerOptions.RowsPerPage)
                     : null,
 
