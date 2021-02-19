@@ -6,7 +6,7 @@ namespace Sockethead.Razor.Grid
 {
     public class SimpleGridViewModel
     {
-        public string Css { get; set; }
+        public GridCssViewModel Css { get; set; }
 
         public SimpleGridOptions Options { get; set; }
 
@@ -19,6 +19,13 @@ namespace Sockethead.Razor.Grid
         public List<object> Rows { get; set; }
 
         public ISimpleGridColumn[] Columns { get; set; }
+    }
+
+    public class GridCssViewModel
+    {
+        public string TableCss { get; set; }
+        public string HeaderCss { get; set; }
+        public string RowCss { get; set; }
     }
 
     public class SimpleGridSearchViewModel

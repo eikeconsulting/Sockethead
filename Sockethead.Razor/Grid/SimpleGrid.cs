@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Sockethead.Razor.Grid
 {
-    public class SimpleGrid<T> : GridBase where T : class
+    public class SimpleGrid<T> where T : class
     {
         /// <summary>
         /// Constructor
@@ -19,7 +19,6 @@ namespace Sockethead.Razor.Grid
         /// <param name="source">Data Source</param>
         public SimpleGrid(IHtmlHelper html, IQueryable<T> source)
         {
-            CssClasses.Add("table");
             Html = html;
             Source = source;
             State = new State(Html.ViewContext.HttpContext.Request);
@@ -33,6 +32,7 @@ namespace Sockethead.Razor.Grid
         private Sort<T> Sort { get; } = new Sort<T>();
         private List<Column<T>> Columns { get; } = new List<Column<T>>();
         private List<Search<T>> SimpleGridSearches { get; } = new List<Search<T>>();
+        private GridCssOptions CssOptions { get; } = new GridCssOptions();
 
         public SimpleGrid<T> AddColumn(Action<ColumnBuilder<T>> action)
         {
@@ -60,9 +60,8 @@ namespace Sockethead.Razor.Grid
         }
 
         public SimpleGrid<T> AddSearch(string name, Expression<Func<T, string, bool>> modelFilter)
-            => AddSearch(name, searchFilter: (source, query) 
-                => source.Where(model 
-                    => modelFilter.Compile().Invoke(model, query)));
+            => AddSearch(name, 
+                searchFilter: (source, query) => source.Where(model => modelFilter.Compile().Invoke(model, query)));
 
         public SimpleGrid<T> AddSearch(string name, Func<IQueryable<T>, string, IQueryable<T>> searchFilter)
         {
@@ -74,15 +73,9 @@ namespace Sockethead.Razor.Grid
             return this;
         }
 
-        public SimpleGrid<T> AddCssClass(string cssClass)
+        public SimpleGrid<T>Css(Action<GridCssOptions> cssOptionsSetter)
         {
-            CssClasses.Add(cssClass);
-            return this;
-        }
-
-        public SimpleGrid<T> AddCssStyle(string cssStyle)
-        {
-            CssStyles.Add(cssStyle);
+            cssOptionsSetter.Invoke(CssOptions);
             return this;
         }
 
@@ -127,6 +120,8 @@ namespace Sockethead.Razor.Grid
             return this;
         }
 
+
+
         private IQueryable<T> BuildQuery()
         {
             IQueryable<T> query = Source;
@@ -159,7 +154,12 @@ namespace Sockethead.Razor.Grid
 
             var vm = new SimpleGridViewModel
             {
-                Css = Css(),
+                Css = new GridCssViewModel
+                {
+                    TableCss = CssOptions.Table.ToString(),
+                    HeaderCss = CssOptions.Header.ToString(),
+                    RowCss = CssOptions.Row.ToString(),
+                },
                 Options = Options,
 
                 // build pager view model

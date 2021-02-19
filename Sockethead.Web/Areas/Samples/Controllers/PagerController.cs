@@ -121,6 +121,13 @@ namespace Sockethead.Web.Areas.Samples.Controllers
         }
 
         [HttpGet]
+        public IActionResult TwoColumnGrid()
+        {
+            ViewData["Title"] = "TwoColumnGrid";
+            return View(_Movies.AsQueryable());
+        }
+
+        [HttpGet]
         public IActionResult Sample1()
         {
             ViewData["Title"] = "Sample Data Example";

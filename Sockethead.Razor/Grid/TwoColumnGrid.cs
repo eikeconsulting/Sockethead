@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Sockethead.Razor.Css;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,17 +18,51 @@ namespace Sockethead.Razor.Grid
     public class TwoColumnGridOptions
     {
         public TwoColumnGridStyle TwoColumnGridStyle { get; set; } = TwoColumnGridStyle.Table;
-        public int? LabelWidth { get; set; } = null;
-        //public int? ValueWidth { get; set; } = null;
-
         public bool AllowDuplicates { get; set; } = true;
     }
 
-    public class TwoColumnGridBuilder : GridBase
+    public class TwoColumnGridOptionsCssOptions
+    {
+        public CssBuilder Table { get; } = new CssBuilder();
+        public CssBuilder Row { get; } = new CssBuilder();
+        public CssBuilder Label { get; } = new CssBuilder();
+        public CssBuilder Item { get; } = new CssBuilder();
+
+        public TwoColumnGridOptionsCssOptions()
+        {
+            SetDefaultCss();
+        }
+
+        public void SetDefaultCss()
+        {
+            Table
+                .AddClass("table")
+                .AddClass("table-striped")
+                .AddClass("table-sm")
+                .AddStyle("table-layout:fixed;");
+
+            Label
+                .AddStyle("width: 140px;");
+
+            Item
+                .AddClass("wrapword");
+        }
+
+        public void ClearAll()
+        {
+            Table.Clear();
+            Row.Clear();
+            Label.Clear();
+            Item.Clear();
+        }
+    }
+
+    public class TwoColumnGridBuilder
     {
         private IHtmlHelper Html { get; }
         private TwoColumnGridOptions GridOptions { get; set; } = new TwoColumnGridOptions();
         private List<KeyValuePair<string, string>> Data { get; } = new List<KeyValuePair<string, string>>();
+        private TwoColumnGridOptionsCssOptions CssOptions { get; } = new TwoColumnGridOptionsCssOptions();
 
         public TwoColumnGridBuilder(IHtmlHelper html)
         {
@@ -58,12 +93,20 @@ namespace Sockethead.Razor.Grid
             return this;
         }
 
-        public TwoColumnGridBuilder AddCssClass(string cssClass) { CssClasses.Add(cssClass); return this; }
-        public TwoColumnGridBuilder AddCssStyle(string cssStyle) { CssStyles.Add(cssStyle); return this; }
+
+        public TwoColumnGridBuilder Css(Action<TwoColumnGridOptionsCssOptions> cssOptionsSetter) 
+        {
+            cssOptionsSetter(CssOptions);
+            return this; 
+        }
 
         public async Task<IHtmlContent> RenderAsync()
         {
-            var viewData = new ViewDataDictionary(source: Html.ViewData) { { "Options", GridOptions } };
+            var viewData = new ViewDataDictionary(source: Html.ViewData) 
+            { 
+                { "Options", GridOptions },
+                { "CssOptions", CssOptions },
+            };
 
             var data = GridOptions.AllowDuplicates
                 ? Data

@@ -20,9 +20,10 @@ namespace Sockethead.Web.Pages
 
         public string Message { get; set; }
 
-        public void OnGet()
+        public IActionResult OnGet()
         {
             Message = $"There are {MyRepo.Db.Users.Count()} users";
+            return Redirect("/Samples/Pager/Movies1");
         }
     }
 }

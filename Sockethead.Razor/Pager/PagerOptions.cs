@@ -11,16 +11,26 @@
 
         public bool HideIfTooFewRows { get; set; } = true;
 
-        public PagerOptions Top(bool enable)
+        public PagerOptions Top()
         {
-            DisplayPagerTop = enable;
+            DisplayPagerTop = true;
+            DisplayPagerBottom = false;
             return this;
         }
 
-        public PagerOptions Botttom(bool enable)
+        public PagerOptions Botttom()
         {
-            DisplayPagerBottom = enable;
+            DisplayPagerTop = false;
+            DisplayPagerBottom = true;
             return this;
         }
+
+        public PagerOptions TopAndBottom()
+        {
+            DisplayPagerTop = true;
+            DisplayPagerBottom = true;
+            return this;
+        }
+
     }
 }

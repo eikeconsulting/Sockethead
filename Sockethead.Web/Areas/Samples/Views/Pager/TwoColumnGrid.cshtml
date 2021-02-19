@@ -1,0 +1,168 @@
+﻿@using Sockethead.Razor.Grid;
+@model IQueryable<Sockethead.Web.Areas.Samples.Controllers.Movie>
+@{
+    var movie = Model.First();
+}
+
+<h2>Two Column Grid</h2>
+
+<h4>Basic Usage</h4>
+<div class="row">
+    <div class="col-md-6">
+        @(await Html
+            .TwoColumnGrid()
+            .Add(movie)
+            .RenderAsync())
+    </div>
+    <div class="col-md-6">
+<pre>@@(await Html
+    .TwoColumnGrid()
+    .Add(movie)
+    .RenderAsync())
+</pre>
+    </div>
+</div>
+
+
+<hr />
+<h4>Adding Rows</h4>
+
+<div class="row">
+    <div class="col-md-6">
+
+        @(await Html
+            .TwoColumnGrid()
+            .Add("First Row", "Boom")
+            .Add(movie)
+            .Add("Another", "Row here")
+            .Add(new Dictionary<string, object>
+            {
+                ["One"] = 1,
+                ["Two"] = "2",
+                ["Now"] = DateTime.Now,
+            })
+            .RenderAsync())
+
+    </div>
+    <div class="col-md-6">
+        <pre>
+@@(await Html
+    .TwoColumnGrid()
+    .Add("First Row", "Boom")
+    .Add(movie)
+    .Add("Another", "Row here")
+    .Add(new Dictionary&lt;string, object&gt;
+    {
+        ["One"] = 1,
+        ["Two"] = "2",
+        ["Now"] = DateTime.Now,
+    })
+    .RenderAsync())
+</pre>
+    </div>
+</div>
+
+<hr />
+<h4>CSS Adjustments</h4>
+<div class="row">
+    <div class="col-md-6">
+        @(await Html
+            .TwoColumnGrid()
+            .Add(movie)
+            .Css(elements =>
+            {
+                elements.ClearAll();
+                elements.Table
+                    .AddClass("table table-sm");
+                elements.Row
+                    .AddStyle("font-style:italic");
+                elements.Label
+                    .AddStyle("width: 200px;");
+                elements.Item
+                    .AddStyle("color:blue");
+            })
+            .RenderAsync())
+    </div>
+    <div class="col-md-6">
+<pre>
+@@(await Html
+    .TwoColumnGrid()
+    .Add(movie)
+    .Css(elements =>
+    {
+        elements.ClearAll();
+        elements.Table
+            .AddClass("table table-sm");
+        elements.Row
+            .AddStyle("font-style:italic");
+        elements.Label
+            .AddStyle("width: 200px;");
+        elements.Item
+            .AddStyle("color:blue");
+    })
+    .RenderAsync())
+</pre>
+    </div>
+</div>
+
+<hr />
+<h4>Filter out Duplicates</h4>
+
+<div class="row">
+    <div class="col-md-6">
+
+        @foreach (bool b in new[] { true, false })
+        {
+            <div>Allow Dupes: @b</div>
+            @(await Html
+                .TwoColumnGrid()
+                .Add(movie)
+                .Add(movie)
+                .Options(options => options.AllowDuplicates = b)
+                .RenderAsync());
+        }
+    </div>
+    <div class="col-md-6">
+<pre>
+@@(await Html
+    .TwoColumnGrid()
+    .Add(movie)
+    .Add(movie)
+    .Options(options => options.AllowDuplicates = ...)
+    .RenderAsync());
+</pre>
+    </div>
+
+</div>
+
+<hr />
+<h4>Description List Format</h4>
+
+<div class="row">
+    <div class="col-md-6">
+
+        @(await Html
+            .TwoColumnGrid()
+            .Options(options =>
+            {
+                options.TwoColumnGridStyle = TwoColumnGridStyle.DescriptionList;
+            })
+            .Add(movie)
+            .RenderAsync())
+
+    </div>
+    <div class="col-md-6">
+<pre>
+@@(await Html
+    .TwoColumnGrid()
+    .Options(options =>
+    {
+        options.TwoColumnGridStyle = 
+            TwoColumnGridStyle.DescriptionList;
+    })
+    .Add(movie)
+    .RenderAsync())
+</pre>
+    </div>
+
+</div>

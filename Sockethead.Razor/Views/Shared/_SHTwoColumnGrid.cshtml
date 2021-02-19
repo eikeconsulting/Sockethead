@@ -2,19 +2,18 @@
 @model IEnumerable<KeyValuePair<string, string>>
 @{
     var options = ViewData["Options"] as TwoColumnGridOptions;
-    int labelWidth = options.LabelWidth ?? 140;
-    string labelStyle = $"width: {labelWidth}px;";
+    var css = ViewData["CssOptions"] as TwoColumnGridOptionsCssOptions;
 }
 
 @if (options.TwoColumnGridStyle == TwoColumnGridStyle.Table)
 {
 
-<table class="table table-sm table-striped" style="table-layout:fixed;">
+<table @Html.Raw(css.Table)>
     @foreach (var kvp in Model)
     {
-        <tr>
-            <td style='@labelStyle'><div class="text-right"><strong>@kvp.Key</strong></div></td>
-            <td class="wrapword"> @kvp.Value?.ToString()</td>
+        <tr @Html.Raw(css.Row)>
+            <td @Html.Raw(css.Label)><div class="text-right"><strong>@kvp.Key</strong></div></td>
+            <td @Html.Raw(css.Item)> @kvp.Value?.ToString()</td>
         </tr>
     }
 </table>
@@ -25,7 +24,7 @@ else if (options.TwoColumnGridStyle == TwoColumnGridStyle.DescriptionList)
 <dl class="row">
     @foreach (var kvp in Model)
     {
-        <dt class="col-sm-3 text-md-right" style='@labelStyle'>@kvp.Key</dt>
+        <dt class="col-sm-3 text-md-right" style='width: 140px;'>@kvp.Key</dt>
         <dd class="col-sm-9">@kvp.Value?.ToString()</dd>
     }
 </dl>

@@ -8,29 +8,33 @@
         .For(model => model.Name)
         .LinkTo(model => $"https://www.google.com/search?q={System.Web.HttpUtility.UrlEncode(model.Name)}", target: "_blank")
         .Sortable()
-        .AddHeaderCssStyle("width:21%"))
+        .Css(elements => elements.Header.AddStyle("width:21%")))
 
     .AddColumn(column => column
         .For(model => model.Director)
-        .AddHeaderCssStyle("width:21%"))
+        .Css(elements => elements.Header.AddStyle("width:21%")))
 
     .AddColumn(column => column
         .Header("Genre")
         .DisplayAs(model => model.Genre.ToUpper())
         .SortableBy(model => model.Genre)
-        .AddHeaderCssStyle("width:21%")
-        .AddItemCssStyle("font-weight:bold"))
+        .Css(elements =>
+        {
+            elements.Header.AddStyle("width:21%");
+            elements.Item.AddStyle("font-weight:bold");
+        }))
 
     .AddColumn(column => column
         .Header("Name not Encoded")
         .DisplayAs(model => model.Name)
-        .Encoded(false)
-        .AddHeaderCssStyle("width:21%"))
+        .Css(elements => elements.Header.AddStyle("width:21%"))
+        .Encoded(false))
 
     .AddColumnFor(model => model.Released)
 
-    .AddCssClass("table-striped")
-    .AddCssClass("table-sm")
+    .Css(elements => elements.Table
+        .AddClass("table-striped")
+        .AddClass("table-sm"))
 
     .Sortable()
     .DefaultSortBy(model => model.Name, SortOrder.Ascending)

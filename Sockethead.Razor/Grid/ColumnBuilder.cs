@@ -1,11 +1,26 @@
-﻿using Sockethead.Razor.Helpers;
+﻿using Sockethead.Razor.Css;
+using Sockethead.Razor.Helpers;
 using System;
 using System.Linq.Expressions;
 
 namespace Sockethead.Razor.Grid
 {
+    public class ColumnCssOptions
+    {
+        public CssBuilder Header { get; } = new CssBuilder();
+        public CssBuilder Item { get; } = new CssBuilder();
+
+        public void ClearAll()
+        {
+            Header.Clear();
+            Item.Clear();
+        }
+    }
+
     public class ColumnBuilder<T> where T : class
     {
+        private ColumnCssOptions CssOptions { get; } = new ColumnCssOptions();
+
         private Column<T> Column { get; }
 
         internal ColumnBuilder(Column<T> column)
@@ -63,6 +78,18 @@ namespace Sockethead.Razor.Grid
                 DisplayAs(model => Column.CompiledExpression.Invoke(model));
             });
 
+
+        public ColumnBuilder<T> Css(Action<ColumnCssOptions> cssOptionsSetter)
+        {
+            cssOptionsSetter(CssOptions);
+
+            Column.HeaderCss = CssOptions.Header.ToString();
+            Column.ItemCss = CssOptions.Item.ToString();
+
+            return this;
+        }
+        
+        /*
         public ColumnBuilder<T> AddHeaderCssClass(string cssClass) => Wrap(() => Column.HeaderDetails.CssClasses.Add(cssClass));
 
         public ColumnBuilder<T> AddHeaderCssStyle(string cssStyle) => Wrap(() => Column.HeaderDetails.CssStyles.Add(cssStyle));
@@ -70,5 +97,6 @@ namespace Sockethead.Razor.Grid
         public ColumnBuilder<T> AddItemCssClass(string cssClass) => Wrap(() => Column.CssClasses.Add(cssClass));
 
         public ColumnBuilder<T> AddItemCssStyle(string cssStyle) => Wrap(() => Column.CssStyles.Add(cssStyle));
+        */
     }
 }
