@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Sockethead.Razor.Css;
 using Sockethead.Razor.Helpers;
 using Sockethead.Razor.Pager;
 using System;
@@ -60,7 +61,7 @@ namespace Sockethead.Razor.Grid
         }
 
         public SimpleGrid<T> AddSearch(string name, Expression<Func<T, string, bool>> modelFilter)
-            => AddSearch(name, 
+            => AddSearch(name,
                 searchFilter: (source, query) => source.Where(model => modelFilter.Compile().Invoke(model, query)));
 
         public SimpleGrid<T> AddSearch(string name, Func<IQueryable<T>, string, IQueryable<T>> searchFilter)
@@ -73,11 +74,13 @@ namespace Sockethead.Razor.Grid
             return this;
         }
 
-        public SimpleGrid<T>Css(Action<GridCssOptions> cssOptionsSetter)
+        public SimpleGrid<T> AddCss(Action<GridCssOptions> cssOptionsSetter)
         {
             cssOptionsSetter.Invoke(CssOptions);
             return this;
         }
+        public SimpleGrid<T> AddCssClass(string cssClass) => AddCss(options => options.Table.AddClass(cssClass));
+        public SimpleGrid<T> AddCssStyle(string cssStyle) => AddCss(options => options.Table.AddStyle(cssStyle));
 
         public SimpleGrid<T> DefaultSortBy(Expression<Func<T, object>> expression, SortOrder sortOrder = SortOrder.Ascending)
         {
@@ -94,8 +97,8 @@ namespace Sockethead.Razor.Grid
 
                 if (enable)
                 {
-                    if (column.Sort.IsEnabled && 
-                        column.Sort.Expression == null && 
+                    if (column.Sort.IsEnabled &&
+                        column.Sort.Expression == null &&
                         column.Expression != null)
                         builder.Sortable(true);
                 }
@@ -104,6 +107,32 @@ namespace Sockethead.Razor.Grid
                     builder.Sortable(false);
                 }
             }
+            return this;
+        }
+
+        public class RowAction
+        {
+            public Func<T, bool> RowFilter { get; set; }
+            public CssBuilder CssBuilder { get; set; } = new CssBuilder();
+        }
+
+        private List<RowAction> RowActionList { get; } = new List<RowAction>();
+
+        //public SimpleGrid<T> AddRowAction(Action<RowAction> rowActionSetter)
+        public SimpleGrid<T> AddRowAction(Func<T, bool> rowFilter, Action<CssBuilder> cssSetter)
+        {
+            var rowAction = new RowAction
+            {
+                RowFilter = rowFilter,
+            };
+            cssSetter(rowAction.CssBuilder);
+            RowActionList.Add(rowAction);
+
+            /*
+            var rowAction = new RowAction();
+            rowActionSetter(rowAction);
+            RowActionList.Add(rowAction);
+            */
             return this;
         }
 
@@ -119,8 +148,6 @@ namespace Sockethead.Razor.Grid
             pagerOptionsSetter?.Invoke(PagerOptions);
             return this;
         }
-
-
 
         private IQueryable<T> BuildQuery()
         {
@@ -160,6 +187,9 @@ namespace Sockethead.Razor.Grid
                     HeaderCss = CssOptions.Header.ToString(),
                     RowCss = CssOptions.Row.ToString(),
                 },
+
+                GetRowCss = row => RowActionList.FirstOrDefault(rc => rc.RowFilter(row as T))?.CssBuilder.ToString(),
+
                 Options = Options,
 
                 // build pager view model

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using Sockethead.Razor.Pager;
+using System;
 using System.Collections.Generic;
 
 namespace Sockethead.Razor.Grid
@@ -7,6 +8,8 @@ namespace Sockethead.Razor.Grid
     public class SimpleGridViewModel
     {
         public GridCssViewModel Css { get; set; }
+
+        public Func<object, string> GetRowCss;
 
         public SimpleGridOptions Options { get; set; }
 

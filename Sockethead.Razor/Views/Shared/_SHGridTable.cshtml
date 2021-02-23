@@ -23,12 +23,12 @@
             <th @Html.Raw(col.HeaderCss)>@Html.Raw(RenderLabel(col.HeaderDetails))</th>
         }
     </tr>
-    @foreach (object item in Model.Rows)
+    @foreach (object row in Model.Rows)
     {
-        <tr @Html.Raw(Model.Css.RowCss)>
+        <tr @Html.Raw(Model.Css.RowCss) @Html.Raw(Model.GetRowCss(row))>
             @foreach (var col in Model.Columns)
             {
-                <td @Html.Raw(col.ItemCss)>@Html.Raw(col.DisplayRender(item))</td>
+                <td @Html.Raw(col.ItemCss)>@Html.Raw(col.DisplayRender(row))</td>
             }
         </tr>
     }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Sockethead.Razor.Alert.Extensions;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -31,13 +32,17 @@ namespace Sockethead.Web.Areas.Samples.Controllers
         public int Id { get; set; } = NextId++;
 
         [DisplayName("First Name")]
+        [Required(ErrorMessage = "Yo, we need a first name here")]
+        [MaxLength(20, ErrorMessage = "First name is tooooo long...")]
         public string First { get; set; }
 
         [Display(Name = "Last Name")]
+        [MaxLength(20)]
         public string Last { get; set; }
 
         public string JobTitle { get; set; }
 
+        //[DataType(DataType.Date)]
         public DateTime RandomDate { get; set; } = GetRandomDate();
 
         public bool Flag { get; set; } = GetRandomBool();
@@ -139,6 +144,18 @@ namespace Sockethead.Web.Areas.Samples.Controllers
         {
             ViewData["Title"] = "Sample Data Example";
             return View(_SampleData.AsQueryable());
+        }
+
+        [HttpGet]
+        public IActionResult FormBuilder()
+        {
+            return View(_SampleData.First());
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public IActionResult FormBuilder(SampleModel formData)
+        {
+            return View(_SampleData.First()).Success($"Submitted form with {formData}");
         }
 
     }
