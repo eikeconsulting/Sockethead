@@ -6,31 +6,33 @@
 
 <h2>Two Column Grid</h2>
 
-<h4>Basic Usage</h4>
-<div class="row">
-    <div class="col-md-6">
-        @(await Html
+<div class="language-csharp">
+
+    <h4>Basic Usage</h4>
+    <div class="row">
+        <div class="col-md-6">
+            @(await Html
             .TwoColumnGrid()
             .Add(movie)
             .RenderAsync())
-    </div>
-    <div class="col-md-6">
-<pre>@@(await Html
+        </div>
+        <div class="col-md-6">
+<pre><code>@@(await Html
     .TwoColumnGrid()
     .Add(movie)
     .RenderAsync())
-</pre>
+</code></pre>
+        </div>
     </div>
-</div>
 
 
-<hr />
-<h4>Adding Rows</h4>
+    <hr />
+    <h4>Adding Rows</h4>
 
-<div class="row">
-    <div class="col-md-6">
+    <div class="row">
+        <div class="col-md-6">
 
-        @(await Html
+            @(await Html
             .TwoColumnGrid()
             .Add("First Row", "Boom")
             .Add(movie)
@@ -43,10 +45,9 @@
             })
             .RenderAsync())
 
-    </div>
-    <div class="col-md-6">
-        <pre>
-@@(await Html
+        </div>
+        <div class="col-md-6">
+            <pre><code>@@(await Html
     .TwoColumnGrid()
     .Add("First Row", "Boom")
     .Add(movie)
@@ -58,15 +59,15 @@
         ["Now"] = DateTime.Now,
     })
     .RenderAsync())
-</pre>
+</code></pre>
+        </div>
     </div>
-</div>
 
-<hr />
-<h4>CSS Adjustments</h4>
-<div class="row">
-    <div class="col-md-6">
-        @(await Html
+    <hr />
+    <h4>CSS Adjustments</h4>
+    <div class="row">
+        <div class="col-md-6">
+            @(await Html
             .TwoColumnGrid()
             .Add(movie)
             .Css(elements =>
@@ -82,10 +83,9 @@
                     .AddStyle("color:blue");
             })
             .RenderAsync())
-    </div>
-    <div class="col-md-6">
-<pre>
-@@(await Html
+        </div>
+        <div class="col-md-6">
+<pre><code>@@(await Html
     .TwoColumnGrid()
     .Add(movie)
     .Css(elements =>
@@ -101,47 +101,46 @@
             .AddStyle("color:blue");
     })
     .RenderAsync())
-</pre>
+</code></pre>
+        </div>
     </div>
-</div>
 
-<hr />
-<h4>Filter out Duplicates</h4>
+    <hr />
+    <h4>Filter out Duplicates</h4>
 
-<div class="row">
-    <div class="col-md-6">
+    <div class="row">
+        <div class="col-md-6">
 
-        @foreach (bool b in new[] { true, false })
-        {
-            <div>Allow Dupes: @b</div>
-            @(await Html
+            @foreach (bool b in new[] { true, false })
+            {
+                <div>Allow Dupes: @b</div>
+                @(await Html
                 .TwoColumnGrid()
                 .Add(movie)
                 .Add(movie)
                 .Options(options => options.AllowDuplicates = b)
                 .RenderAsync());
-        }
-    </div>
-    <div class="col-md-6">
-<pre>
-@@(await Html
+            }
+        </div>
+        <div class="col-md-6">
+<pre><code>@@(await Html
     .TwoColumnGrid()
     .Add(movie)
     .Add(movie)
     .Options(options => options.AllowDuplicates = ...)
     .RenderAsync());
-</pre>
+</code></pre>
+        </div>
+
     </div>
 
-</div>
+    <hr />
+    <h4>Description List Format</h4>
 
-<hr />
-<h4>Description List Format</h4>
+    <div class="row">
+        <div class="col-md-6">
 
-<div class="row">
-    <div class="col-md-6">
-
-        @(await Html
+            @(await Html
             .TwoColumnGrid()
             .Options(options =>
             {
@@ -150,10 +149,9 @@
             .Add(movie)
             .RenderAsync())
 
-    </div>
-    <div class="col-md-6">
-<pre>
-@@(await Html
+        </div>
+        <div class="col-md-6">
+<pre><code>@@(await Html
     .TwoColumnGrid()
     .Options(options =>
     {
@@ -162,7 +160,9 @@
     })
     .Add(movie)
     .RenderAsync())
-</pre>
+</code></pre>
+        </div>
+
     </div>
 
 </div>
