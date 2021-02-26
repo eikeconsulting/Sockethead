@@ -5,8 +5,8 @@
     .SimpleGrid(Model)
     .AddColumnsFromModel()
     .AddCss(elements => elements.Table.AddClass("table-striped").AddStyle("color:black"))
-    .AddRowAction(movie => movie.Director.Contains("James"), css => css.AddStyle("background-color:red"))
-    .AddRowAction(movie => movie.Name.Contains("Rocky"), css => css.AddStyle("background-color:green"))
+    .AddRowModifier(movie => movie.Director.Contains("James"), css => css.AddStyle("background-color:red"))
+    .AddRowModifier(movie => movie.Name.Contains("Rocky"), css => css.AddStyle("background-color:green"))
     /*
     .AddRowAction(rowAction =>
     {

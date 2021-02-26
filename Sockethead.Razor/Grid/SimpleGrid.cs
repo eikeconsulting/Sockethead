@@ -110,29 +110,22 @@ namespace Sockethead.Razor.Grid
             return this;
         }
 
-        public class RowAction
+        private class RowModifier
         {
             public Func<T, bool> RowFilter { get; set; }
             public CssBuilder CssBuilder { get; set; } = new CssBuilder();
         }
 
-        private List<RowAction> RowActionList { get; } = new List<RowAction>();
+        private List<RowModifier> RowActionList { get; } = new List<RowModifier>();
 
-        //public SimpleGrid<T> AddRowAction(Action<RowAction> rowActionSetter)
-        public SimpleGrid<T> AddRowAction(Func<T, bool> rowFilter, Action<CssBuilder> cssSetter)
+        public SimpleGrid<T> AddRowModifier(Func<T, bool> rowFilter, Action<CssBuilder> cssSetter)
         {
-            var rowAction = new RowAction
+            var rowAction = new RowModifier
             {
                 RowFilter = rowFilter,
             };
             cssSetter(rowAction.CssBuilder);
             RowActionList.Add(rowAction);
-
-            /*
-            var rowAction = new RowAction();
-            rowActionSetter(rowAction);
-            RowActionList.Add(rowAction);
-            */
             return this;
         }
 

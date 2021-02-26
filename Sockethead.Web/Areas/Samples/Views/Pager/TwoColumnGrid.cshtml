@@ -34,13 +34,13 @@
 
             @(await Html
             .TwoColumnGrid()
-            .Add("First Row", "Boom")
+            .Add("First Row", "I like this")
             .Add(movie)
             .Add("Another", "Row here")
             .Add(new Dictionary<string, object>
             {
                 ["One"] = 1,
-                ["Two"] = "2",
+                ["Two"] = "Two",
                 ["Now"] = DateTime.Now,
             })
             .RenderAsync())
@@ -49,13 +49,13 @@
         <div class="col-md-6">
             <pre><code>@@(await Html
     .TwoColumnGrid()
-    .Add("First Row", "Boom")
+    .Add("First Row", "I like this")
     .Add(movie)
     .Add("Another", "Row here")
     .Add(new Dictionary&lt;string, object&gt;
     {
         ["One"] = 1,
-        ["Two"] = "2",
+        ["Two"] = "Two",
         ["Now"] = DateTime.Now,
     })
     .RenderAsync())
@@ -74,13 +74,11 @@
             {
                 elements.ClearAll();
                 elements.Table
-                    .AddClass("table table-sm");
-                elements.Row
-                    .AddStyle("font-style:italic");
-                elements.Label
-                    .AddStyle("width: 200px;");
-                elements.Item
-                    .AddStyle("color:blue");
+                    .AddClass("table")
+                    .AddClass("table-sm");
+                elements.Row.AddStyle("font-style:italic");
+                elements.Label.AddStyle("width: 200px;");
+                elements.Item.AddStyle("color:blue");
             })
             .RenderAsync())
         </div>
@@ -92,13 +90,11 @@
     {
         elements.ClearAll();
         elements.Table
-            .AddClass("table table-sm");
-        elements.Row
-            .AddStyle("font-style:italic");
-        elements.Label
-            .AddStyle("width: 200px;");
-        elements.Item
-            .AddStyle("color:blue");
+            .AddClass("table")
+            .AddClass("table-sm");
+        elements.Row.AddStyle("font-style:italic");
+        elements.Label.AddStyle("width: 200px;");
+        elements.Item.AddStyle("color:blue");
     })
     .RenderAsync())
 </code></pre>
@@ -116,8 +112,12 @@
                 <div>Allow Dupes: @b</div>
                 @(await Html
                 .TwoColumnGrid()
+                .Add("Row A", "A Stuff")
                 .Add(movie)
+                .Add("Row B", "B Stuff")
+                .Add("Row B", "B Stuff Again")
                 .Add(movie)
+                .Add("Row C", "C Stuff")
                 .Options(options => options.AllowDuplicates = b)
                 .RenderAsync());
             }
@@ -125,8 +125,12 @@
         <div class="col-md-6">
 <pre><code>@@(await Html
     .TwoColumnGrid()
+    .Add("Row A", "A Stuff")
     .Add(movie)
+    .Add("Row B", "B Stuff")
+    .Add("Row B", "B Stuff Again")
     .Add(movie)
+    .Add("Row C", "C Stuff")
     .Options(options => options.AllowDuplicates = ...)
     .RenderAsync());
 </code></pre>

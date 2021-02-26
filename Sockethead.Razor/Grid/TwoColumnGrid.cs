@@ -87,16 +87,16 @@ namespace Sockethead.Razor.Grid
             return this;
         }
 
-        public TwoColumnGridBuilder Options(Action<TwoColumnGridOptions> action)
+        public TwoColumnGridBuilder Options(Action<TwoColumnGridOptions> optionsSetter)
         {
-            action(GridOptions);
+            optionsSetter(GridOptions);
             return this;
         }
 
 
-        public TwoColumnGridBuilder Css(Action<TwoColumnGridOptionsCssOptions> cssOptionsSetter) 
+        public TwoColumnGridBuilder Css(Action<TwoColumnGridOptionsCssOptions> optionsSetter) 
         {
-            cssOptionsSetter(CssOptions);
+            optionsSetter(CssOptions);
             return this; 
         }
 
