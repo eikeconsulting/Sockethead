@@ -6,13 +6,6 @@
     .AddCss(elements => elements.Table.AddClass("table-striped").AddStyle("color:black"))
     .AddRowModifier(movie => movie.Director.Contains("James"), css => css.AddStyle("background-color:red"))
     .AddRowModifier(movie => movie.Name.Contains("Rocky"), css => css.AddStyle("background-color:green"))
-    /*
-    .AddRowAction(rowAction =>
-    {
-        rowAction.RowFilter = movie => movie.Name.Contains("Rocky");
-        rowAction.CssBuilder.AddStyle("background-color:green");
-    })
-    */
     .Sortable()
     .RenderAsync()
 )

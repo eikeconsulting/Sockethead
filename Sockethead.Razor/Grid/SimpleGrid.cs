@@ -34,16 +34,31 @@ namespace Sockethead.Razor.Grid
         private List<Column<T>> Columns { get; } = new List<Column<T>>();
         private List<Search<T>> SimpleGridSearches { get; } = new List<Search<T>>();
         private GridCssOptions CssOptions { get; } = new GridCssOptions();
+        private List<RowModifier> RowModifiers { get; } = new List<RowModifier>();
 
-        public SimpleGrid<T> AddColumn(Action<ColumnBuilder<T>> action)
+        private class RowModifier
+        {
+            public Func<T, bool> RowFilter { get; set; }
+            public CssBuilder CssBuilder { get; set; } = new CssBuilder();
+        }
+
+        /// <summary>
+        /// Add a column to the table.
+        /// </summary>
+        /// <param name="columnBuilder">Callback to use the ColumnBuilder to configure the column.</param>
+        public SimpleGrid<T> AddColumn(Action<ColumnBuilder<T>> columnBuilder)
         {
             var column = new Column<T>();
             var builder = new ColumnBuilder<T>(column);
-            action.Invoke(builder);
+            columnBuilder.Invoke(builder);
             Columns.Add(column);
             return this;
         }
 
+        /// <summary>
+        /// Add a column for a model expression.
+        /// This automatically adds both a Header and Display and makes the column available to Sort.
+        /// </summary>
         public SimpleGrid<T> AddColumnFor(Expression<Func<T, object>> expression)
         {
             var column = new Column<T>();
@@ -53,6 +68,10 @@ namespace Sockethead.Razor.Grid
             return this;
         }
 
+        /// <summary>
+        /// Add columns from the model via Reflection
+        /// This is a quick and dirty way to quickly build the grid out with all properties of the Model
+        /// </summary>
         public SimpleGrid<T> AddColumnsFromModel()
         {
             foreach (var property in typeof(T).GetProperties())
@@ -60,10 +79,13 @@ namespace Sockethead.Razor.Grid
             return this;
         }
 
-        public SimpleGrid<T> AddSearch(string name, Expression<Func<T, string, bool>> modelFilter)
-            => AddSearch(name,
-                searchFilter: (source, query) => source.Where(model => modelFilter.Compile().Invoke(model, query)));
-
+        /// <summary>
+        /// Add a Search function to the grid.
+        /// The first AddSearch will add the Search Form
+        /// </summary>
+        /// <param name="name">A name to be populated in the Search Form dropdown</param>
+        /// <param name="searchFilter">An function that accepts the queryable and query string
+        /// the user typed in and returns a filtered query</param>
         public SimpleGrid<T> AddSearch(string name, Func<IQueryable<T>, string, IQueryable<T>> searchFilter)
         {
             SimpleGridSearches.Add(new Search<T>
@@ -74,14 +96,29 @@ namespace Sockethead.Razor.Grid
             return this;
         }
 
+        /// <summary>
+        /// Add custom css classes and styles to various elements of the Grid.
+        /// </summary>
         public SimpleGrid<T> AddCss(Action<GridCssOptions> cssOptionsSetter)
         {
             cssOptionsSetter.Invoke(CssOptions);
             return this;
         }
+
+        /// <summary>
+        /// Add a CSS class to the TABLE element
+        /// </summary>
         public SimpleGrid<T> AddCssClass(string cssClass) => AddCss(options => options.Table.AddClass(cssClass));
+
+        /// <summary>
+        /// Add a CSS style to the TABLE element
+        /// </summary>
         public SimpleGrid<T> AddCssStyle(string cssStyle) => AddCss(options => options.Table.AddStyle(cssStyle));
 
+        /// <summary>
+        /// Specify an expression to sort the Grid by default
+        /// Once a column sort is selected, this will be the secondary sort
+        /// </summary>
         public SimpleGrid<T> DefaultSortBy(Expression<Func<T, object>> expression, SortOrder sortOrder = SortOrder.Ascending)
         {
             Sort.Expression = expression;
@@ -89,6 +126,11 @@ namespace Sockethead.Razor.Grid
             return this;
         }
 
+        /// <summary>
+        /// Enable/Disable column sorts
+        /// When enabled, columns with "Expressions" will become sortable unless 
+        /// explicitly disabled in the specific column.
+        /// </summary>
         public SimpleGrid<T> Sortable(bool enable = true)
         {
             foreach (var column in Columns)
@@ -110,14 +152,11 @@ namespace Sockethead.Razor.Grid
             return this;
         }
 
-        private class RowModifier
-        {
-            public Func<T, bool> RowFilter { get; set; }
-            public CssBuilder CssBuilder { get; set; } = new CssBuilder();
-        }
-
-        private List<RowModifier> RowActionList { get; } = new List<RowModifier>();
-
+        /// <summary>
+        /// Add CSS to to a Row (TR element) if a certain condition is met
+        /// </summary>
+        /// <param name="rowFilter">Function to decide if the Row should be "modified" with custom CSS</param>
+        /// <param name="cssSetter">Action to specify the CSS changes to make</param>
         public SimpleGrid<T> AddRowModifier(Func<T, bool> rowFilter, Action<CssBuilder> cssSetter)
         {
             var rowAction = new RowModifier
@@ -125,16 +164,23 @@ namespace Sockethead.Razor.Grid
                 RowFilter = rowFilter,
             };
             cssSetter(rowAction.CssBuilder);
-            RowActionList.Add(rowAction);
+            RowModifiers.Add(rowAction);
             return this;
         }
 
+        /// <summary>
+        /// Specify Grid Options
+        /// </summary>
         public SimpleGrid<T> SetOptions(Action<SimpleGridOptions> optionsSetter)
         {
             optionsSetter.Invoke(Options);
             return this;
         }
 
+        /// <summary>
+        /// Add a Pager to the Grid
+        /// </summary>
+        /// <param name="pagerOptionsSetter">Action to set Pager options like top/bottom and rows per page.</param>
         public SimpleGrid<T> AddPager(Action<PagerOptions> pagerOptionsSetter = null)
         {
             PagerOptions.Enabled = true;
@@ -164,6 +210,9 @@ namespace Sockethead.Razor.Grid
             return Sort<T>.ApplySorts(sorts, query);
         }
 
+        /// <summary>
+        /// Render the Grid!
+        /// </summary>
         public async Task<IHtmlContent> RenderAsync()
         {
             IQueryable<T> query = BuildQuery();
@@ -181,7 +230,7 @@ namespace Sockethead.Razor.Grid
                     RowCss = CssOptions.Row.ToString(),
                 },
 
-                GetRowCss = row => RowActionList.FirstOrDefault(rc => rc.RowFilter(row as T))?.CssBuilder.ToString(),
+                GetRowCss = row => RowModifiers.FirstOrDefault(rc => rc.RowFilter(row as T))?.CssBuilder.ToString(),
 
                 Options = Options,
 

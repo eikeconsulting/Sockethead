@@ -1,0 +1,10 @@
+﻿@model IQueryable<Movie>
+
+@(await Html
+    .SimpleGrid(Model)
+    .AddColumnsFromModel()
+    .AddSearch("Blah", searchFilter: (source, query) => source.Where(movie => movie.Name.Contains(query, StringComparison.OrdinalIgnoreCase)))
+    .AddPager(options => options.RowsPerPage = 3)
+    .RenderAsync()
+)
+
