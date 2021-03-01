@@ -10,16 +10,16 @@
     <h4>Basic Usage</h4>
     <div class="row">
         <div class="col-md-6">
-            @(await Html
+            @(Html
             .TwoColumnGrid()
             .Add(movie)
-            .RenderAsync())
+            .Render())
         </div>
         <div class="col-md-6">
-<pre><code>@@(await Html
+<pre><code>@@(Html
     .TwoColumnGrid()
     .Add(movie)
-    .RenderAsync())
+    .Render())
 </code></pre>
         </div>
     </div>

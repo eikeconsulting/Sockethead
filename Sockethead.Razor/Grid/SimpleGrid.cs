@@ -213,7 +213,7 @@ namespace Sockethead.Razor.Grid
         /// <summary>
         /// Render the Grid!
         /// </summary>
-        public async Task<IHtmlContent> RenderAsync()
+        public SimpleGridViewModel PrepareRender()
         {
             IQueryable<T> query = BuildQuery();
 
@@ -290,8 +290,25 @@ namespace Sockethead.Razor.Grid
             // build array of generic columns (not tied to the type of the model)
             vm.Columns = Columns.Cast<ISimpleGridColumn>().ToArray();
 
-            // render it!
+            return vm;
+        }
+
+        public IHtmlContent Render()
+        {
+            var vm = PrepareRender();
+            return Html.Partial("_SHGrid", vm);
+        }
+
+        public async Task<IHtmlContent> RenderAsync()
+        {
+            var vm = PrepareRender();
             return await Html.PartialAsync("_SHGrid", vm);
+        }
+
+        public string RenderToString()
+        {
+            var vm = PrepareRender();
+            return Html.RenderPartialToString(partialViewName: "_SHGrid", model: vm);
         }
     }
 }

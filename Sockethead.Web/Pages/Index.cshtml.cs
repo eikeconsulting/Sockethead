@@ -22,8 +22,8 @@ namespace Sockethead.Web.Pages
 
         public IActionResult OnGet()
         {
-            Message = $"There are {MyRepo.Db.Users.Count()} users";
-            return Redirect("/Samples/Pager/Movies1");
+            //Message = $"There are {MyRepo.Db.Users.Count()} users";
+            return Redirect("/Samples/Home/Dashboard");
         }
     }
 }

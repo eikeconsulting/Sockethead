@@ -2,10 +2,12 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Sockethead.Razor.Css;
+using Sockethead.Razor.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace Sockethead.Razor.Grid
 {
@@ -69,20 +71,29 @@ namespace Sockethead.Razor.Grid
             Html = html;
         }
 
+        private static string Encode(string s) => HttpUtility.HtmlEncode(s);
+
         public TwoColumnGridBuilder Add<T>(Dictionary<string, T> dictionary)
         {
             foreach (var kvp in dictionary)
-                Data.Add(new KeyValuePair<string, string>(kvp.Key, kvp.Value.ToString()));
+            {
+                string value = kvp.Value == null
+                    ? ""
+                    : kvp.Value.ToString();
+                Data.Add(new KeyValuePair<string, string>(kvp.Key, Encode(value)));
+            }
             return this;
         }
 
         public TwoColumnGridBuilder Add<T>(T model)
         {
-            return Add(Helpers.ExpressionHelpers.ModelToDictionary(model));
+            return Add(ExpressionHelpers.ModelToDictionary(model));
         }
 
-        public TwoColumnGridBuilder Add(string label, string value)
+        public TwoColumnGridBuilder Add(string label, string value, bool encode = true)
         {
+            if (encode)
+                value = Encode(value);
             Data.Add(new KeyValuePair<string, string>(label, value));
             return this;
         }
@@ -100,26 +111,38 @@ namespace Sockethead.Razor.Grid
             return this; 
         }
 
-        public async Task<IHtmlContent> RenderAsync()
-        {
-            var viewData = new ViewDataDictionary(source: Html.ViewData) 
-            { 
+        private ViewDataDictionary BuildViewData()
+            => new ViewDataDictionary(source: Html.ViewData)
+            {
                 { "Options", GridOptions },
                 { "CssOptions", CssOptions },
             };
 
-            var data = GridOptions.AllowDuplicates
+        private List<KeyValuePair<string, string>> BuildGridData() 
+            => GridOptions.AllowDuplicates
                 ? Data
                 : Data
                     .GroupBy(kvp => kvp.Key)
                     .Select(x => new KeyValuePair<string, string>(x.Key, x.First().Value))
                     .ToList();
 
-            return await Html.PartialAsync(
+        public IHtmlContent Render()
+            => Html.Partial(
                 partialViewName: "_SHTwoColumnGrid",
-                model: data,
-                viewData: viewData);
-        }
-    }
+                model: BuildGridData(),
+                viewData: BuildViewData());
 
+        public async Task<IHtmlContent> RenderAsync()
+            => await Html.PartialAsync(
+                partialViewName: "_SHTwoColumnGrid",
+                model: BuildGridData(),
+                viewData: BuildViewData());
+
+        public string RenderToString()
+            => Html.RenderPartialToString(
+                partialViewName: "_SHTwoColumnGrid",
+                model: BuildGridData(),
+                viewData: BuildViewData());
+
+    }
 }

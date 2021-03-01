@@ -7,18 +7,11 @@ using System.Linq;
 namespace Sockethead.Web.Areas.Samples.Controllers
 {
     [Area("Samples")]
-    public class PagerController : Controller
+    public class FormBuilderController : Controller
     {
         private static IQueryable<SampleModel> SampleDataQuery => SampleData.SampleModels.AsQueryable();
         private static IQueryable<Movie> MovieQuery => SampleData.Movies.AsQueryable();
 
-
-        [HttpGet]
-        public IActionResult TwoColumnGrid()
-        {
-            ViewData["Title"] = "TwoColumnGrid";
-            return View(MovieQuery.AsQueryable());
-        }
 
         [HttpGet]
         public IActionResult FormBuilder()

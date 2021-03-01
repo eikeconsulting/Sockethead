@@ -13,7 +13,7 @@
     {
         <tr @Html.Raw(css.Row)>
             <td @Html.Raw(css.Label)><div class="text-right"><strong>@kvp.Key</strong></div></td>
-            <td @Html.Raw(css.Item)> @kvp.Value?.ToString()</td>
+            <td @Html.Raw(css.Item)> @Html.Raw(kvp.Value)</td>
         </tr>
     }
 </table>
@@ -25,7 +25,7 @@ else if (options.TwoColumnGridStyle == TwoColumnGridStyle.DescriptionList)
     @foreach (var kvp in Model)
     {
         <dt class="col-sm-3 text-md-right" style='width: 140px;'>@kvp.Key</dt>
-        <dd class="col-sm-9">@kvp.Value?.ToString()</dd>
+        <dd class="col-sm-9">@Html.Raw(kvp.Value)</dd>
     }
 </dl>
 }

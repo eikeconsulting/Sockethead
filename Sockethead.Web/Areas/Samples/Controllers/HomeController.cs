@@ -10,9 +10,6 @@ namespace Sockethead.Web.Areas.Samples.Controllers
     [Area("Samples")]
     public class HomeController : Controller
     {
-        public IActionResult Index()
-        {
-            return View().Success("My cool success message!");
-        }
+        public IActionResult Dashboard() => View().Success("Welcome to Sockethead!");
     }
 }
