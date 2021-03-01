@@ -75,7 +75,7 @@ namespace Sockethead.Razor.Grid
         public SimpleGrid<T> AddColumnsFromModel()
         {
             foreach (var property in typeof(T).GetProperties())
-                AddColumnFor(ExpressionHelpers.GenerateGetterLambda<T>(property));
+                AddColumnFor(ExpressionHelpers.BuildGetterLambda<T>(property));
             return this;
         }
 
@@ -280,6 +280,7 @@ namespace Sockethead.Razor.Grid
             }
 
             // resolve the data (rows)
+            // Note: we can't call ToListAsync here without a reference to Microsoft.EntityFrameworkCore
             int rowsToTake = PagerOptions.Enabled ? PagerOptions.RowsPerPage : Options.MaxRows;
             vm.Rows = query
                 .Skip((State.PageNum - 1) * rowsToTake)
@@ -296,13 +297,13 @@ namespace Sockethead.Razor.Grid
         public IHtmlContent Render()
         {
             var vm = PrepareRender();
-            return Html.Partial("_SHGrid", vm);
+            return Html.Partial(partialViewName: "_SHGrid", model: vm);
         }
 
         public async Task<IHtmlContent> RenderAsync()
         {
             var vm = PrepareRender();
-            return await Html.PartialAsync("_SHGrid", vm);
+            return await Html.PartialAsync(partialViewName: "_SHGrid", model: vm);
         }
 
         public string RenderToString()

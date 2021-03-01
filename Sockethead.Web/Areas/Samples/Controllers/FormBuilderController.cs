@@ -10,8 +10,7 @@ namespace Sockethead.Web.Areas.Samples.Controllers
     public class FormBuilderController : Controller
     {
         private static IQueryable<SampleModel> SampleDataQuery => SampleData.SampleModels.AsQueryable();
-        private static IQueryable<Movie> MovieQuery => SampleData.Movies.AsQueryable();
-
+        //private static IQueryable<Movie> MovieQuery => SampleData.Movies.AsQueryable();
 
         [HttpGet]
         public IActionResult FormBuilder()
@@ -24,6 +23,5 @@ namespace Sockethead.Web.Areas.Samples.Controllers
         {
             return View(SampleDataQuery.First()).Success($"Submitted form with {formData}");
         }
-
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using System.Threading.Tasks;
 
 namespace Sockethead.Razor.Helpers
 {
@@ -11,6 +12,15 @@ namespace Sockethead.Razor.Helpers
             object model, 
             ViewDataDictionary viewData = null)
         {
+            return htmlHelper.RenderPartialToStringAsync(partialViewName, model, viewData).Result;
+        }
+
+        public static async Task<string> RenderPartialToStringAsync(
+            this IHtmlHelper htmlHelper,
+            string partialViewName,
+            object model,
+            ViewDataDictionary viewData = null)
+        {
             var oldWriter = htmlHelper.ViewContext.Writer;
             try
             {
@@ -18,7 +28,7 @@ namespace Sockethead.Razor.Helpers
 
                 htmlHelper.ViewContext.Writer = writer;
 
-                htmlHelper.RenderPartial(
+                await htmlHelper.RenderPartialAsync(
                     partialViewName: partialViewName,
                     model: model,
                     viewData: viewData);
@@ -30,6 +40,5 @@ namespace Sockethead.Razor.Helpers
                 htmlHelper.ViewContext.Writer = oldWriter;
             }
         }
-
     }
 }

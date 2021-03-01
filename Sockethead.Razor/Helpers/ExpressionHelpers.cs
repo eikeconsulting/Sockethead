@@ -15,23 +15,16 @@ namespace Sockethead.Razor.Helpers
             if (expression.Body is MemberExpression me)
                 return me;
 
-            if (expression.Body is UnaryExpression ue)
-            {
-                if (ue.Operand is MemberExpression me2)
-                    return me2;
-            }
+            if (expression.Body is UnaryExpression ue && ue.Operand is MemberExpression me2)
+                return me2;
 
             return null;
         }
 
-        public static string MemberName<T, V>(this Expression<Func<T, V>> expression)
-            => expression.GetBody()?.Member.Name;
-
         public static T GetAttribute<T>(this ICustomAttributeProvider provider) where T : Attribute
-            => provider.GetCustomAttributes(typeof(T), true).FirstOrDefault() as T;
-
-        public static bool IsRequired<T, V>(this Expression<Func<T, V>> expression)
-            => expression.GetBody()?.Member.GetAttribute<RequiredAttribute>() != null;
+            => provider
+                .GetCustomAttributes(typeof(T), true)
+                .FirstOrDefault() as T;
 
         /// <summary>
         /// Returns the name associated with the expression:
@@ -56,46 +49,70 @@ namespace Sockethead.Razor.Helpers
             return body.Member.Name?.PascalCaseAddSpaces();
         }
 
-        public static Expression<Func<TModel, bool>> BuildWhere<TModel>(string propertyName, string inputText)
+        /// <summary>
+        /// Build a lambda expression for a Where clause (i.e. returns a bool)
+        /// for a property (given by name) that Equals a specific string
+        /// The final Lambda looks like: 
+        /// x => x.MyProp.Equals("mysearch")
+        /// </summary>
+        /// <typeparam name="TModel">Model type</typeparam>
+        /// <param name="propertyName">Name of the property to compare</param>
+        /// <param name="inputText">String to match (Equals)</param>
+        /// <returns>Lambda Expression</returns>
+        public static Expression<Func<TModel, bool>> BuildWhereEqualsLambda<TModel>(string propertyName, string inputText)
         {
+            // Create the lambda input parameter (i.e. "x => ..." part)
             ParameterExpression parameter = Expression.Parameter(typeof(TModel), "x");
-            Expression property = Expression.Property(parameter, propertyName);
-            Expression target = Expression.Constant(inputText);
-            Expression equalsMethod = Expression.Call(property, "Equals", null, target);
-            Expression<Func<TModel, bool>> lambda =
-               Expression.Lambda<Func<TModel, bool>>(equalsMethod, parameter);
-            return lambda;
+
+            // Create the property part (i.e. "x.MyProp" part)
+            MemberExpression property = Expression.Property(parameter, propertyName);
+
+            // Create the target for the comparision (i.e. "mysearch")
+            ConstantExpression target = Expression.Constant(inputText);
+
+            // Create an Equals clause (i.e. "x.MyProp.Equals("mysearch")")
+            MethodCallExpression equalsMethod = Expression.Call(property, "Equals", null, target);
+            
+            // Put it all together (i.e. "x => x.MyProp.Equals("mysearch")")
+            return Expression.Lambda<Func<TModel, bool>>(equalsMethod, parameter);
         }
 
-        /*
-        public static Expression<Func<TModel, T>> BuildExpression<TModel, T>(string propertyName)
-        {
-            ParameterExpression parameter = Expression.Parameter(typeof(TModel), "x");
-            Expression property = Expression.Property(parameter, propertyName);
-            Expression<Func<TModel, bool>> lambda =
-               Expression.Lambda<Func<TModel, T>>();
-            return lambda;
-        }
-        */
-
-        public static Expression<Func<TModel, object>> GenerateGetterLambda<TModel>(PropertyInfo property)
+        /// <summary>
+        /// Build a lambda expression for "get" from a Property
+        /// The final Lambda looks like: 
+        /// x => x.MyProp
+        /// </summary>
+        /// <typeparam name="TModel">Model Type</typeparam>
+        /// <param name="property">PropertyInfo for the Property</param>
+        /// <returns>Lambda Expression</returns>
+        public static Expression<Func<TModel, object>> BuildGetterLambda<TModel>(PropertyInfo property)
         {
             // Define our instance parameter, which will be the input of the Func
-            var objParameterExpr = Expression.Parameter(typeof(object), "instance");
-            // 1. Cast the instance to the correct type
-            var instanceExpr = Expression.TypeAs(objParameterExpr, property.DeclaringType);
-            // 2. Call the getter and retrieve the value of the property
-            var propertyExpr = Expression.Property(instanceExpr, property);
-            // 3. Convert the property's value to object
-            var propertyObjExpr = Expression.Convert(propertyExpr, typeof(object));
+            ParameterExpression objParameterExpr = Expression.Parameter(typeof(object), "instance");
+            
+            // Cast the instance to the correct type
+            UnaryExpression instanceExpr = Expression.TypeAs(objParameterExpr, property.DeclaringType);
+            
+            // Call the getter and retrieve the value of the property
+            MemberExpression propertyExpr = Expression.Property(instanceExpr, property);
+            
+            // Convert the property's value to object
+            UnaryExpression propertyObjExpr = Expression.Convert(propertyExpr, typeof(object));
+            
             // Create a lambda expression of the latest call & compile it
             return Expression.Lambda<Func<TModel, object>>(propertyObjExpr, objParameterExpr);
         }
 
+        /// <summary>
+        /// Extract all Properties of the object (model) and 
+        /// create a Dictionary of Name/Value
+        /// </summary>
+        /// <typeparam name="T">Type of the object (must be known at compile time)</typeparam>
+        /// <param name="model">object to convert</param>
         public static Dictionary<string, object> ModelToDictionary<T>(T model)
             => typeof(T)
                 .GetProperties()
-                .Select(pi => new { pi, lambda = GenerateGetterLambda<T>(pi) })
+                .Select(pi => new { pi, lambda = BuildGetterLambda<T>(pi) })
                 .ToDictionary(
                     x => FriendlyName(x.lambda), 
                     x => x.lambda.Compile().Invoke(model));

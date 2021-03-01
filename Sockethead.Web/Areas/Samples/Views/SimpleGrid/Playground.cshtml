@@ -16,8 +16,6 @@
 
 <hr />
 
-<div>How meta is this?</div>
-
 @(await Html
     .SimpleGrid(Model)
     .AddColumnFor(model => model.Name)
@@ -28,7 +26,14 @@
             .TwoColumnGrid()
             .Add("Name", model.Name)
             .Add(model)
-            .Add($"List of all movies inside the movie {model.Name}", Html.SimpleGrid(Model).AddColumnFor(model => model.Name).RenderToString(), encode: false)
+            .Add(
+                label: $"List of all movies inside the movie {model.Name}", 
+                value: Html.SimpleGrid(Model)
+                    .AddColumnFor(model => model.Name)
+                    .AddColumnFor(model => model.Genre)
+                    .AddColumnFor(model => model.Director)
+                    .RenderToString(), 
+                encode: false)
             .RenderToString()))
     .RenderAsync()
 )

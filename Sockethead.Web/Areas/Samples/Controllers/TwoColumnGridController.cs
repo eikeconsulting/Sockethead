@@ -9,9 +9,8 @@ namespace Sockethead.Web.Areas.Samples.Controllers
     [Area("Samples")]
     public class TwoColumnGridController : Controller
     {
-        private static IQueryable<SampleModel> SampleDataQuery => SampleData.SampleModels.AsQueryable();
+        //private static IQueryable<SampleModel> SampleDataQuery => SampleData.SampleModels.AsQueryable();
         private static IQueryable<Movie> MovieQuery => SampleData.Movies.AsQueryable();
-
 
         [HttpGet]
         public IActionResult TwoColumnGrid()

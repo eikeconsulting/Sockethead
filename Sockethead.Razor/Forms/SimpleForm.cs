@@ -12,8 +12,10 @@ namespace Sockethead.Razor.Forms
 {
     public static class SimpleFormExtensions
     {
+#pragma warning disable IDE0060 // Remove unused parameter
         public static SimpleForm<T> SimpleForm<T>(this IHtmlHelper<T> html, T model) where T : class
                 => new SimpleForm<T>(html);
+#pragma warning restore IDE0060 // Remove unused parameter
     }
 
     public class FormOptions
