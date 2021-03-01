@@ -21,10 +21,16 @@ namespace Sockethead.Razor.Helpers
             return null;
         }
 
-        public static T GetAttribute<T>(this ICustomAttributeProvider provider) where T : Attribute
+        public static TAttribute GetAttribute<TAttribute>(this ICustomAttributeProvider provider) where TAttribute : Attribute
             => provider
-                .GetCustomAttributes(typeof(T), true)
-                .FirstOrDefault() as T;
+                .GetCustomAttributes(typeof(TAttribute), true)
+                .FirstOrDefault() as TAttribute;
+
+        public static TAttribute GetAttribute<TAttribute, T, V>(this Expression<Func<T, V>> expression) where TAttribute : Attribute
+            => expression
+                .GetBody()?
+                .Member
+                .GetAttribute<TAttribute>();
 
         /// <summary>
         /// Returns the name associated with the expression:

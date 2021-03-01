@@ -5,6 +5,7 @@ using Sockethead.Razor.Helpers;
 using Sockethead.Razor.Pager;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -31,7 +32,7 @@ namespace Sockethead.Razor.Grid
         private SimpleGridOptions Options { get; } = new SimpleGridOptions();
         private PagerOptions PagerOptions { get; } = new PagerOptions();
         private Sort<T> Sort { get; } = new Sort<T>();
-        private List<Column<T>> Columns { get; } = new List<Column<T>>();
+        private List<Column<T>> Columns { get; set; } = new List<Column<T>>();
         private List<Search<T>> SimpleGridSearches { get; } = new List<Search<T>>();
         private GridCssOptions CssOptions { get; } = new GridCssOptions();
         private List<RowModifier> RowModifiers { get; } = new List<RowModifier>();
@@ -75,7 +76,34 @@ namespace Sockethead.Razor.Grid
         public SimpleGrid<T> AddColumnsFromModel()
         {
             foreach (var property in typeof(T).GetProperties())
-                AddColumnFor(ExpressionHelpers.BuildGetterLambda<T>(property));
+            {
+                var expression = ExpressionHelpers.BuildGetterLambda<T>(property);
+                DisplayAttribute display = expression.GetAttribute<DisplayAttribute, T, object>();
+
+                if (display != null && display.GetAutoGenerateField().HasValue && !display.GetAutoGenerateField().Value)
+                    continue;
+
+                var column = new Column<T>();
+                var builder = new ColumnBuilder<T>(column);
+                builder.For(expression);
+                Columns.Add(column);
+
+                if (display != null && display.Order > 0)
+                    column.Order = display.Order;
+            }
+            return this;
+        }
+
+        /// <summary>
+        /// Rearrange the Order of the columns based on the Order property of DisplayAttribute
+        /// Note that this only affects columns added from "AddColumnsFromModel", and columns added
+        /// after this call will be ordered as they are added
+        /// </summary>
+        public SimpleGrid<T> OrderColumns()
+        {
+            Columns = Columns
+                .OrderBy(c => c.Order)
+                .ToList();
             return this;
         }
 

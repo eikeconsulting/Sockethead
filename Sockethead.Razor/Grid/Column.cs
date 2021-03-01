@@ -29,6 +29,7 @@ namespace Sockethead.Razor.Grid
         internal string LinkTarget { get; set; }
         internal bool IsEncoded { get; set; } = true;
         internal string HeaderValue { get; set; } = null;
+        internal int Order { get; set; } = int.MaxValue;
 
         public string HeaderCss { get; set; }
         public string ItemCss { get; set; }

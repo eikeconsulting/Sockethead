@@ -11,15 +11,16 @@ namespace Sockethead.Web.Data.Entities
 
     public class SampleModel
     {
-        [Display(Name = "Unique ID")]
+        [Display(Name = "Unique ID", Order = 1)]
         public int Id { get; set; } = NextId++;
 
+        [Display(Order = 3)]
         [DisplayName("First Name")]
         [Required(ErrorMessage = "Yo, we need a first name here")]
         [MaxLength(20, ErrorMessage = "First name is tooooo long...")]
         public string First { get; set; }
 
-        [Display(Name = "Last Name")]
+        [Display(Name = "Last Name", Order = 2)]
         [MaxLength(20)]
         public string Last { get; set; }
 
@@ -28,6 +29,7 @@ namespace Sockethead.Web.Data.Entities
         //[DataType(DataType.Date)]
         public DateTime RandomDate { get; set; } = GetRandomDate();
 
+        [Display(Order = 5)]
         public bool Flag { get; set; } = GetRandomBool();
 
         public SampleEnum SampleEnum { get; set; } = GetRandomEnum();
@@ -37,6 +39,9 @@ namespace Sockethead.Web.Data.Entities
         private static int NextId = 1001;
 
         private static readonly Random Random = new Random(DateTime.Now.Millisecond);
+
+        [Display(AutoGenerateField = false)]
+        public string SecretField { get; set; } = "I'm secret";
 
         private static DateTime GetRandomDate()
             => DateTime.UtcNow

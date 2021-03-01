@@ -3,6 +3,7 @@
 @(await Html
     .SimpleGrid(Model)
     .AddColumnsFromModel()
+    .OrderColumns()
     .AddColumn(column => column.For(model => model.First).Sortable(false))
     .AddColumn(column => column.Header("First").DisplayAs(model => model.First).SortableBy(model => model.First))
     .AddColumn(column => column.Header("Full Name").DisplayAs(model => $"{model.Last}, {model.First}"))

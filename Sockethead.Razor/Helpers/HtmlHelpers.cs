@@ -15,29 +15,34 @@ namespace Sockethead.Razor.Helpers
             return htmlHelper.RenderPartialToStringAsync(partialViewName, model, viewData).Result;
         }
 
+        /// <summary>
+        /// Render a partial view to a string by temporarly 
+        /// replacing the view's writer (kludge!)
+        /// </summary>
         public static async Task<string> RenderPartialToStringAsync(
             this IHtmlHelper htmlHelper,
             string partialViewName,
             object model,
             ViewDataDictionary viewData = null)
         {
-            var oldWriter = htmlHelper.ViewContext.Writer;
+            var viewWriter = htmlHelper.ViewContext.Writer;
             try
             {
-                using var writer = new System.IO.StringWriter();
+                using var stringWriter = new System.IO.StringWriter();
 
-                htmlHelper.ViewContext.Writer = writer;
+                htmlHelper.ViewContext.Writer = stringWriter;
 
                 await htmlHelper.RenderPartialAsync(
                     partialViewName: partialViewName,
                     model: model,
                     viewData: viewData);
 
-                return writer.GetStringBuilder().ToString();
+                return stringWriter.GetStringBuilder().ToString();
             }
             finally
             {
-                htmlHelper.ViewContext.Writer = oldWriter;
+                // restore the original writer back to the View
+                htmlHelper.ViewContext.Writer = viewWriter;
             }
         }
     }
