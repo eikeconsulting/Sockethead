@@ -4,7 +4,7 @@
     <TargetFramework>net5.0</TargetFramework>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.0.3</Version>
+    <Version>0.0.4</Version>
     <Authors>Randall Eike</Authors>
     <Company>Eike Consulting, LLC</Company>
     <Description>Razor Utilities for .Net Core 5.
@@ -15,7 +15,9 @@
     <RepositoryType>GIT</RepositoryType>
     <PackageTags>ASP.Net Core, MVC, Razor, Grid Control</PackageTags>
     <Copyright>Copyright (c) 2021</Copyright>
-    <PackageReleaseNotes>Added Grid control.</PackageReleaseNotes>
+    <PackageReleaseNotes>Added TwoColumnGrid and made improvements to SimpleGrid.</PackageReleaseNotes>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
   <ItemGroup>

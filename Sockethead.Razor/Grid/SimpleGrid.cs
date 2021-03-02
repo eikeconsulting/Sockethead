@@ -80,7 +80,10 @@ namespace Sockethead.Razor.Grid
                 var expression = ExpressionHelpers.BuildGetterLambda<T>(property);
                 DisplayAttribute display = expression.GetAttribute<DisplayAttribute, T, object>();
 
-                if (display != null && display.GetAutoGenerateField().HasValue && !display.GetAutoGenerateField().Value)
+                // Skip if DisplayAttribute.AutoGenerateField is turned off
+                if (display != null && 
+                    display.GetAutoGenerateField().HasValue && 
+                    !display.GetAutoGenerateField().Value)
                     continue;
 
                 var column = new Column<T>();
@@ -88,8 +91,10 @@ namespace Sockethead.Razor.Grid
                 builder.For(expression);
                 Columns.Add(column);
 
-                if (display != null && display.Order > 0)
-                    column.Order = display.Order;
+                // Apply DisplayAttribute.Order
+                if (display != null && 
+                    display.GetOrder().HasValue)
+                    column.Order = display.GetOrder().Value;
             }
             return this;
         }
