@@ -22,6 +22,7 @@
 <pre><code>@@(await Html
     .SimpleGrid(Model)
     .AddColumnsFromModel()
+    .OrderColumns()
     .AddColumn(column => column.For(model => model.First).Sortable(false))
     .AddColumn(column => column.Header("First").DisplayAs(model => model.First).SortableBy(model => model.First))
     .AddColumn(column => column.Header("Full Name").DisplayAs(model => $"{model.Last}, {model.First}"))
@@ -32,9 +33,6 @@
         searchFilter: (source, query) => source.Where(model =>
             model.First.Contains(query, StringComparison.OrdinalIgnoreCase) ||
             model.Last.Contains(query, StringComparison.OrdinalIgnoreCase) ))
-    .AddSearch(
-        name: "First Name Match",
-        modelFilter: (model, query) => model.First.Equals(query, StringComparison.OrdinalIgnoreCase))
     .RenderAsync()
 )</code></pre>
 
