@@ -83,6 +83,8 @@ A library of Razor utilities.
     install-package Sockethead.Razor
 
 ### Alerts
+Namespace: Sockethead.Razor.Alert.Extensions
+
 This allows you to add an alert to an MVC page in the Controller.
 
 Add the following to your _Layout.cshtml page:
@@ -91,16 +93,12 @@ Add the following to your _Layout.cshtml page:
 
 Then the Extensions in your Controller:
 
-    using Sockethead.Razor.Alert.Extensions;
-
     public IActionResult Index()
     {
         return View().Success("My cool success message!");
     }
 
 You may want to customize your Alert and create your own partial view, here is the source:
-
-    @using Sockethead.Razor.Alert.Extensions
 
     @foreach (string key in Alerts.ALL)
     {
@@ -121,19 +119,37 @@ You may want to customize your Alert and create your own partial view, here is t
         </div>
     }
 
+### Client Time
+Namespace: Sockethead.Razor.Helpers 
+
+There is a HTMLHelper called "ClientTime" which 
+will output a DateTime as a &lt;time&gt; html tag.  The following JavaScript 
+should be included in the main layout page to make this render correctly:
+
+    <script type="text/javascript">
+
+        $("time").each(function (elem) {
+            var utctimeval = $(this).html();
+            var date = new Date(utctimeval);
+            $(this).html(date.toLocaleString());
+        });
+
+    </script>
+
+
 ### TinyTable
 TinyTable takes a Dictionary<string, object> and renders a pretty Bootstrap Table:
 
     <partial name="_TinyTable" model="<your dictionary>" />
 
 ### RazorViewRenderer (for Email Generation)
+Namespace: Sockethead.Razor.Utilities
+
 This is a utility function to render a Razor view to a string 
 which is useful for constructing Emails to be sent by your website.
 
 Register in your DI:
 
-    using Sockethead.Razor.Utilities;
-    ...
     services.AddScoped<IRazorViewRenderer, RazorViewRenderer>();
 
 Then inject and use in your Controller:
@@ -149,6 +165,46 @@ Then inject and use in your Controller:
     }
 
 
+### Post Redirect Get (PRG) Support
+Namespace: Sockethead.Razor.PRG 
+
+There are two Attributes to support serializing the ModelState to 
+TempData so that you can Redirect after a Post and maintain state.
+
+    [HttpGet, RestoreModelState]
+    public IActionResult SomeEndpoint(int id)
+    ...
+
+    [HttpPost, ValidateAntiForgeryToken, SaveModelState]
+    public IActionResult SomeEndpoint(SomeModel someModel)
+    {
+        // always redirect here for both success and error
+        var result = RedirectToAction(
+                actionName: nameof(SomeEndpoint),
+                routeValues: new { id = someModel.Id });
+
+        if (!ModelState.IsValid)
+            return result.Error("Error Saving Response.");
+
+        ... handle form ...
+
+        return result.Success("Successfully did it!");
+    }
+
+
+Inspired by https://andrewlock.net/post-redirect-get-using-tempdata-in-asp-net-core/
+
+
+### Diagnostics
+Namespace: Sockethead.Razor.Diagnostics
+
+Html.BuildTime - returns a Timestamp when the project was built for display in 
+the page footer or wherever you like.
+
+TimeTracker Attribute
+Apply to a Controller or Controller method and it adds a StopWatch to the 
+HTTP context.  Then you can retrieve the page execution time 
+(only the Controller part) in the footer.
 
    
 

@@ -1,0 +1,59 @@
+﻿@using Sockethead.Razor.Html;
+
+<hr />
+
+@(Html.HtmlBuilder()
+    .Div(tag => tag
+        .Style("margin:10px;")
+        .Then(builder => builder
+            .Content("inside")))
+    .Content("hi")
+    .Render())
+
+<hr />
+
+@(Html.HtmlBuilder()
+    .Div(tag => tag.Class("row").Then(builder => builder
+        .Div(tag => tag.Class("col-6").Then(builder => builder.Content("One")))
+        .Div(tag => tag.Class("col-6").Then(builder => builder.Content("Two")))))
+    .Render())
+
+<hr />
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            1 of 2
+        </div>
+        <div class="col">
+            2 of 2
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            1 of 3
+        </div>
+        <div class="col">
+            2 of 3
+        </div>
+        <div class="col">
+            3 of 3
+        </div>
+    </div>
+</div>
+
+<hr />
+
+@(Html.HtmlBuilder()
+    .Container(then: b => b
+        .Row(then: b => b
+            .Col(t => t.Class("col").Then(b => b.Content("1 of 2")))
+            .Col(t => t.Class("col").Then(b => b.Content("2 of 2")))
+        )
+        .Row(then: b => b
+            .Col(t => t.Class("col"), b => b.Content("1 of 3"))
+            .Col(t => t.Class("col"), b => b.Content("2 of 3"))
+            .Col(t => t.Class("col"), b => b.Content("3 of 3"))
+        )
+    )
+    .Render())

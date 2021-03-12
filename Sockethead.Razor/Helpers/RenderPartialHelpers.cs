@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Sockethead.Razor.Helpers
 {
-    public static class HtmlHelpers
+    public static class RenderPartialHelpers
     {
         public static string RenderPartialToString(
             this IHtmlHelper htmlHelper, 
