@@ -1,19 +1,18 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Logging;
 using Sockethead.EFCore.Entities;
+using Sockethead.EFCore.Extensions;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 
 namespace Sockethead.EFCore.AuditLogging
 {
     /// <summary>
-    /// AuditLog generation, with the help of
+    /// AuditLog generation, inspired by
     /// http://jmdority.wordpress.com/2011/07/20/using-entity-framework-4-1-dbcontext-change-tracking-for-audit-logging/
-    /// with changes for .net Core
+    /// With changes for .Net Core
     /// </summary>
     public class AuditLogGenerator
     {
@@ -31,94 +30,89 @@ namespace Sockethead.EFCore.AuditLogging
         {
             try
             {
-                return dbEntries.Select(dbEntry => GenerateAuditLog(dbEntry));
+                return dbEntries.Select(GenerateAuditLog).ToList();
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, "Error Generating Audit Logs");
+                Logger.LogError(ex, "Error Generating Audit Logs.");
                 return new List<AuditLog>();
             }
         }
 
         private AuditLog GenerateAuditLog(EntityEntry dbEntry)
         {
-            // Get the Table() attribute, if one exists
-            // Get table name (if it has a Table attribute, use that, otherwise get the pluralized name)
-            string tableName = GetTableName(dbEntry);
-
-            // Get primary key value
-            string recordId = GetPrimaryKeyValue(dbEntry);
-
-            var changes = new List<AuditLogChange>();
-
-            bool isOriginal = dbEntry.State == EntityState.Modified || dbEntry.State == EntityState.Deleted;
-            bool isCurrent = dbEntry.State == EntityState.Modified || dbEntry.State == EntityState.Added;
-
-            if (isOriginal || isCurrent)
-            {
-                IEnumerable<IProperty> propertyNames = isOriginal
-                   ? dbEntry.OriginalValues.Properties
-                   : dbEntry.CurrentValues.Properties;
-
-                changes = (from propertyName in propertyNames
-                           where !Equals(
-                           isOriginal ? GetPropertyValue(dbEntry.OriginalValues.ToObject(), propertyName.Name) : "",
-                           isCurrent ? GetPropertyValue(dbEntry.CurrentValues.ToObject(), propertyName.Name) : "")
-                           select new AuditLogChange
-                           {
-                               Property = propertyName.Name,
-                               Original = ToStringSafe(isOriginal ? GetPropertyValue(dbEntry.OriginalValues.ToObject(), propertyName.Name) : ""),
-                               Current = ToStringSafe(isCurrent ? GetPropertyValue(dbEntry.CurrentValues.ToObject(), propertyName.Name) : ""),
-                           })
-                           .ToList();
-            }
+            object orig = GetOriginalEntity(dbEntry);
+            object curr = GetCurrentEntity(dbEntry);
 
             return new AuditLog
             {
                 EntityState = dbEntry.State,
-                TableName = tableName,
-                RecordId = recordId,
-                AuditLogChanges = changes,
+                TableName = dbEntry.GetTableName(),
+                RecordId = dbEntry.GetPrimaryKeyValue(),
                 TimeStamp = DateTime.UtcNow,
+                AuditLogChanges = dbEntry
+                    .CurrentValues
+                    .Properties
+                    .Where(prop => !prop.IsIndexerProperty())
+                    .Select(prop => new AuditLogChange
+                    {
+                        Property = prop.Name,
+                        Original = GetPropertyValue(orig, prop.Name),
+                        Current = GetPropertyValue(curr, prop.Name),
+                    })
+                    .Where(change => change.Original != change.Current)
+                    .ToList(),
             };
         }
 
-        public string GetTableName(EntityEntry dbEntry)
-            // Get the Table() attribute, if one exists
-            // Get table name (if it has a Table attribute, use that, otherwise get the pluralized name)
-            => dbEntry.Entity.GetType()
-               .GetCustomAttributes(typeof(TableAttribute), false)
-               .SingleOrDefault() is TableAttribute tableAttr
-               ? tableAttr.Name
-               : dbEntry.Entity.GetType().Name;
+        private static object GetOriginalEntity(EntityEntry dbEntry)
+        {
+            switch (dbEntry.State)
+            {
+                case EntityState.Modified:
+                case EntityState.Deleted:
+                    return dbEntry.OriginalValues.ToObject();
 
-        public string GetPrimaryKeyValue(EntityEntry dbEntry)
+                default:
+                case EntityState.Detached:
+                case EntityState.Unchanged:
+                case EntityState.Added:
+                    return null;
+            };
+        }
+
+        private static object GetCurrentEntity(EntityEntry dbEntry)
+        {
+            switch (dbEntry.State)
+            {
+                case EntityState.Modified:
+                case EntityState.Added:
+                    return dbEntry.CurrentValues.ToObject();
+
+                default:
+                case EntityState.Deleted:
+                case EntityState.Detached:
+                case EntityState.Unchanged:
+                    return null;
+            };
+        }
+
+        private string GetPropertyValue(object entity, string name)
         {
             try
             {
-                IKey pk = dbEntry.Metadata.FindPrimaryKey();
+                object o = entity
+                    .GetType()
+                    .GetProperty(name)
+                    .GetValue(entity, null);
 
-                if (pk == null)
-                    return "N/A";
-
-                IEnumerable<object> values = pk.Properties.Select(p => dbEntry.Property(p.Name).CurrentValue);
-                return string.Join("-", values.Select(v => v.ToString()));
+                return o == null ? "" : o.ToString();
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, "Error retriving recordId through primary key");
-                // swallow error
-                return "[error]";
+                Logger.LogError(ex, $"Error resolving property {name} in entity [{entity}].");
+                return "";
             }
-
         }
-
-        private static string ToStringSafe(object s) => s?.ToString();
-
-        private static object GetPropertyValue(object keyProperty, string name)
-            => keyProperty
-                .GetType()
-                .GetProperty(name)
-                .GetValue(keyProperty, null);
     }
 }
