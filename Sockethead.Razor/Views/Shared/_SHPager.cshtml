@@ -1,8 +1,31 @@
 ﻿@model Sockethead.Razor.Pager.PagerModel
 @{ 
     string IsDisabled(string s) => string.IsNullOrEmpty(s) ? "disabled" : "";
-}
+
+    //Model.TotalItems = 12345;
+    //Model.RowsPerPageLinks = new[] { 20, 50, 100, 1000 };
+ }
 <nav aria-label="Pager">
+    @if (Model.TotalItems.HasValue)
+    {
+    <div class="float-left">Total: @Model.TotalItems.Value.ToString("N0")</div>
+    }
+    @if (Model.RowsPerPageLinks != null)
+    {
+    <div class="float-right">
+        <div class="dropdown">
+            <button class="btn btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Rows per page
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                @foreach (var kvp in Model.RowsPerPageLinks)
+                {
+                <a class="dropdown-item" href="@kvp.Value">@kvp.Key.ToString("N0")</a>
+                }
+            </div>
+        </div>
+    </div>
+    }
     <ul class="pagination justify-content-center">
         <li class="page-item @IsDisabled(Model.FirstUrl)"><a class="page-link" href="@Model.FirstUrl">First</a></li>
         <li class="page-item @IsDisabled(Model.PrevUrl)"><a class="page-link" href="@Model.PrevUrl">Prev</a></li>

@@ -1,4 +1,6 @@
-﻿namespace Sockethead.Razor.Pager
+﻿using System.Collections.Generic;
+
+namespace Sockethead.Razor.Pager
 {
     public class PagerModel
     {
@@ -9,5 +11,10 @@
 
         public int TotalPages { get; set; }
         public int CurrentPage { get; set; }
+
+        public int? TotalItems { get; set; }
+
+        public Dictionary<int, string> RowsPerPageLinks { get; set; }
+
     }
 }

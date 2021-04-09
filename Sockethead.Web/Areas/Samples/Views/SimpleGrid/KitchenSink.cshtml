@@ -65,6 +65,8 @@
         options.RowsPerPage = 5;
         options.DisplayPagerTop = true;
         options.DisplayPagerBottom = true;
+        options.DisplayTotal = true;
+        options.RowsPerPageOptions = new[] { 5, 10, 20, 50, 100, 1000 };
     })
 
     .RenderAsync()
@@ -135,6 +137,8 @@
         options.RowsPerPage = 5;
         options.DisplayPagerTop = true;
         options.DisplayPagerBottom = true;
+        options.DisplayTotal = true;
+        options.RowsPerPageOptions = new[] { 5, 10, 20, 50, 100, 1000 };
     })
 
     .RenderAsync()

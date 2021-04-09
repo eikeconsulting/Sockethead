@@ -6,6 +6,11 @@
 
         public bool Enabled { get; set; } = false;
         public int RowsPerPage { get; set; } = 20;
+
+        public int[] RowsPerPageOptions { get; set; }// = new[] { 20, 100, 1000 };
+
+        public bool DisplayTotal { get; set; } = false;
+
         public bool DisplayPagerTop { get; set; } = true;
         public bool DisplayPagerBottom { get; set; } = false;
 

@@ -15,7 +15,8 @@ namespace Sockethead.Razor.Helpers
             if (expression.Body is MemberExpression me)
                 return me;
 
-            if (expression.Body is UnaryExpression ue && ue.Operand is MemberExpression me2)
+            if (expression.Body is UnaryExpression ue && 
+                ue.Operand is MemberExpression me2)
                 return me2;
 
             return null;
@@ -28,14 +29,14 @@ namespace Sockethead.Razor.Helpers
 
         public static TAttribute GetAttribute<TAttribute, T, V>(this Expression<Func<T, V>> expression) where TAttribute : Attribute
             => expression
-                .GetBody()?
-                .Member
+                .GetBody()
+                ?.Member
                 .GetAttribute<TAttribute>();
 
         /// <summary>
         /// Returns the name associated with the expression:
-        /// 1. DisplayName attribute
-        /// 2. Display.Name attribute
+        /// 1. Display.Name attribute
+        /// 2. DisplayName attribute
         /// 3. The underlying name of the field if no Display attribute adding spaces
         /// </summary>
         public static string FriendlyName<T, V>(this Expression<Func<T, V>> expression)

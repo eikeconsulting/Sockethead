@@ -272,7 +272,9 @@ namespace Sockethead.Razor.Grid
                 PagerModel = PagerOptions.Enabled
                     ? State.BuildPagerModel(
                         totalRecords: totalRecords, 
-                        rowsPerPage: PagerOptions.RowsPerPage)
+                        displayTotal: PagerOptions.DisplayTotal,
+                        rowsPerPage: State.RowsPerPage.HasValue ? State.RowsPerPage.Value : PagerOptions.RowsPerPage,
+                        rowsPerPageOptions: PagerOptions.RowsPerPageOptions)
                     : null,
 
                 // build search view model
@@ -314,7 +316,16 @@ namespace Sockethead.Razor.Grid
 
             // resolve the data (rows)
             // Note: we can't call ToListAsync here without a reference to Microsoft.EntityFrameworkCore
-            int rowsToTake = PagerOptions.Enabled ? PagerOptions.RowsPerPage : Options.MaxRows;
+            int rowsToTake = Options.MaxRows;
+
+            if (State.RowsPerPage.HasValue)
+                rowsToTake = State.RowsPerPage.Value;
+            else if (PagerOptions.Enabled)
+                rowsToTake = PagerOptions.RowsPerPage;
+
+            if (rowsToTake > Options.MaxRows)
+                rowsToTake = Options.MaxRows;
+
             vm.Rows = query
                 .Skip((State.PageNum - 1) * rowsToTake)
                 .Take(rowsToTake)

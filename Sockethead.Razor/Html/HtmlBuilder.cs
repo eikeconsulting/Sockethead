@@ -11,7 +11,6 @@ namespace Sockethead.Razor.Html
     public static class HtmlBuilderExtensions
     {
         public static HtmlBuilder HtmlBuilder(this IHtmlHelper html) => new HtmlBuilder(html);
-
     }
 
     public class HtmlBuilder
@@ -43,8 +42,7 @@ namespace Sockethead.Razor.Html
             return Div(tag =>
             {
                 tag.Class("container");
-                if (builder != null)
-                    builder(tag);
+                builder?.Invoke(tag);
                 tag.Then(then);
             });
         }
@@ -54,8 +52,7 @@ namespace Sockethead.Razor.Html
             return Div(tag =>
             {
                 tag.Class("row");
-                if (builder != null)
-                    builder(tag);
+                builder?.Invoke(tag);
                 tag.Then(then);
             });
         }
@@ -64,12 +61,10 @@ namespace Sockethead.Razor.Html
         {
             return Div(tag =>
             {
-                if (builder != null)
-                    builder(tag);
+                builder?.Invoke(tag);
                 tag.Then(then);
             });
         }
-
 
         public HtmlBuilder Div(Action<HtmlTagBuilder> tagBuilderAction)
         {
@@ -198,6 +193,5 @@ namespace Sockethead.Razor.Html
 
             return sb.ToString();
         }
-
     }
 }
