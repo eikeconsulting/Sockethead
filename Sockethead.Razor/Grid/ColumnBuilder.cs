@@ -103,17 +103,13 @@ namespace Sockethead.Razor.Grid
             Func<T, IQueryable<TGrid>> modelBuilder, 
             Action<SimpleGrid<TGrid>> builderAction) 
             where TGrid : class
-            => Wrap(() =>
+            => DisplayAs(model =>
             {
-                DisplayAs(model =>
-                {
-                    SimpleGrid<TGrid> grid = Html.SimpleGrid(modelBuilder(model));
-                    builderAction.Invoke(grid);
-                    return grid.RenderToString();
-                })
-                .Encoded(false);
-
-            });
+                SimpleGrid<TGrid> grid = Html.SimpleGrid(modelBuilder(model));
+                builderAction.Invoke(grid);
+                return grid.RenderToString();
+            })
+            .Encoded(false);
 
         /// <summary>
         /// Embed a TwoColumnGrid inside this SimpleGrid
@@ -121,16 +117,13 @@ namespace Sockethead.Razor.Grid
         /// <param name="builderAction">An Action that takes the original model and a builder Action that 
         /// builds up the newly created TwoColumnGrid</param>
         public ColumnBuilder<T> TwoColumnGrid(Action<T, TwoColumnGridBuilder> builderAction)
-            => Wrap(() =>
+            => DisplayAs(model =>
             {
-                DisplayAs(model =>
-                {
-                    TwoColumnGridBuilder grid = Html.TwoColumnGrid();
-                    builderAction.Invoke(model, grid);
-                    return grid.RenderToString();
-                })
-                .Encoded(false);
-            });
+                TwoColumnGridBuilder grid = Html.TwoColumnGrid();
+                builderAction.Invoke(model, grid);
+                return grid.RenderToString();
+            })
+            .Encoded(false);
 
         /// <summary>
         /// Embed a TwoColumnGrid inside this SimpleGrid
@@ -138,16 +131,20 @@ namespace Sockethead.Razor.Grid
         /// <typeparam name="TGrid">Type of the Model for the new TwoColumnGrid</typeparam>
         /// <param name="gridbuilder">Function to return the Model to use</param>
         public ColumnBuilder<T> TwoColumnGrid<TGrid>(Func<T, TGrid> gridbuilder)
-            => Wrap(() =>
+            => DisplayAs(model =>
             {
-                DisplayAs(model =>
-                {
-                    TwoColumnGridBuilder grid = Html.TwoColumnGrid();
-                    grid.Add(gridbuilder(model));
-                    return grid.RenderToString();
-                })
-                .Encoded(false);
-            });
+                TwoColumnGridBuilder grid = Html.TwoColumnGrid();
+                grid.Add(gridbuilder(model));
+                return grid.RenderToString();
+            })
+            .Encoded(false);
+
+        /// <summary>
+        /// Render a DateTime as a time html tag to be processed on the client side
+        /// </summary>
+        public ColumnBuilder<T> ClientTime(Func<T, DateTime?> timeBuilder)
+            => DisplayAs(model => TimeHelpers.ClientTimeHtml(timeBuilder(model)))
+            .Encoded(false);
 
         /*
         public ColumnBuilder<T> AddHeaderCssClass(string cssClass) => Wrap(() => Column.HeaderDetails.CssClasses.Add(cssClass));

@@ -130,6 +130,35 @@ namespace Sockethead.Razor.Grid
         }
 
         /// <summary>
+        /// Extension method to SimpleGrid that adds Enumerated search support
+        /// The input value string from the user will be attempted to match the enumeration provided
+        /// Then the caller provides the Search filter that handles the correponding enum value
+        /// TODO: attempt to match the Display names as well!
+        /// </summary>
+        /// <typeparam name="T">Grid Entity Type</typeparam>
+        /// <typeparam name="TEnum">Enumeration type</typeparam>
+        /// <param name="grid">SimpleGrid</param>
+        /// <param name="name">Name of search to display in the dropdown</param>
+        /// <param name="searchFilter">Enum search filter Func</param>
+        public SimpleGrid<T> AddEnumSearch<TEnum>(
+            string name,
+            Func<IQueryable<T>, TEnum, IQueryable<T>> searchFilter)
+            where TEnum : struct, IConvertible
+            => AddSearch(
+                name: name,
+                searchFilter: (source, query) =>
+                {
+                    query = query.Replace(" ", "").ToLower();
+
+                    return Enum
+                        .GetNames(typeof(TEnum))
+                        .TryFirst(e => e.ToLower().Contains(query), out string name)
+                            ? searchFilter(source, (TEnum)Enum.Parse(typeof(TEnum), name))
+                            : source.NoResults();
+                });
+
+
+        /// <summary>
         /// Add custom css classes and styles to various elements of the Grid.
         /// </summary>
         public SimpleGrid<T> AddCss(Action<GridCssOptions> cssOptionsSetter)
@@ -221,6 +250,17 @@ namespace Sockethead.Razor.Grid
             return this;
         }
 
+        /// <summary>
+        /// Perform grid building operations only if a condition is met
+        /// </summary>
+        public SimpleGrid<T> If(bool condition, Action<SimpleGrid<T>> conditionalAction)
+        {
+            if (condition)
+                conditionalAction(this);
+            return this;
+        }
+
+
         private IQueryable<T> BuildQuery()
         {
             IQueryable<T> query = Source;
@@ -273,7 +313,7 @@ namespace Sockethead.Razor.Grid
                     ? State.BuildPagerModel(
                         totalRecords: totalRecords, 
                         displayTotal: PagerOptions.DisplayTotal,
-                        rowsPerPage: State.RowsPerPage.HasValue ? State.RowsPerPage.Value : PagerOptions.RowsPerPage,
+                        rowsPerPage: State.RowsPerPage ?? PagerOptions.RowsPerPage,
                         rowsPerPageOptions: PagerOptions.RowsPerPageOptions)
                     : null,
 
