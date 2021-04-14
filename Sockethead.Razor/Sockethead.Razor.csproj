@@ -4,7 +4,7 @@
     <TargetFramework>net5.0</TargetFramework>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.0.5</Version>
+    <Version>0.1.0</Version>
     <Authors>Randall Eike</Authors>
     <Company>Eike Consulting, LLC</Company>
     <Description>Razor Utilities for .Net Core 5.
@@ -15,7 +15,7 @@
     <RepositoryType>GIT</RepositoryType>
     <PackageTags>ASP.Net Core, MVC, Razor, Grid Control</PackageTags>
     <Copyright>Copyright (c) 2021</Copyright>
-    <PackageReleaseNotes>Added Rows per Page control to SimpleGrid</PackageReleaseNotes>
+    <PackageReleaseNotes>Simple Grid bug fixes.</PackageReleaseNotes>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
