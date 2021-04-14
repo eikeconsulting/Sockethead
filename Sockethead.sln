@@ -9,6 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sockethead.EFCore", "Socket
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{E438F68A-F906-4DAA-A82A-72C2C594312B}"
 	ProjectSection(SolutionItems) = preProject
+		CONTRIBUTING.md = CONTRIBUTING.md
 		README.md = README.md
 		Sockethead.EFCore\Sockethead.EFCore.nuspec = Sockethead.EFCore\Sockethead.EFCore.nuspec
 		TODOs.md = TODOs.md

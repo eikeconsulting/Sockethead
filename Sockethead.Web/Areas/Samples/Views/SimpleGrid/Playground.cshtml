@@ -10,7 +10,41 @@
             .Add(model)
             .RenderToString()))
     .AddSearch("Blah", searchFilter: (source, query) => source.Where(movie => movie.Name.Contains(query, StringComparison.OrdinalIgnoreCase)))
+    .AddSearch("Boom", searchFilter: (source, query) => source.Where(movie => movie.Name.Contains(query, StringComparison.OrdinalIgnoreCase)))
     .AddPager(options => options.RowsPerPage = 3)
+    .RenderAsync()
+)
+
+<hr />
+
+@(await Html
+    .SimpleGrid(Model)
+    .AddColumnsFromModel()
+    .AddColumn(column => column
+        .Header("TwoColumnGrid in a SimpleGrid!")
+        //.TwoColumnGrid((model, grid) => grid.Add(model))
+        .TwoColumnGrid(model => model))
+
+    .AddSearch("Blah", searchFilter: (source, query) => source.Where(movie => movie.Name.Contains(query, StringComparison.OrdinalIgnoreCase)))
+    .AddSearch("Boom", searchFilter: (source, query) => source.Where(movie => movie.Name.Contains(query, StringComparison.OrdinalIgnoreCase)))
+    .AddPager(options => options.RowsPerPage = 3)
+    .RenderAsync()
+)
+
+<hr />
+
+@(await Html
+    .SimpleGrid(Model)
+    .AddColumnsFromModel()
+    .AddColumn(column => column
+        .Header("This inside itself")
+        .SimpleGrid(model => Model.Take(5), grid => grid
+            .AddColumnFor(model => model.Name)
+            .AddColumnFor(model => model.Director)
+            ))
+
+    .AddPager(options => options.RowsPerPage = 3)
+    .AddCssClass("table-striped")
     .RenderAsync()
 )
 
@@ -27,12 +61,12 @@
             .Add("Name", model.Name)
             .Add(model)
             .Add(
-                label: $"List of all movies inside the movie {model.Name}", 
+                label: $"List of all movies inside the movie {model.Name}",
                 value: Html.SimpleGrid(Model)
                     .AddColumnFor(model => model.Name)
                     .AddColumnFor(model => model.Genre)
                     .AddColumnFor(model => model.Director)
-                    .RenderToString(), 
+                    .RenderToString(),
                 encode: false)
             .RenderToString()))
     .RenderAsync()

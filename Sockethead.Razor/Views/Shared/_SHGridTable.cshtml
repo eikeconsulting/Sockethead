@@ -23,14 +23,21 @@
             <th @Html.Raw(col.HeaderCss)>@Html.Raw(RenderLabel(col.HeaderDetails))</th>
         }
     </tr>
-    @foreach (object row in Model.Rows)
+    @if (Model.Rows.Any())
     {
-        <tr @Html.Raw(Model.Css.RowCss) @Html.Raw(Model.GetRowCss(row))>
-            @foreach (var col in Model.Columns)
-            {
-                <td @Html.Raw(col.ItemCss)>@Html.Raw(col.DisplayRender(row))</td>
-            }
-        </tr>
+        @foreach (object row in Model.Rows)
+        {
+            <tr @Html.Raw(Model.Css.RowCss) @Html.Raw(Model.GetRowCss(row))>
+                @foreach (var col in Model.Columns)
+                {
+                    <td @Html.Raw(col.ItemCss)>@Html.Raw(col.DisplayRender(row))</td>
+                }
+            </tr>
+        }
+    }
+    else
+    {
+        <tr><td colspan="@Model.Columns.Count()" class="text-center"><br />No matching records.<br /></td></tr>
     }
 </table>
 

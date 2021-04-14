@@ -50,7 +50,7 @@ namespace Sockethead.Razor.Grid
         public SimpleGrid<T> AddColumn(Action<ColumnBuilder<T>> columnBuilder)
         {
             var column = new Column<T>();
-            var builder = new ColumnBuilder<T>(column);
+            var builder = new ColumnBuilder<T>(column, Html);
             columnBuilder.Invoke(builder);
             Columns.Add(column);
             return this;
@@ -63,7 +63,7 @@ namespace Sockethead.Razor.Grid
         public SimpleGrid<T> AddColumnFor(Expression<Func<T, object>> expression)
         {
             var column = new Column<T>();
-            var builder = new ColumnBuilder<T>(column);
+            var builder = new ColumnBuilder<T>(column, Html);
             builder.For(expression);
             Columns.Add(column);
             return this;
@@ -87,7 +87,7 @@ namespace Sockethead.Razor.Grid
                     continue;
 
                 var column = new Column<T>();
-                var builder = new ColumnBuilder<T>(column);
+                var builder = new ColumnBuilder<T>(column, Html);
                 builder.For(expression);
                 Columns.Add(column);
 
@@ -168,7 +168,7 @@ namespace Sockethead.Razor.Grid
         {
             foreach (var column in Columns)
             {
-                var builder = new ColumnBuilder<T>(column);
+                var builder = new ColumnBuilder<T>(column, Html);
 
                 if (enable)
                 {
@@ -288,6 +288,7 @@ namespace Sockethead.Razor.Grid
                             Value = (i + 1).ToString(),
                             Selected = State.SearchNdx == i + 1,
                         }).ToList(),
+                        Query = State.SearchQuery,
                         SearchNdx = State.SearchNdx.ToString(),
                     }
                     : null,

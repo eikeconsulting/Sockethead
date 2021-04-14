@@ -13,6 +13,7 @@ namespace Sockethead.Web.Data.Entities
         [DisplayName("Movie Genre")]
         public string Genre { get; set; } = "";
 
+        [Display(AutoGenerateField = true)]
         public int? Released { get; set; }
     }
 }

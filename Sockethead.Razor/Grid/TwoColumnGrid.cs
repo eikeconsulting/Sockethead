@@ -39,7 +39,7 @@ namespace Sockethead.Razor.Grid
         {
             Table
                 .AddClass("table")
-                .AddClass("table-striped")
+                //.AddClass("table-striped")
                 .AddClass("table-sm")
                 .AddStyle("table-layout:fixed;");
 

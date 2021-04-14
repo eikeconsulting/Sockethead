@@ -120,6 +120,16 @@ namespace Sockethead.Razor.Helpers
             => typeof(T)
                 .GetProperties()
                 .Select(pi => new { pi, lambda = BuildGetterLambda<T>(pi) })
+                .Where(x =>
+                {
+                    DisplayAttribute display = x.lambda.GetAttribute<DisplayAttribute, T, object>();
+
+                    // Skip if DisplayAttribute.AutoGenerateField is turned off
+                    return
+                        display == null ||
+                        !display.GetAutoGenerateField().HasValue ||
+                        display.GetAutoGenerateField().Value;
+                })
                 .ToDictionary(
                     x => FriendlyName(x.lambda), 
                     x => x.lambda.Compile().Invoke(model));

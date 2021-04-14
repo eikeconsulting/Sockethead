@@ -1,6 +1,8 @@
-﻿using Sockethead.Razor.Css;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using Sockethead.Razor.Css;
 using Sockethead.Razor.Helpers;
 using System;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace Sockethead.Razor.Grid
@@ -22,10 +24,12 @@ namespace Sockethead.Razor.Grid
         private ColumnCssOptions CssOptions { get; } = new ColumnCssOptions();
 
         private Column<T> Column { get; }
+        private IHtmlHelper Html { get; }
 
-        internal ColumnBuilder(Column<T> column)
+        internal ColumnBuilder(Column<T> column, IHtmlHelper html)
         {
             Column = column;
+            Html = html;
         }
 
         private ColumnBuilder<T> Wrap(Action action)
@@ -88,7 +92,63 @@ namespace Sockethead.Razor.Grid
 
             return this;
         }
-        
+
+        /// <summary>
+        /// Embed a SimpleGrid inside this grid, how Meta!
+        /// </summary>
+        /// <typeparam name="TGrid">The entity type for the new SimpleGrid</typeparam>
+        /// <param name="modelBuilder">Function to return the IQueryable model for the new SimpleGrid</param>
+        /// <param name="builderAction">Action to build up the new SimpleGrid</param>
+        public ColumnBuilder<T> SimpleGrid<TGrid>(
+            Func<T, IQueryable<TGrid>> modelBuilder, 
+            Action<SimpleGrid<TGrid>> builderAction) 
+            where TGrid : class
+            => Wrap(() =>
+            {
+                DisplayAs(model =>
+                {
+                    SimpleGrid<TGrid> grid = Html.SimpleGrid(modelBuilder(model));
+                    builderAction.Invoke(grid);
+                    return grid.RenderToString();
+                })
+                .Encoded(false);
+
+            });
+
+        /// <summary>
+        /// Embed a TwoColumnGrid inside this SimpleGrid
+        /// </summary>
+        /// <param name="builderAction">An Action that takes the original model and a builder Action that 
+        /// builds up the newly created TwoColumnGrid</param>
+        public ColumnBuilder<T> TwoColumnGrid(Action<T, TwoColumnGridBuilder> builderAction)
+            => Wrap(() =>
+            {
+                DisplayAs(model =>
+                {
+                    TwoColumnGridBuilder grid = Html.TwoColumnGrid();
+                    builderAction.Invoke(model, grid);
+                    return grid.RenderToString();
+                })
+                .Encoded(false);
+            });
+
+        /// <summary>
+        /// Embed a TwoColumnGrid inside this SimpleGrid
+        /// </summary>
+        /// <typeparam name="TGrid">Type of the Model for the new TwoColumnGrid</typeparam>
+        /// <param name="gridbuilder">Function to return the Model to use</param>
+        public ColumnBuilder<T> TwoColumnGrid<TGrid>(Func<T, TGrid> gridbuilder)
+            => Wrap(() =>
+            {
+                DisplayAs(model =>
+                {
+                    TwoColumnGridBuilder grid = Html.TwoColumnGrid();
+                    grid.Add(gridbuilder(model));
+                    return grid.RenderToString();
+                })
+                .Encoded(false);
+            });
+
         /*
         public ColumnBuilder<T> AddHeaderCssClass(string cssClass) => Wrap(() => Column.HeaderDetails.CssClasses.Add(cssClass));
 
