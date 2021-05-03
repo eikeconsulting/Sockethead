@@ -11,12 +11,9 @@ namespace Sockethead.Web.Pages
 {
     public class IndexModel : PageModel
     {
-        public IndexModel(MyRepo myRepo)
+        public IndexModel()
         {
-            MyRepo = myRepo;
         }
-
-        public MyRepo MyRepo { get; }
 
         public string Message { get; set; }
 
