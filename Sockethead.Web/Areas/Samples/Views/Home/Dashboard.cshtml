@@ -1,7 +1,58 @@
-﻿
+﻿@{ 
+    ViewData["Title"] = "Dashboard";
 
-<ul>
-    <li><a href='/Samples/SimpleGrid/Dashboard'>Simple Grid</a></li>
-    <li><a href='/Samples/TwoColumnGrid/TwoColumnGrid'>Two Column Grid</a></li>
-    <li><a href='/Samples/FOrmBuilder/FormBuilder'>Form Builder</a></li>
-</ul>
+    IQueryable<SocketheadRazorFeature> features = new List<SocketheadRazorFeature>
+    {
+        new SocketheadRazorFeature
+        {
+            Name = "Simple Grid",
+            Url = "/Samples/SimpleGrid/Dashboard",
+            Description = "A full featured ASP.Net Core Razor grid control.  It is used to render this table, too!",
+        },
+        new SocketheadRazorFeature
+        {
+            Name = "Two Column Grid",
+            Url = "/Samples/TwoColumnGrid/TwoColumnGrid",
+            Description = "A two column grid for easily rendering a Description List",
+        },
+        new SocketheadRazorFeature
+        {
+            Name = "Form Builder",
+            Url = "/Samples/FormBuilder/FormBuilder",
+            Description = "An ASP.Net Core form builder.  This is in early progress, not ready for use yet!!!",
+        },
+    }
+    .AsQueryable();
+}
+
+<div class="row">
+    <div class="col-sm-6">
+
+        <p>
+            <h4>Packages</h4>
+            <ul>
+                <li>Sockethead.EFCore</li>
+                <li>Sockethead.Razor</li>
+            </ul>
+            This website mainly focues on Sockethead.Razor right now.
+            <br />
+            <br />
+            For installation and basic usage, see the <a href="https://github.com/eikeconsulting/Sockethead">ReadMe</a> on the GitHub project site.
+        </p>
+        <br />
+        <p>
+            <h4>Sockethead.Razor</h4>
+            @(await Html
+                .SimpleGrid(features)
+                .AddColumn(col => col
+                    .For(feature => feature.Name)
+                    .LinkTo(model => model.Url)
+                    .Css(css => css.Item.AddStyle("width: 150px;")))
+                .AddColumn(col => col.For(feature => feature.Description))
+                .AddCssClass("table-striped")
+                .Sortable()
+                .RenderAsync())
+        </p>
+    </div>
+</div>
+
