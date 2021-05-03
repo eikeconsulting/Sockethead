@@ -42,6 +42,8 @@ namespace Sockethead.Razor.Grid
 
         public ColumnBuilder<T> Header(string header) => Wrap(() => Column.HeaderValue = header);
 
+        public ColumnBuilder<T> DisplayAs(string value) => Wrap(() => Column.DisplayBuilder = model => value);
+
         public ColumnBuilder<T> DisplayAs(Func<T, object> displayBuilder) => Wrap(() => Column.DisplayBuilder = displayBuilder);
 
         public ColumnBuilder<T> DisplayHtmlContent(Func<T, IHtmlContent> htmlBuilder, HtmlEncoder htmlEncoder)

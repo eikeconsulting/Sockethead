@@ -1,8 +1,18 @@
-﻿@model IQueryable<Movie>
+﻿@using System.Linq; 
+@model IQueryable<Movie>
 
 @(await Html
     .SimpleGrid(Model)
     .AddColumnsFromModel()
+    
+    /*
+    .AddColumnForTwoColumnGrid(col => col
+        .Header("Cast"), 
+            (grid, movie) => grid
+                .Add(movie.Cast.ToDictionary(
+                    keySelector: c => c.Name, 
+                    elementSelector: cast => (object)cast.Character)))
+    */
     .AddColumn(col => col.DisplayAs(model => "link").LinkTo(model => "https://www.google.com"))
     .Sortable()
     .AddPager(options =>

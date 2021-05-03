@@ -17,7 +17,7 @@ namespace Sockethead.Web.Data.Entities
         [Display(AutoGenerateField = true)]
         public int? Released { get; set; }
 
-        [Display(AutoGenerateField = true)]
+        [Display(AutoGenerateField = false)]
         public ICollection<CastMember> Cast { get; set; }
     }
 
