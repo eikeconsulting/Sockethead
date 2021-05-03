@@ -27,6 +27,7 @@ namespace Sockethead.Razor.Grid
         internal Func<T, object> DisplayBuilder { get; set; } = model => null;
         internal Func<T, object> LinkBuilder { get; set; } = null;
         internal string LinkTarget { get; set; }
+        internal Css.CssBuilder LinkCssBuilder { get; set; }
         internal bool IsEncoded { get; set; } = true;
         internal string HeaderValue { get; set; } = null;
         internal int Order { get; set; } = int.MaxValue;
@@ -47,7 +48,7 @@ namespace Sockethead.Razor.Grid
                 display = HttpUtility.HtmlEncode(display);
 
             if (LinkBuilder != null)
-                display = $"<a href='{LinkBuilder.Invoke((T)model)}' target='{LinkTarget}'>{display}</a>";
+                display = $"<a {LinkCssBuilder} href='{LinkBuilder.Invoke((T)model)}' target='{LinkTarget}'>{display}</a>";
 
             return display;
         }

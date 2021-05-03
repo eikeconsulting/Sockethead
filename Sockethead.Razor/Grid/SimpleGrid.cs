@@ -70,6 +70,49 @@ namespace Sockethead.Razor.Grid
         }
 
         /// <summary>
+        /// Add a TwoColumnGrid inside a SimpleGrid
+        /// </summary>
+        public SimpleGrid<T> AddColumnForTwoColumnGrid(
+            Action<ColumnBuilder<T>> columnBuilder, 
+            Action<TwoColumnGridBuilder, T> gridBuilder)
+            => AddColumn(col =>
+            {
+                col
+                    .DisplayAs(model =>
+                    {
+                        var grid = Html.TwoColumnGrid();
+                        gridBuilder(grid, model);
+                        return grid.RenderToString();
+                    })
+                    .Encoded(false);
+
+                columnBuilder(col);
+            });
+
+        /// <summary>
+        /// Add a SimpleGrid inside a SimpleGrid
+        /// </summary>
+        public SimpleGrid<T> AddColumnForSimpleGrid<TGrid>(
+            Action<ColumnBuilder<T>> columnBuilder, 
+            Func<T, IQueryable<TGrid>> modelBuilder, 
+            Action<SimpleGrid<TGrid>> gridBuilder)
+            where TGrid : class
+            => AddColumn(col =>
+            {
+                col
+                    .DisplayAs(model =>
+                    {
+                        IQueryable<TGrid> gridModel = modelBuilder(model);
+                        var grid = Html.SimpleGrid(gridModel);
+                        gridBuilder(grid);
+                        return grid.RenderToString();
+                    })
+                    .Encoded(false);
+
+                columnBuilder(col);
+            });
+
+        /// <summary>
         /// Add columns from the model via Reflection
         /// This is a quick and dirty way to quickly build the grid out with all properties of the Model
         /// </summary>
@@ -96,6 +139,27 @@ namespace Sockethead.Razor.Grid
                     display.GetOrder().HasValue)
                     column.Order = display.GetOrder().Value;
             }
+            return this;
+        }
+
+        /// <summary>
+        /// Removed a column based on the header name
+        /// This is the "rendered" header name
+        /// </summary>
+        public SimpleGrid<T> RemoveColumn(string header)
+        {
+            for (int i = 0; i < Columns.Count; i++)
+                if (Columns[i].HeaderValue == header)
+                    return RemoveColumn(i);
+            return this;
+        }
+
+        /// <summary>
+        /// Remove column on a zero-based index
+        /// </summary>
+        public SimpleGrid<T> RemoveColumn(int ndx)
+        {
+            Columns.RemoveAt(ndx);
             return this;
         }
 
@@ -130,7 +194,7 @@ namespace Sockethead.Razor.Grid
         }
 
         /// <summary>
-        /// Extension method to SimpleGrid that adds Enumerated search support
+        /// Add search on an Enumerated field type
         /// The input value string from the user will be attempted to match the enumeration provided
         /// Then the caller provides the Search filter that handles the correponding enum value
         /// TODO: attempt to match the Display names as well!
@@ -259,7 +323,6 @@ namespace Sockethead.Razor.Grid
                 conditionalAction(this);
             return this;
         }
-
 
         private IQueryable<T> BuildQuery()
         {

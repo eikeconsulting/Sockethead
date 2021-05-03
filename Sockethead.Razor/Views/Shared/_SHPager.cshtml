@@ -5,7 +5,7 @@
     //Model.TotalItems = 12345;
     //Model.RowsPerPageLinks = new[] { 20, 50, 100, 1000 };
  }
-<nav aria-label="Pager">
+<nav aria-label="Pager" class="SimpleGridPagination">
     @if (Model.TotalItems.HasValue)
     {
     <div class="float-left">Total: @Model.TotalItems.Value.ToString("N0")</div>

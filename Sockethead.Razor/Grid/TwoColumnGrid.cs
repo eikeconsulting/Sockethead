@@ -6,6 +6,7 @@ using Sockethead.Razor.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using System.Web;
 
@@ -39,7 +40,6 @@ namespace Sockethead.Razor.Grid
         {
             Table
                 .AddClass("table")
-                //.AddClass("table-striped")
                 .AddClass("table-sm")
                 .AddStyle("table-layout:fixed;");
 
@@ -65,7 +65,7 @@ namespace Sockethead.Razor.Grid
         private TwoColumnGridOptions GridOptions { get; set; } = new TwoColumnGridOptions();
         private List<KeyValuePair<string, string>> Data { get; } = new List<KeyValuePair<string, string>>();
         private TwoColumnGridOptionsCssOptions CssOptions { get; } = new TwoColumnGridOptionsCssOptions();
-
+        private Func<KeyValuePair<string, string>, KeyValuePair<string, string>> RowProcessor { get; set; }
         public TwoColumnGridBuilder(IHtmlHelper html)
         {
             Html = html;
@@ -73,28 +73,96 @@ namespace Sockethead.Razor.Grid
 
         private static string Encode(string s) => HttpUtility.HtmlEncode(s);
 
-        public TwoColumnGridBuilder Add<T>(Dictionary<string, T> dictionary)
+        /// <summary>
+        /// Helper class to add rows via Expressions for a Model
+        /// </summary>
+        public class TwoColumnGridModelBuilder<TModel>
         {
-            foreach (var kvp in dictionary)
+            private TModel Model { get; }
+            private TwoColumnGridBuilder GridBuilder { get; }
+
+            internal TwoColumnGridModelBuilder(TModel model, TwoColumnGridBuilder gridBuilder)
             {
-                string value = kvp.Value == null
-                    ? ""
-                    : kvp.Value.ToString();
-                Data.Add(new KeyValuePair<string, string>(kvp.Key, Encode(value)));
+                Model = model;
+                GridBuilder = gridBuilder;
             }
-            return this;
+
+            /// <summary>
+            /// Add a row to the TwoColumnGrid via an Expression
+            /// </summary>
+            public TwoColumnGridModelBuilder<TModel> Add(Expression<Func<TModel, object>> expression)
+            {
+                string value = expression.Compile().Invoke(Model).ToString();
+                
+                //if (GridBuilder.Html is IHtmlHelper<TModel> html)
+                //    value = html.DisplayFor(expression).ToString() + " boom";
+
+                GridBuilder.Add(expression.FriendlyName(), value);
+                return this;
+            }
         }
 
+        /// <summary>
+        /// Add all public properties from the Model into the TwoColumnGrid 
+        /// </summary>
         public TwoColumnGridBuilder Add<T>(T model)
         {
             return Add(ExpressionHelpers.ModelToDictionary(model));
         }
 
+        /// <summary>
+        /// Add a Model to the TwoColumnGrid and specify exactly which properties to include via a builder callback
+        /// </summary>
+        public TwoColumnGridBuilder Add<TModel>(TModel model, Action<TwoColumnGridModelBuilder<TModel>> builderAction)
+        {
+            builderAction(new TwoColumnGridModelBuilder<TModel>(model, this));
+            return this;
+        }
+
+        /// <summary>
+        /// Add all KeyValuePairs in a dictionary to a TwoColumnGrid
+        /// </summary>
+        public TwoColumnGridBuilder Add<T>(Dictionary<string, T> dictionary)
+        {
+            foreach (var kvp in dictionary)
+                Data.Add(new KeyValuePair<string, string>(kvp.Key, Encode(kvp.Value == null ? "" : kvp.Value.ToString())));
+            return this;
+        }
+
+        /// <summary>
+        /// Add a manually specified Label/Value pair to a TwoColumnGrid
+        /// </summary>
         public TwoColumnGridBuilder Add(string label, string value, bool encode = true)
         {
-            if (encode)
-                value = Encode(value);
-            Data.Add(new KeyValuePair<string, string>(label, value));
+            Data.Add(new KeyValuePair<string, string>(label, encode ? Encode(value) : value));
+            return this;
+        }
+
+        /// <summary>
+        /// Add a TwoColumnGrid inside a TwoColumnGrid
+        /// </summary>
+        public TwoColumnGridBuilder AddTwoColumnGrid(string label, Action<TwoColumnGridBuilder> gridBuilder)
+        {
+            var grid = Html.TwoColumnGrid();
+            gridBuilder(grid);
+            Add(label, grid.RenderToString(), encode: false);
+            return this;
+        }
+
+        /// <summary>
+        /// Add a SimpleGrid inside a TwoColumnGrid
+        /// </summary>
+        public TwoColumnGridBuilder AddSimpleGrid<T>(string label, IQueryable<T> model, Action<SimpleGrid<T>> gridBuilder) where T : class
+        {
+            var grid = Html.SimpleGrid(model);
+            gridBuilder(grid);
+            Add(label, grid.RenderToString(), encode: false);
+            return this;
+        }
+
+        public TwoColumnGridBuilder AddRowProcessor(Func<KeyValuePair<string, string>, KeyValuePair<string, string>> processor)
+        {
+            RowProcessor = processor;
             return this;
         }
 
@@ -103,7 +171,6 @@ namespace Sockethead.Razor.Grid
             optionsSetter(GridOptions);
             return this;
         }
-
 
         public TwoColumnGridBuilder Css(Action<TwoColumnGridOptionsCssOptions> optionsSetter) 
         {
@@ -118,13 +185,21 @@ namespace Sockethead.Razor.Grid
                 { "CssOptions", CssOptions },
             };
 
-        private List<KeyValuePair<string, string>> BuildGridData() 
-            => GridOptions.AllowDuplicates
+        private List<KeyValuePair<string, string>> BuildGridData()
+        {
+            var data = GridOptions.AllowDuplicates
                 ? Data
                 : Data
                     .GroupBy(kvp => kvp.Key)
-                    .Select(x => new KeyValuePair<string, string>(x.Key, x.First().Value))
-                    .ToList();
+                    .Select(x => new KeyValuePair<string, string>(x.Key, x.First().Value));
+
+            if (RowProcessor != null)
+                data = data
+                    .Select(RowProcessor)
+                    .Where(d => !string.IsNullOrEmpty(d.Key));
+
+            return data.ToList();
+        }
 
         public IHtmlContent Render()
             => Html.Partial(
@@ -143,6 +218,5 @@ namespace Sockethead.Razor.Grid
                 partialViewName: "_SHTwoColumnGrid",
                 model: BuildGridData(),
                 viewData: BuildViewData());
-
     }
 }

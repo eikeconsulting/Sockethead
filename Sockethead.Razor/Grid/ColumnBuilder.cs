@@ -4,6 +4,8 @@ using Sockethead.Razor.Helpers;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
+using Microsoft.AspNetCore.Html;
+using System.Text.Encodings.Web;
 
 namespace Sockethead.Razor.Grid
 {
@@ -42,13 +44,31 @@ namespace Sockethead.Razor.Grid
 
         public ColumnBuilder<T> DisplayAs(Func<T, object> displayBuilder) => Wrap(() => Column.DisplayBuilder = displayBuilder);
 
+        public ColumnBuilder<T> DisplayHtmlContent(Func<T, IHtmlContent> htmlBuilder, HtmlEncoder htmlEncoder)
+            => Wrap(() =>
+            {
+                Column.DisplayBuilder = model =>
+                {
+                    var content = htmlBuilder(model);
+                    var stringWriter = new System.IO.StringWriter();
+                    content.WriteTo(stringWriter, htmlEncoder);
+                    return stringWriter.ToString();
+                };
+
+                Encoded(false);
+            });
+
         public ColumnBuilder<T> Encoded(bool isEncoded) => Wrap(() => Column.IsEncoded = isEncoded);
 
-        public ColumnBuilder<T> LinkTo(Func<T, string> linkBuilder, string target = "_self")
+        public ColumnBuilder<T> LinkTo(Func<T, string> linkBuilder, string target = "_self", Action<CssBuilder> css = null)
             => Wrap(() =>
             {
                 Column.LinkBuilder = linkBuilder;
                 Column.LinkTarget = target;
+                var cssBuilder = new CssBuilder();
+                css?.Invoke(cssBuilder);
+                Column.LinkCssBuilder = cssBuilder;
+                return;
             });
 
         public ColumnBuilder<T> Sortable(bool enable = true, SortOrder sortOrder = SortOrder.Ascending)
@@ -82,7 +102,6 @@ namespace Sockethead.Razor.Grid
                 DisplayAs(model => Column.CompiledExpression.Invoke(model));
             });
 
-
         public ColumnBuilder<T> Css(Action<ColumnCssOptions> cssOptionsSetter)
         {
             cssOptionsSetter(CssOptions);
@@ -92,6 +111,17 @@ namespace Sockethead.Razor.Grid
 
             return this;
         }
+
+        /// <summary>
+        /// Perform column building operations only if a condition is met
+        /// </summary>
+        public ColumnBuilder<T> If(bool condition, Action<ColumnBuilder<T>> conditionalAction)
+        {
+            if (condition)
+                conditionalAction(this);
+            return this;
+        }
+
 
         /// <summary>
         /// Embed a SimpleGrid inside this grid, how Meta!
@@ -112,7 +142,7 @@ namespace Sockethead.Razor.Grid
             .Encoded(false);
 
         /// <summary>
-        /// Embed a TwoColumnGrid inside this SimpleGrid
+        /// Embed and build a TwoColumnGrid inside this SimpleGrid
         /// </summary>
         /// <param name="builderAction">An Action that takes the original model and a builder Action that 
         /// builds up the newly created TwoColumnGrid</param>
@@ -126,34 +156,18 @@ namespace Sockethead.Razor.Grid
             .Encoded(false);
 
         /// <summary>
-        /// Embed a TwoColumnGrid inside this SimpleGrid
+        /// Embed a TwoColumnGrid inside this SimpleGrid from a Model
         /// </summary>
         /// <typeparam name="TGrid">Type of the Model for the new TwoColumnGrid</typeparam>
-        /// <param name="gridbuilder">Function to return the Model to use</param>
-        public ColumnBuilder<T> TwoColumnGrid<TGrid>(Func<T, TGrid> gridbuilder)
-            => DisplayAs(model =>
-            {
-                TwoColumnGridBuilder grid = Html.TwoColumnGrid();
-                grid.Add(gridbuilder(model));
-                return grid.RenderToString();
-            })
-            .Encoded(false);
+        /// <param name="gridModelBuilder">Function to return the Model to use</param>
+        public ColumnBuilder<T> TwoColumnGrid<TGrid>(Func<T, TGrid> gridModelBuilder)
+            => TwoColumnGrid((model, grid) => grid.Add(gridModelBuilder(model)));
 
         /// <summary>
         /// Render a DateTime as a time html tag to be processed on the client side
         /// </summary>
         public ColumnBuilder<T> ClientTime(Func<T, DateTime?> timeBuilder)
-            => DisplayAs(model => TimeHelpers.ClientTimeHtml(timeBuilder(model)))
+            => DisplayAs(model => Html.ClientTime(timeBuilder(model)))
             .Encoded(false);
-
-        /*
-        public ColumnBuilder<T> AddHeaderCssClass(string cssClass) => Wrap(() => Column.HeaderDetails.CssClasses.Add(cssClass));
-
-        public ColumnBuilder<T> AddHeaderCssStyle(string cssStyle) => Wrap(() => Column.HeaderDetails.CssStyles.Add(cssStyle));
-
-        public ColumnBuilder<T> AddItemCssClass(string cssClass) => Wrap(() => Column.CssClasses.Add(cssClass));
-
-        public ColumnBuilder<T> AddItemCssStyle(string cssStyle) => Wrap(() => Column.CssStyles.Add(cssStyle));
-        */
     }
 }

@@ -1,0 +1,41 @@
+﻿@model IQueryable<Movie>
+
+<div class="row">
+    <div class="col-6">
+
+@(await Html
+    .SimpleGrid(Model.Take(3))
+    .AddColumnsFromModel()
+    .RenderAsync())
+
+    </div>
+</div>
+
+<hr />
+
+<div class="row">
+    <div class="col-6">
+
+@(await Html
+    .SimpleGrid(Model.Take(3))
+    .AddColumnsFromModel()
+    .RemoveColumn(1)
+    .RenderAsync())
+
+    </div>
+</div>
+
+<hr />
+
+<div class="row">
+    <div class="col-6">
+
+@(await Html
+    .SimpleGrid(Model.Take(3))
+    .AddColumnsFromModel()
+    .RemoveColumn("Movie Director")
+    .RenderAsync())
+
+    </div>
+</div>
+

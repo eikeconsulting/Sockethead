@@ -8,6 +8,7 @@ namespace Sockethead.Razor.Grid
 {
     public class State
     {
+        public string BaseUrl { get; set; } = null;
         public int PageNum { get; set; } = 1;
         public int? RowsPerPage { get; set; } = null;
 
@@ -23,6 +24,8 @@ namespace Sockethead.Razor.Grid
 
             var query = Request.QueryParamDictionary();
 
+            BaseUrl = query.ContainsKey(BaseUrlName) ? query[BaseUrlName] : null;
+
             PageNum = query.ContainsKey(PageNumName) && int.TryParse(query[PageNumName], out int page) ? page : 1;
             RowsPerPage = query.ContainsKey(RowsPerPageName) && int.TryParse(query[RowsPerPageName], out int rpp) ? rpp : null;
 
@@ -32,6 +35,8 @@ namespace Sockethead.Razor.Grid
             SearchQuery = query.ContainsKey(SearchQueryName) ? query[SearchQueryName] : null;
             SearchNdx = query.ContainsKey(SearchNdxName) && int.TryParse(query[SearchNdxName], out int searchNdx) ? searchNdx : 0;
         }
+
+        private const string BaseUrlName = "grid-base-url";
 
         private const string PageNumName = "grid-page";
         private const string RowsPerPageName = "grid-rows-per-page";
@@ -77,6 +82,13 @@ namespace Sockethead.Razor.Grid
         public string BuildResetUrl()
         {
             var q = EmptyGridParameters();
+
+            if (!string.IsNullOrEmpty(BaseUrl))
+            {
+                string separator = BaseUrl.Contains("?") ? "&" : "?";
+                return $"{BaseUrl}{separator}{string.Join("&", q.Select(kvp => $"{kvp.Key}={System.Web.HttpUtility.UrlEncode(kvp.Value)}"))}";
+            }
+
             return Request.UrlUpdateQuery(q);
         }
 

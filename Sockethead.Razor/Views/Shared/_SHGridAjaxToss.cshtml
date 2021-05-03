@@ -1,0 +1,65 @@
+﻿@model Sockethead.Razor.Grid.SimpleGridAjaxViewModel
+@using Microsoft.AspNetCore.Http.Extensions
+
+@{
+    var request = Html.ViewContext.HttpContext.Request;
+    string originalPageUrl = System.Web.HttpUtility.UrlEncode(request.GetEncodedUrl());
+}
+
+<div id="@Model.Id">
+</div>
+
+<script type="text/javascript">
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        $(document).ready(function () {
+
+            var initialUrl = '@Model.Endpoint';
+
+            initialUrl += (initialUrl.includes('?') ? '&' : '?');
+            initialUrl += 'grid-base-url=@originalPageUrl';
+
+            console.log(initialUrl);
+
+            $("#@Model.Id").load(initialUrl);
+
+            document.addEventListener('click', function (event) {
+
+                // event.target.baseURI <== original page w/parameters
+                console.log(event)
+
+                var href = event.target.href;
+                if (!href)
+                    return;
+
+                console.log('Is HREF')
+
+                var target = $(event.target);
+                if (!target.parents('#@Model.Id').length)
+                    return;
+
+                if (!target.parents('.SimpleGridPagination').length &&
+                    !target.parents('.SimpleGridSortNav').length)
+                    return;
+
+                console.log('Is GridPagination')
+
+                const baseUrl = initialUrl.split('?')[0];
+                const url = new URL(href);
+
+                var targetUrl = baseUrl + url.search;
+
+                console.log(targetUrl)
+
+                event.preventDefault();
+
+                $("#@Model.Id").load(targetUrl);
+
+            }, false);
+
+        });
+    });
+
+</script>
+

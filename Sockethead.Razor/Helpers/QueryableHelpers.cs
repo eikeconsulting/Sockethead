@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Sockethead.Razor.Helpers
 {
-    public static class QuerableHelpers
+    public static class QueryableHelpers
     {
         public static IQueryable<T> NoResults<T>(this IQueryable<T> source) where T : class
             => source.Where(s => false);

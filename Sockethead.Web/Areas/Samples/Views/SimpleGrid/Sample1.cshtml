@@ -1,9 +1,35 @@
 ﻿@model IQueryable<SampleModel>
 
+@{ int i = 10; }
+
 @(await Html
     .SimpleGrid(Model)
-    .AddColumnsFromModel()
-    .OrderColumns()
+    //.AddColumnsFromModel()
+    //.OrderColumns()
+    .AddColumnFor(model => model.SampleEnum)
+    .AddColumn(column => column
+        .Header("Enum DisplayFor")
+        .DisplayAs(model =>
+        {
+            var content = Html.DisplayFor(modelQueryable => model.SampleEnum);
+            var stringWriter = new System.IO.StringWriter();
+            content.WriteTo(stringWriter, HtmlEncoder);
+            return stringWriter.ToString();
+        }))
+
+    .AddColumn(column => column
+        .Header("Enum DisplayFor")
+        .DisplayHtmlContent(model => Html.DisplayFor(modelQueryable => model.SampleEnum), HtmlEncoder))
+
+    .AddColumn(column => column
+        .Header("First Name")
+        .DisplayHtmlContent(model => Html.TextBoxFor(modelQueryable => model.First, null, new { id = $"First_{i++}", @class = "form-control" }), HtmlEncoder))
+
+    .AddColumn(column => column
+        .Header("First Name")
+        .Encoded(false)
+        .Sortable(false))
+
     .AddColumn(column => column.For(model => model.First).Sortable(false))
     .AddColumn(column => column.Header("First").DisplayAs(model => model.First).SortableBy(model => model.First))
     .AddColumn(column => column.Header("Full Name").DisplayAs(model => $"{model.Last}, {model.First}"))

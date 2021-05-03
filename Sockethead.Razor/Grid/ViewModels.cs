@@ -24,6 +24,13 @@ namespace Sockethead.Razor.Grid
         public ISimpleGridColumn[] Columns { get; set; }
     }
 
+    public class SimpleGridAjaxViewModel
+    {
+        public string Endpoint { get; set; }
+        public string Id { get; set; }
+        public bool DisplaySearchField { get; set; }
+    }
+
     public class GridCssViewModel
     {
         public string TableCss { get; set; }

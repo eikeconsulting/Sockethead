@@ -1,0 +1,75 @@
+﻿@model Sockethead.Razor.Grid.SimpleGridAjaxViewModel
+@{ 
+    string gridId = $"{Model.Id}-grid";
+    string findId = $"{Model.Id}-find";
+    string initialUrl = $"{Model.Endpoint}";
+}
+
+@if (Model.DisplaySearchField)
+{
+<form class="form-inline">
+    <div class="input-group mb-3 mr-sm-3">
+        <input id="@findId" type="text" class="form-control" placeholder="Search">
+    </div>
+</form>
+}
+
+<div id="@gridId">
+</div>
+
+<script type="text/javascript">
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        $(document).ready(function () {
+
+            var currentUrl = '@Model.Endpoint';
+            $("#@gridId").load(currentUrl);
+
+            $("#@findId").keyup(function () {
+
+                const query = $("#@findId").val();
+                const baseUrl = currentUrl.split('?')[0];
+                console.log(currentUrl)
+                const url = new URL('http://www.placeholder.com' + currentUrl);
+                if (query) {
+                    url.searchParams.set('grid-search-query', query);
+                    url.searchParams.set('grid-search-ndx', 1);
+                }
+                else {
+                    url.searchParams.delete('grid-search-query');
+                    url.searchParams.delete('grid-search-ndx');
+                }
+                url.searchParams.set('grid-page', 1);
+                currentUrl = baseUrl + url.search;
+                $("#@gridId").load(currentUrl);
+
+            });
+
+            document.addEventListener('click', function (event) {
+
+                var href = event.target.href;
+                if (!href)
+                    return;
+
+                var target = $(event.target);
+                if (!target.parents('#@gridId').length)
+                    return;
+
+                if (!target.parents('.SimpleGridPagination').length &&
+                    !target.parents('.SimpleGridSortNav').length)
+                    return;
+
+                const baseUrl = currentUrl.split('?')[0];
+                const url = new URL(href);
+                currentUrl = baseUrl + url.search;
+                event.preventDefault();
+                $("#@gridId").load(currentUrl);
+
+            }, false);
+
+        });
+    });
+
+</script>
+

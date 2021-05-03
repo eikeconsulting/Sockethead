@@ -4,7 +4,7 @@
     <TargetFramework>net5.0</TargetFramework>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.1.1</Version>
+    <Version>0.1.3</Version>
     <Authors>Randall Eike</Authors>
     <Company>Eike Consulting, LLC</Company>
     <Description>Razor Utilities for .Net Core 5.
@@ -15,7 +15,9 @@
     <RepositoryType>GIT</RepositoryType>
     <PackageTags>ASP.Net Core, MVC, Razor, Grid Control</PackageTags>
     <Copyright>Copyright (c) 2021</Copyright>
-    <PackageReleaseNotes>Simple Grid bug fixes.</PackageReleaseNotes>
+    <PackageReleaseNotes>- AJAX fast find support for SimpleGrid
+- Improvements to SimpleGrid and TwoColumnGrid
+</PackageReleaseNotes>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
@@ -27,6 +29,10 @@
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="System.Linq.Expressions" Version="4.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Mvc\" />
   </ItemGroup>
   
 

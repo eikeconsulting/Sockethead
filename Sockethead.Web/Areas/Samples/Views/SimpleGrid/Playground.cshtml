@@ -1,4 +1,22 @@
 ﻿@model IQueryable<Movie>
+
+
+<h4>Form</h4>
+<form method="post">
+    @(await Html
+    .SimpleGrid(Model)
+    .AddColumn(col => col
+        .DisplayAs(model => $"<input name='Names' type='checkbox' value='{model.Name}' />")
+        .Encoded(false))
+    .AddColumnsFromModel()
+    .RenderAsync()
+)
+    <button class="btn btn-primary">Submit</button>
+</form>
+
+<br />
+
+
 @(await Html
     .SimpleGrid(Model)
     .AddColumnsFromModel()
@@ -51,18 +69,18 @@
 <hr />
 
 @(await Html
-    .SimpleGrid(Model)
+    .SimpleGrid(Model.Take(2))
     .AddColumnFor(model => model.Name)
     .AddColumn(column =>  column
         .Header("TwoColumnGrid")
         .Encoded(false)
         .DisplayAs(model => Html
             .TwoColumnGrid()
-            .Add("Name", model.Name)
+            .Add("Name 1", model.Name)
             .Add(model)
             .Add(
                 label: $"List of all movies inside the movie {model.Name}",
-                value: Html.SimpleGrid(Model)
+                value: Html.SimpleGrid(Model.Take(4))
                     .AddColumnFor(model => model.Name)
                     .AddColumnFor(model => model.Genre)
                     .AddColumnFor(model => model.Director)
@@ -71,3 +89,22 @@
             .RenderToString()))
     .RenderAsync()
 )
+
+<hr />
+
+@(Html
+    .SimpleGrid(Model.Take(2))
+    .AddColumnFor(model => model.Name)
+    .AddColumnForTwoColumnGrid(column =>  column.Header("TwoColumnGrid"), 
+        (gridBuilder, model) => 
+            gridBuilder
+                .Add("Name 1", model.Name)
+                .Add(model)
+                .AddSimpleGrid(
+                    label: $"List of all movies inside the movie {model.Name}",
+                    model: Model.Take(4),
+                    gridBuilder: grid => grid
+                        .AddColumnFor(model => model.Name)
+                        .AddColumnFor(model => model.Genre)
+                        .AddColumnFor(model => model.Director)))
+    .Render())

@@ -1,0 +1,19 @@
+﻿@model IQueryable<Movie>
+
+@(await Html
+    .SimpleGrid(Model)
+    .AddColumnsFromModel()
+    .AddColumn(col => col.DisplayAs(model => "link").LinkTo(model => "https://www.google.com"))
+    .Sortable()
+    .AddPager(options =>
+    {
+        options.RowsPerPage = 10;
+        options.RowsPerPageOptions = new[] { 3, 5, 10, 50 };
+    })
+    .AddSearch("Name", (source, query) => source.Where(movie => movie.Name.Contains(query, StringComparison.OrdinalIgnoreCase)))
+    .SetOptions(options =>
+    {
+        options.SearchViewName = null;
+        //options.MaxRows = 10;
+    })
+    .RenderAsync())

@@ -17,27 +17,31 @@
     }
 }
 <table @Html.Raw(Model.Css.TableCss)>
-    <tr @Html.Raw(Model.Css.HeaderCss)>
-        @foreach (var col in Model.Columns)
+    <thead class="SimpleGridSortNav">
+        <tr @Html.Raw(Model.Css.HeaderCss)>
+            @foreach (var col in Model.Columns)
+            {
+                <th @Html.Raw(col.HeaderCss)>@Html.Raw(RenderLabel(col.HeaderDetails))</th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Rows.Any())
         {
-            <th @Html.Raw(col.HeaderCss)>@Html.Raw(RenderLabel(col.HeaderDetails))</th>
+            @foreach (object row in Model.Rows)
+            {
+                <tr @Html.Raw(Model.Css.RowCss) @Html.Raw(Model.GetRowCss(row))>
+                    @foreach (var col in Model.Columns)
+                    {
+                        <td @Html.Raw(col.ItemCss)>@Html.Raw(col.DisplayRender(row))</td>
+                    }
+                </tr>
+            }
         }
-    </tr>
-    @if (Model.Rows.Any())
-    {
-        @foreach (object row in Model.Rows)
+        else
         {
-            <tr @Html.Raw(Model.Css.RowCss) @Html.Raw(Model.GetRowCss(row))>
-                @foreach (var col in Model.Columns)
-                {
-                    <td @Html.Raw(col.ItemCss)>@Html.Raw(col.DisplayRender(row))</td>
-                }
-            </tr>
+            <tr><td colspan="@Model.Columns.Count()" class="text-center"><br />No matching records.<br /></td></tr>
         }
-    }
-    else
-    {
-        <tr><td colspan="@Model.Columns.Count()" class="text-center"><br />No matching records.<br /></td></tr>
-    }
+    </tbody>
 </table>
 

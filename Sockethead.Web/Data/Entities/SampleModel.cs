@@ -6,7 +6,13 @@ namespace Sockethead.Web.Data.Entities
 {
     public enum SampleEnum
     {
-        Zero, One, Two, Three, Four
+        [Display(Name = "Zilch")]
+        Zero, 
+        
+        One, Two, Three, Four, 
+        
+        [Display(Name = "Two Parts")]
+        TwoParts,
     }
 
     public class SampleModel
@@ -50,7 +56,7 @@ namespace Sockethead.Web.Data.Entities
 
         private static bool GetRandomBool() => Random.NextDouble() > 0.5;
 
-        private static SampleEnum GetRandomEnum() => (SampleEnum)Random.Next((int)SampleEnum.Zero, (int)SampleEnum.Four + 1);
+        private static SampleEnum GetRandomEnum() => (SampleEnum)Random.Next((int)SampleEnum.Zero, (int)SampleEnum.TwoParts + 1);
 
         public override string ToString() => $"Sample Data for {First} {Last}, {JobTitle}";
     }

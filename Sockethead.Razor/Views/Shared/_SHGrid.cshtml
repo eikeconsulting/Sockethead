@@ -5,7 +5,7 @@
     <partial name="@Model.PagerOptions.PagerViewName" model="Model.PagerModel" />
 }
 
-@if (Model.SimpleGridSearchViewModel != null)
+@if (Model.SimpleGridSearchViewModel != null && Model.Options.SearchViewName != null)
 {
     <partial name="@Model.Options.SearchViewName" model="Model.SimpleGridSearchViewModel" />
 }

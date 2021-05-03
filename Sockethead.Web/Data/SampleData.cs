@@ -7,7 +7,19 @@ namespace Sockethead.Web.Data
     {
         public static List<Movie> Movies { get; } = new List<Movie>
         {
-            new Movie { Name = "Star Wars", Director = "George Lucas", Genre = "Sci-Fi", Released = 1997 },
+            new Movie { Name = "Star Wars", Director = "George Lucas", Genre = "Sci-Fi", Released = 1997, 
+                Cast = new List<CastMember>
+                {
+                    new CastMember { Name = "Mark Hamill", Character = "Luke Skywalker" },
+                    new CastMember { Name = "Harrison Ford", Character = "Han Solo" },
+                    new CastMember { Name = "Carrie Fisher", Character = "Princess Leia Organa" },
+                    new CastMember { Name = "Alec Guinness", Character = "Ben Obi-Wan Kenobi" },
+                    new CastMember { Name = "Anthony Daniels", Character = "C-3PO" },
+                    new CastMember { Name = "Kenny Baker", Character = "R2-D2" },
+                    new CastMember { Name = "Peter Mayhew", Character = "Chewbacca" },
+                    new CastMember { Name = "David Prowse", Character = "Darth Vader" },
+                }
+            },
             new Movie { Name = "Terminator", Genre = "Action", Director = "James Cameron", Released = 1984 },
             new Movie { Name = "Terminator 2: Judgement Day", Genre = "Action", Director = "James Cameron", Released = 1991 },
             new Movie { Name = "Wonder Woman 1984", Genre = "Action", Director = "", Released = 2020 },
