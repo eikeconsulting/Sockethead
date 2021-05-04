@@ -101,6 +101,9 @@ namespace Sockethead.EFCore.AuditLogging
         {
             try
             {
+                if (entity == null)
+                    return "";
+
                 object o = entity
                     .GetType()
                     .GetProperty(name)
