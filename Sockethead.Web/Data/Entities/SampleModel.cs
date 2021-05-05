@@ -56,7 +56,7 @@ namespace Sockethead.Web.Data.Entities
 
         private static bool GetRandomBool() => Random.NextDouble() > 0.5;
 
-        private static SampleEnum GetRandomEnum() => (SampleEnum)Random.Next((int)SampleEnum.Zero, (int)SampleEnum.TwoParts + 1);
+        private static SampleEnum GetRandomEnum() => (SampleEnum)Random.Next((int)SampleEnum.Zero, (int)SampleEnum.TwoParts + 4);
 
         public override string ToString() => $"Sample Data for {First} {Last}, {JobTitle}";
     }

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <Version>0.0.3</Version>
+    <Version>0.0.4</Version>
     <Authors>Randall Eike</Authors>
     <Company>Eike Consulting, LLC</Company>
     <Product>Sockethead.EFCore</Product>
@@ -13,7 +13,7 @@
     <PackageProjectUrl>https://github.com/eikeconsulting/Sockethead</PackageProjectUrl>
     <RepositoryUrl>https://github.com/eikeconsulting/Sockethead</RepositoryUrl>
     <PackageTags>Entity Framework Core, Audit Log, Utilities</PackageTags>
-    <PackageReleaseNotes>Bug fixes for AuditLogger.</PackageReleaseNotes>
+    <PackageReleaseNotes>Fixed bug in AuditLog generator for unchanged properties.</PackageReleaseNotes>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>

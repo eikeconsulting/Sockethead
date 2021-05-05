@@ -40,12 +40,40 @@ namespace Sockethead.Razor.Grid
             return this;
         }
 
+        /// <summary>
+        /// Specify the Header for the Column.
+        /// The Header is also set by the "For(model => model.MyProp)" as well, 
+        /// so this isn't necessary in most cases
+        /// </summary>
+        /// <param name="header"></param>
+        /// <returns></returns>
         public ColumnBuilder<T> Header(string header) => Wrap(() => Column.HeaderValue = header);
 
-        public ColumnBuilder<T> DisplayAs(string value) => Wrap(() => Column.DisplayBuilder = model => value);
+        /// <summary>
+        /// Generate the Header from an Expression
+        /// </summary>
+        public ColumnBuilder<T> HeaderAs(Expression<Func<T, object>> expression) => Wrap(() => Header(expression.FriendlyName()));
 
+        /// <summary>
+        /// Display a static value for this column for all rows 
+        /// </summary>
+        public ColumnBuilder<T> Display(string value) => Wrap(() => Column.DisplayBuilder = model => value);
+
+        /// <summary>
+        /// What to render
+        /// </summary>
         public ColumnBuilder<T> DisplayAs(Func<T, object> displayBuilder) => Wrap(() => Column.DisplayBuilder = displayBuilder);
 
+        /// <summary>
+        /// Render an Enum Expression with an Enum value's Display.Name Attribute
+        /// </summary>
+        public ColumnBuilder<T> DisplayAsEnum<TEnum>(Func<T, TEnum> displayBuilder) where TEnum : struct, Enum
+            => Wrap(() => Column.DisplayBuilder = model => EnumHelper<TEnum>.GetDisplayValueSafe(displayBuilder(model)));
+
+        /// <summary>
+        /// Display IHtmlContent in the column.
+        /// This can be used in conjunction with Html.DisplayFor (see example)
+        /// </summary>
         public ColumnBuilder<T> DisplayHtmlContent(Func<T, IHtmlContent> htmlBuilder, HtmlEncoder htmlEncoder)
             => Wrap(() =>
             {
@@ -60,8 +88,18 @@ namespace Sockethead.Razor.Grid
                 Encoded(false);
             });
 
+        /// <summary>
+        /// Html encode
+        /// </summary>
         public ColumnBuilder<T> Encoded(bool isEncoded) => Wrap(() => Column.IsEncoded = isEncoded);
 
+        /// <summary>
+        /// Create a link
+        /// </summary>
+        /// <param name="linkBuilder">Build the destination URL</param>
+        /// <param name="target">target (e.g. _self, or _blank)</param>
+        /// <param name="css">CSS to apply to the link</param>
+        /// <returns></returns>
         public ColumnBuilder<T> LinkTo(Func<T, string> linkBuilder, string target = "_self", Action<CssBuilder> css = null)
             => Wrap(() =>
             {
@@ -73,20 +111,25 @@ namespace Sockethead.Razor.Grid
                 return;
             });
 
+        /// <summary>
+        /// Make the entire table sortable by those columns that are Sortable
+        /// Individual Columns are sortable if they have an Expression and aren't otherwise sort disabled
+        /// </summary>
         public ColumnBuilder<T> Sortable(bool enable = true, SortOrder sortOrder = SortOrder.Ascending)
             => Wrap(() =>
             {
+                if (enable && Column.Sort.Expression == null)
+                    throw new ArgumentException("You must call For() or SortableBy() with a valid Expression to enable Sorting on this Column.");
+
                 Column.Sort.IsEnabled = enable;
-
-                if (enable && Column.Expression == null)
-                    throw new ArgumentException("You must pass an Expression into sort if not already specified.");
-
-                if (!enable)
-                    return;
-
-                SortableBy(Column.Expression, sortOrder);
+                Column.Sort.SortOrder = sortOrder;
             });
 
+        /// <summary>
+        /// Specify the expression to sort the column by
+        /// By default calling "For(model => model.MyProp)" sets the Sort Expression as well, 
+        /// so in most cases this isn't needed.
+        /// </summary>
         public ColumnBuilder<T> SortableBy(Expression<Func<T, object>> expression, SortOrder sortOrder = SortOrder.Ascending)
             => Wrap(() =>
             {
@@ -95,15 +138,24 @@ namespace Sockethead.Razor.Grid
                 Column.Sort.SortOrder = sortOrder;
             });
 
+        /// <summary>
+        /// Specify an Expression for the column which initializes the Column:
+        /// 1. Header (via the Expression)
+        /// 2. Sort Expression
+        /// 3. DisplayAs Expression
+        /// </summary>
         public ColumnBuilder<T> For(Expression<Func<T, object>> expression)
             => Wrap(() =>
             {
-                Column.Expression = expression;
-                Header(expression.FriendlyName());
+                HeaderAs(expression);
+                SortableBy(expression);
                 Column.CompiledExpression = expression.Compile();
-                DisplayAs(model => Column.CompiledExpression.Invoke(model));
+                DisplayAs(model => Column.CompiledExpression(model));
             });
 
+        /// <summary>
+        /// Specify CSS options for the Grid
+        /// </summary>
         public ColumnBuilder<T> Css(Action<ColumnCssOptions> cssOptionsSetter)
         {
             cssOptionsSetter(CssOptions);
@@ -123,7 +175,6 @@ namespace Sockethead.Razor.Grid
                 conditionalAction(this);
             return this;
         }
-
 
         /// <summary>
         /// Embed a SimpleGrid inside this grid, how Meta!

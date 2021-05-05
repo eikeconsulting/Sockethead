@@ -7,15 +7,10 @@
     //.AddColumnsFromModel()
     //.OrderColumns()
     .AddColumnFor(model => model.SampleEnum)
+
     .AddColumn(column => column
-        .Header("Enum DisplayFor")
-        .DisplayAs(model =>
-        {
-            var content = Html.DisplayFor(modelQueryable => model.SampleEnum);
-            var stringWriter = new System.IO.StringWriter();
-            content.WriteTo(stringWriter, HtmlEncoder);
-            return stringWriter.ToString();
-        }))
+        .Header("DisplayEnum")
+        .DisplayAsEnum(model => model.SampleEnum))
 
     .AddColumn(column => column
         .Header("Enum DisplayFor")

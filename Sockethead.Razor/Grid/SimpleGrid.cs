@@ -36,6 +36,7 @@ namespace Sockethead.Razor.Grid
         private List<Search<T>> SimpleGridSearches { get; } = new List<Search<T>>();
         private GridCssOptions CssOptions { get; } = new GridCssOptions();
         private List<RowModifier> RowModifiers { get; } = new List<RowModifier>();
+        private bool IsSortable { get; set; } = false;
 
         private class RowModifier
         {
@@ -259,22 +260,22 @@ namespace Sockethead.Razor.Grid
         /// </summary>
         public SimpleGrid<T> Sortable(bool enable = true)
         {
+            IsSortable = enable;
+            /*
             foreach (var column in Columns)
             {
                 var builder = new ColumnBuilder<T>(column, Html);
 
                 if (enable)
                 {
-                    if (column.Sort.IsEnabled &&
-                        column.Sort.Expression == null &&
-                        column.Expression != null)
+                    if (column.Sort.IsEnabled && column.Sort.Expression != null)
                         builder.Sortable(true);
                 }
                 else
                 {
                     builder.Sortable(false);
                 }
-            }
+            }*/
             return this;
         }
 
@@ -337,7 +338,7 @@ namespace Sockethead.Razor.Grid
             // apply sort(s) to query
             var sortColumn = State.SortColumn > 0 && State.SortColumn <= Columns.Count ? Columns[State.SortColumn - 1] : null;
             var sorts = new List<Sort<T>>();
-            if (sortColumn != null && sortColumn.Sort.IsActive)
+            if (sortColumn != null && IsSortable && sortColumn.Sort.IsActive)
             {
                 sortColumn.Sort.SortOrder = State.SortOrder; // kludge
                 sorts.Add(sortColumn.Sort);
@@ -404,7 +405,7 @@ namespace Sockethead.Razor.Grid
                 ndx++;
 
                 col.HeaderDetails.Display = col.HeaderRender();
-                if (!col.Sort.IsActive)
+                if (!IsSortable || !col.Sort.IsActive)
                     continue;
 
                 SortOrder sortOrder = col.Sort.SortOrder;

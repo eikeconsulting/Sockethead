@@ -21,7 +21,7 @@ namespace Sockethead.Razor.Grid
 
     internal class Column<T> : ISimpleGridColumn where T : class
     {
-        internal Expression<Func<T, object>> Expression { get; set; }
+        //internal Expression<Func<T, object>> Expression { get; set; }
         internal Func<T, object> CompiledExpression { get; set; }
         internal Sort<T> Sort { get; set; } = new Sort<T>();
         internal Func<T, object> DisplayBuilder { get; set; } = model => null;
