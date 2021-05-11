@@ -1,0 +1,59 @@
+﻿@model IQueryable<Movie>
+
+<div class="row">
+    <div class="col-6">
+
+        @(await Html
+    .SimpleGrid(Model.Take(3))
+
+    // Sets the Header from an Expression
+    .AddColumn(col => col.For(movie => movie.Name))
+
+    // Set Header Expression directly
+    .AddColumn(col => col
+        .HeaderFor(movie => movie.Director)
+        .DisplayAs(movie => movie.Director))
+
+    // Define an explicit Header
+    .AddColumn(col => col
+        .Header("GENRE")
+        .DisplayAs(movie => movie.Genre))
+
+    .RenderAsync())
+
+    </div>
+
+    <div class="col-6">
+
+        <pre><code>@@(await Html
+    .SimpleGrid(Model.Take(3))
+
+    // Sets the Header from an Expression
+    .AddColumn(col => col.For(movie => movie.Name))
+
+    // Set Header Expression directly
+    .AddColumn(col => col
+        .HeaderFor(movie => movie.Director)
+        .DisplayAs(movie => movie.Director))
+
+    // Define an explicit Header
+    .AddColumn(col => col
+        .Header("GENRE")
+        .DisplayAs(movie => movie.Genre))
+
+    .RenderAsync())
+</code></pre>
+
+        <br />
+        <p>
+            The Header Expression will resolve the name in the following progression:
+            <ol>
+                <li>Display Name Attribute if it exists</li>
+                <li>DisplayName Attribute if it exists</li>
+                <li>Name of the Property</li>
+            </ol>
+        </p>
+
+    </div>
+</div>
+

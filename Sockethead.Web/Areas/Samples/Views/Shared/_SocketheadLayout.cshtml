@@ -20,9 +20,13 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        @*<li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="Admin" asp-controller="Users" asp-action="Index">Users</a>
-                        </li>*@
+                        <li class="nav-item">
+                            @*<a class="nav-link text-dark" asp-area="Admin" asp-controller="Users" asp-action="Index">Users</a>*@
+                            <a class="nav-link text-light" asp-area="Samples" asp-controller="SimpleGrid" asp-action="Dashboard">SimpleGrid</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" asp-area="Samples" asp-controller="TwoColumnGrid" asp-action="TwoColumnGrid">TwoColumnGrid</a>
+                        </li>
                     </ul>
                     @*<partial name="_LoginPartial" />*@
                 </div>

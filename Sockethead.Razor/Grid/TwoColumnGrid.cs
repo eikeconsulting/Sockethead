@@ -92,12 +92,12 @@ namespace Sockethead.Razor.Grid
             /// </summary>
             public TwoColumnGridModelBuilder<TModel> Add(Expression<Func<TModel, object>> expression)
             {
-                string value = expression.Compile().Invoke(Model).ToString();
+                object value = expression.Compile().Invoke(Model);
                 
                 //if (GridBuilder.Html is IHtmlHelper<TModel> html)
                 //    value = html.DisplayFor(expression).ToString() + " boom";
 
-                GridBuilder.Add(expression.FriendlyName(), value);
+                GridBuilder.Add(expression.FriendlyName(), value == null ? "" : value.ToString());
                 return this;
             }
         }

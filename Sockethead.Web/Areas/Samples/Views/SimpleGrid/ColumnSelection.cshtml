@@ -3,11 +3,29 @@
 <div class="row">
     <div class="col-6">
 
-@(await Html
+        @(await Html
     .SimpleGrid(Model.Take(3))
     .AddColumnsFromModel()
     .RenderAsync())
 
+    </div>
+
+    <div class="col-6">
+
+        <h4>Automatically Select Columns</h4>
+
+        <pre><code>@@(await Html
+    .SimpleGrid(Model.Take(3))
+    .AddColumnsFromModel()
+    .RenderAsync())
+</code></pre>
+
+        <p>
+            This will automatically pick up columns from the Model's properties.
+            It will respect the Display Attribute "AutoGenerateField" to suppress specific properties:<br />
+            <code>[Display(AutoGenerateField = false)]</code><br />
+            Which is why the "Cast" column is not included in the Grid on the left.
+        </p>
     </div>
 </div>
 
@@ -16,12 +34,32 @@
 <div class="row">
     <div class="col-6">
 
-@(await Html
+        @(await Html
     .SimpleGrid(Model.Take(3))
-    .AddColumnsFromModel()
-    .RemoveColumn(1)
+    .AddColumnFor(movie => movie.Name)
+    .AddColumnFor(movie => movie.Director)
+    .AddColumn(col => col.For(movie => movie.Genre))
+    .AddColumn(col => col.For(movie => movie.Released))
     .RenderAsync())
 
+    </div>
+
+    <div class="col-6">
+        <h4>Select Specific Columns</h4>
+
+        <pre><code>@@(await Html
+    .SimpleGrid(Model.Take(3))
+    .AddColumnFor(movie => movie.Name)
+    .AddColumnFor(movie => movie.Director)
+    .AddColumn(col => col.For(movie => movie.Genre))
+    .AddColumn(col => col.For(movie => movie.Released))
+    .RenderAsync())
+</code></pre>
+
+        <p>
+            Note that <code>AddColumnFor</code> is a shortcut for calling <code>AddColumn</code> followed by <code>For</code> inside.
+            You will want to use <code>AddColumn</code> if you want to further customize the Column as you will see in other Samples.
+        </p>
     </div>
 </div>
 
@@ -30,12 +68,26 @@
 <div class="row">
     <div class="col-6">
 
-@(await Html
+        @(await Html
     .SimpleGrid(Model.Take(3))
     .AddColumnsFromModel()
-    .RemoveColumn("Movie Director")
+    .RemoveColumn(1) // by zero based index
+    .RemoveColumn("Released") // by column header
     .RenderAsync())
 
     </div>
-</div>
 
+    <div class="col-6">
+        <h4>Remove Columns</h4>
+
+        <pre><code>@@(await Html
+    .SimpleGrid(Model.Take(3))
+    .AddColumnsFromModel()
+    .RemoveColumn(1) // by zero based index
+    .RemoveColumn("Released") // by column header
+    .RenderAsync())
+</code></pre>
+
+    </div>
+
+</div>

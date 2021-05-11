@@ -6,6 +6,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using Microsoft.AspNetCore.Html;
 using System.Text.Encodings.Web;
+using System.Collections.Generic;
 
 namespace Sockethead.Razor.Grid
 {
@@ -34,11 +35,10 @@ namespace Sockethead.Razor.Grid
             Html = html;
         }
 
-        private ColumnBuilder<T> Wrap(Action action)
-        {
-            action();
-            return this;
-        }
+        /// <summary>
+        /// Generate the Header from an Expression
+        /// </summary>
+        public ColumnBuilder<T> HeaderFor(Expression<Func<T, object>> expression) => Header(expression.FriendlyName());
 
         /// <summary>
         /// Specify the Header for the Column.
@@ -47,51 +47,59 @@ namespace Sockethead.Razor.Grid
         /// </summary>
         /// <param name="header"></param>
         /// <returns></returns>
-        public ColumnBuilder<T> Header(string header) => Wrap(() => Column.HeaderValue = header);
-
-        /// <summary>
-        /// Generate the Header from an Expression
-        /// </summary>
-        public ColumnBuilder<T> HeaderAs(Expression<Func<T, object>> expression) => Wrap(() => Header(expression.FriendlyName()));
-
-        /// <summary>
-        /// Display a static value for this column for all rows 
-        /// </summary>
-        public ColumnBuilder<T> Display(string value) => Wrap(() => Column.DisplayBuilder = model => value);
+        public ColumnBuilder<T> Header(string header) { Column.HeaderValue = header; return this; }
 
         /// <summary>
         /// What to render
         /// </summary>
-        public ColumnBuilder<T> DisplayAs(Func<T, object> displayBuilder) => Wrap(() => Column.DisplayBuilder = displayBuilder);
+        public ColumnBuilder<T> DisplayAs(Func<T, object> displayBuilder)
+        {
+            Column.DisplayFunc = displayBuilder;
+            return this;
+        }
 
         /// <summary>
-        /// Render an Enum Expression with an Enum value's Display.Name Attribute
+        /// Display a static value for this column for all rows 
         /// </summary>
-        public ColumnBuilder<T> DisplayAsEnum<TEnum>(Func<T, TEnum> displayBuilder) where TEnum : struct, Enum
-            => Wrap(() => Column.DisplayBuilder = model => EnumHelper<TEnum>.GetDisplayValueSafe(displayBuilder(model)));
+        public ColumnBuilder<T> Display(string value) 
+            => DisplayAs(model => value);
+
+        public ColumnBuilder<T> DisplayExpression(Expression<Func<T, object>> expression)
+        {
+            Func<T, object> compiled = (Column.DisplayExpr = expression).Compile();
+
+            return ExpressionHelpers
+                .GetObjectType(expression)
+                .IsSubclassOf(typeof(Enum))
+                    ? DisplayAs(model => (compiled(model) as Enum).GetDisplayName())
+                    : DisplayAs(compiled);
+        }
+
+        public ColumnBuilder<T> DisplayAsList(Func<T, IEnumerable<object>> displayBuilder)
+            => DisplayAs(model => HtmlUtilities.BuildList(displayBuilder(model))).Encoded(false);
 
         /// <summary>
         /// Display IHtmlContent in the column.
         /// This can be used in conjunction with Html.DisplayFor (see example)
         /// </summary>
-        public ColumnBuilder<T> DisplayHtmlContent(Func<T, IHtmlContent> htmlBuilder, HtmlEncoder htmlEncoder)
-            => Wrap(() =>
+        public ColumnBuilder<T> DisplayHtmlContent(Func<T, IHtmlContent> htmlBuilder) 
+            => DisplayAs(model =>
             {
-                Column.DisplayBuilder = model =>
-                {
-                    var content = htmlBuilder(model);
-                    var stringWriter = new System.IO.StringWriter();
-                    content.WriteTo(stringWriter, htmlEncoder);
-                    return stringWriter.ToString();
-                };
-
-                Encoded(false);
-            });
+                var content = htmlBuilder(model);
+                var stringWriter = new System.IO.StringWriter();
+                content.WriteTo(stringWriter, HtmlEncoder.Default);
+                return stringWriter.ToString();
+            })
+            .Encoded(false);
 
         /// <summary>
         /// Html encode
         /// </summary>
-        public ColumnBuilder<T> Encoded(bool isEncoded) => Wrap(() => Column.IsEncoded = isEncoded);
+        public ColumnBuilder<T> Encoded(bool isEncoded) 
+        { 
+            Column.IsEncoded = isEncoded; 
+            return this; 
+        }
 
         /// <summary>
         /// Create a link
@@ -101,29 +109,28 @@ namespace Sockethead.Razor.Grid
         /// <param name="css">CSS to apply to the link</param>
         /// <returns></returns>
         public ColumnBuilder<T> LinkTo(Func<T, string> linkBuilder, string target = "_self", Action<CssBuilder> css = null)
-            => Wrap(() =>
-            {
-                Column.LinkBuilder = linkBuilder;
-                Column.LinkTarget = target;
-                var cssBuilder = new CssBuilder();
-                css?.Invoke(cssBuilder);
-                Column.LinkCssBuilder = cssBuilder;
-                return;
-            });
+        {
+            Column.LinkBuilder = linkBuilder;
+            Column.LinkTarget = target;
+            var cssBuilder = new CssBuilder();
+            css?.Invoke(cssBuilder);
+            Column.LinkCssBuilder = cssBuilder;
+            return this;
+        }
 
         /// <summary>
         /// Make the entire table sortable by those columns that are Sortable
         /// Individual Columns are sortable if they have an Expression and aren't otherwise sort disabled
         /// </summary>
         public ColumnBuilder<T> Sortable(bool enable = true, SortOrder sortOrder = SortOrder.Ascending)
-            => Wrap(() =>
-            {
-                if (enable && Column.Sort.Expression == null)
-                    throw new ArgumentException("You must call For() or SortableBy() with a valid Expression to enable Sorting on this Column.");
+        {
+            if (enable && Column.Sort.Expression == null)
+                throw new ArgumentException("You must call For() or SortableBy() with a valid Expression to enable Sorting on this Column.");
 
-                Column.Sort.IsEnabled = enable;
-                Column.Sort.SortOrder = sortOrder;
-            });
+            Column.Sort.IsEnabled = enable;
+            Column.Sort.SortOrder = sortOrder;
+            return this;
+        }
 
         /// <summary>
         /// Specify the expression to sort the column by
@@ -131,12 +138,12 @@ namespace Sockethead.Razor.Grid
         /// so in most cases this isn't needed.
         /// </summary>
         public ColumnBuilder<T> SortableBy(Expression<Func<T, object>> expression, SortOrder sortOrder = SortOrder.Ascending)
-            => Wrap(() =>
-            {
-                Column.Sort.IsEnabled = true;
-                Column.Sort.Expression = expression;
-                Column.Sort.SortOrder = sortOrder;
-            });
+        {
+            Column.Sort.IsEnabled = true;
+            Column.Sort.Expression = expression;
+            Column.Sort.SortOrder = sortOrder;
+            return this;
+        }
 
         /// <summary>
         /// Specify an Expression for the column which initializes the Column:
@@ -145,13 +152,12 @@ namespace Sockethead.Razor.Grid
         /// 3. DisplayAs Expression
         /// </summary>
         public ColumnBuilder<T> For(Expression<Func<T, object>> expression)
-            => Wrap(() =>
-            {
-                HeaderAs(expression);
-                SortableBy(expression);
-                Column.CompiledExpression = expression.Compile();
-                DisplayAs(model => Column.CompiledExpression(model));
-            });
+        {
+            HeaderFor(expression);
+            SortableBy(expression);
+            DisplayExpression(expression);
+            return this;
+        }
 
         /// <summary>
         /// Specify CSS options for the Grid
@@ -159,10 +165,8 @@ namespace Sockethead.Razor.Grid
         public ColumnBuilder<T> Css(Action<ColumnCssOptions> cssOptionsSetter)
         {
             cssOptionsSetter(CssOptions);
-
             Column.HeaderCss = CssOptions.Header.ToString();
             Column.ItemCss = CssOptions.Item.ToString();
-
             return this;
         }
 

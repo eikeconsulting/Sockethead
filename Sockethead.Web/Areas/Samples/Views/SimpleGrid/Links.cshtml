@@ -1,0 +1,67 @@
+﻿@using System.Web;
+@model IQueryable<Movie>
+@{ 
+    string GoogleSearchLink(string query)
+    {
+        string encoded = HttpUtility.UrlEncode(query);
+        return $"https://www.google.com/search?q={encoded}";
+    }
+}
+<div class="row">
+    <div class="col-md-4">
+
+        @(await Html
+    .SimpleGrid(Model.Take(3))
+
+    .AddColumn(col => col
+        .For(movie => movie.Name)
+        .Header("Movie")
+        .LinkTo(model => GoogleSearchLink(model.Name)))
+
+    .AddColumn(col => col
+        .Display("Click Me!")
+        .LinkTo(
+            linkBuilder: model => GoogleSearchLink(model.Name),
+            target: "_blank",
+            css: css => css.AddClass("btn btn-sm btn-primary")))
+
+    .RenderAsync())
+
+    </div>
+    <div class="col-md-8">
+
+        <pre><code>@@using System.Web;
+@@model IQueryable&lt;Movie&gt;
+
+@@{ 
+    string GoogleSearchLink(string query)
+    {
+        string encoded = HttpUtility.UrlEncode(query);
+        return $"https://www.google.com/search?q={encoded}";
+    }
+}
+
+@@(await Html
+    .SimpleGrid(Model.Take(3))
+
+    .AddColumn(col => col
+        .For(movie => movie.Name)
+        .Header("Movie")
+        .LinkTo(model => GoogleSearchLink(model.Name)))
+
+    .AddColumn(col => col
+        .Display("Click Me!")
+        .LinkTo(
+            linkBuilder: model => GoogleSearchLink(model.Name),
+            target: "_blank",
+            css: css => css.AddClass("btn btn-sm btn-primary")))
+
+    .RenderAsync())</code></pre>
+
+        <br />
+        <p>
+        </p>
+
+    </div>
+</div>
+

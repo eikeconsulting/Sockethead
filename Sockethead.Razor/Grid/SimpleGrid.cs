@@ -37,11 +37,18 @@ namespace Sockethead.Razor.Grid
         private GridCssOptions CssOptions { get; } = new GridCssOptions();
         private List<RowModifier> RowModifiers { get; } = new List<RowModifier>();
         private bool IsSortable { get; set; } = false;
+        private bool IsHeaderEnabled { get; set; } = true;
 
         private class RowModifier
         {
             public Func<T, bool> RowFilter { get; set; }
             public CssBuilder CssBuilder { get; set; } = new CssBuilder();
+        }
+
+        public SimpleGrid<T> NoHeaders()
+        {
+            IsHeaderEnabled = false;
+            return this;
         }
 
         /// <summary>
@@ -261,21 +268,6 @@ namespace Sockethead.Razor.Grid
         public SimpleGrid<T> Sortable(bool enable = true)
         {
             IsSortable = enable;
-            /*
-            foreach (var column in Columns)
-            {
-                var builder = new ColumnBuilder<T>(column, Html);
-
-                if (enable)
-                {
-                    if (column.Sort.IsEnabled && column.Sort.Expression != null)
-                        builder.Sortable(true);
-                }
-                else
-                {
-                    builder.Sortable(false);
-                }
-            }*/
             return this;
         }
 
@@ -352,7 +344,7 @@ namespace Sockethead.Razor.Grid
         /// </summary>
         public SimpleGridViewModel PrepareRender()
         {
-            IQueryable<T> query = BuildQuery();
+            IQueryable<T> query = BuildQuery() ?? new List<T>().AsQueryable();
 
             int totalRecords = query.Count();
             PagerOptions.Enabled = PagerOptions.Enabled && 
@@ -375,7 +367,7 @@ namespace Sockethead.Razor.Grid
                 PagerOptions = PagerOptions,
                 PagerModel = PagerOptions.Enabled
                     ? State.BuildPagerModel(
-                        totalRecords: totalRecords, 
+                        totalRecords: totalRecords,
                         displayTotal: PagerOptions.DisplayTotal,
                         rowsPerPage: State.RowsPerPage ?? PagerOptions.RowsPerPage,
                         rowsPerPageOptions: PagerOptions.RowsPerPageOptions)
@@ -396,6 +388,8 @@ namespace Sockethead.Razor.Grid
                         SearchNdx = State.SearchNdx.ToString(),
                     }
                     : null,
+
+                IsHeaderEnabled = IsHeaderEnabled,
             };
 
             // build column headers

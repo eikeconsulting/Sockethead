@@ -1,0 +1,39 @@
+﻿@{ 
+    var enums = new[] { 0, 1, 2, 3 }
+        .Select(i => new SampleModel { SampleEnum = (SampleEnum)i })
+        .ToList()
+        .AsQueryable();
+}
+
+@(await Html
+    .SimpleGrid(enums)
+
+    .AddColumn(column => column
+        .DisplayAs(model => (int)model.SampleEnum)
+        .Header("int"))
+
+    .AddColumn(column => column
+        .DisplayAs(model => model.SampleEnum)
+        .Header("DisplayAs"))
+
+    .AddColumn(col => col
+        .For(model => model.SampleEnum)
+        .Header("For"))
+
+    .AddColumn(column => column
+        .DisplayExpression(model => model.SampleEnum)
+        .Header("Expression"))
+
+    .AddColumn(column => column
+        .DisplayHtmlContent(model => 
+            Html.DisplayFor(modelQueryable => model.SampleEnum))
+        .Header("HtmlContent"))
+
+    .RenderAsync()
+)
+
+<div>
+
+<pre><code></code></pre>
+
+</div>

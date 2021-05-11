@@ -1,13 +1,85 @@
 ﻿@model IQueryable<Movie>
 
-@(await Html
-    .SimpleGrid(Model)
-    .AddColumnsFromModel()
-    .RenderAsync()
-)
+<div class="row">
+    <div class="col-6">
 
-<pre><code>@@(await Html
+        @(await Html
     .SimpleGrid(Model)
     .AddColumnsFromModel()
-    .RenderAsync()
-)</code></pre>
+    .RenderAsync())
+
+    </div>
+    <div class="col-6">
+
+        <h4>Model</h4>
+        <pre><code>public class Movie
+{
+    public string Name { get; set; }
+
+    [Display(Name = "Movie Director")]
+    public string Director { get; set; }
+
+    [DisplayName("Movie Genre")]
+    public string Genre { get; set; }
+
+    [Display(AutoGenerateField = true)]
+    public int? Released { get; set; }
+
+    [Display(AutoGenerateField = false)]
+    public ICollection&lt;CastMember&gt; Cast { get; set; }
+}
+
+public class CastMember
+{
+    public string Name { get; set; }
+
+    public string Character { get; set; }
+
+    public override string ToString() 
+        => $"{Name} as {Character}";
+}</code></pre>
+
+        <br />
+
+        <h4>View</h4>
+<pre><code>@@model IQueryable&lt;Movie&gt;
+
+@@(await Html
+    .SimpleGrid(Model)
+    .AddColumnsFromModel()
+    .RenderAsync())</code></pre>
+
+        <br />
+
+        <h4>Controller</h4>
+<pre><code>[HttpGet]
+public IActionResult BasicUsage()
+{
+    return View(SampleData.Movies.AsQueryable());
+}</code></pre>
+
+
+        @{
+            var table = await Html
+            .SimpleGrid(Model.Take(3))
+            .AddColumnsFromModel()
+            .RenderAsync();
+
+            string GetString(Microsoft.AspNetCore.Html.IHtmlContent content)
+            {
+                using (var writer = new System.IO.StringWriter())
+                {
+                    content.WriteTo(writer, System.Text.Encodings.Web.HtmlEncoder.Default);
+                    return writer.ToString();
+                }
+            }
+        }
+
+        <br />
+
+        <h4>HTML Rendered</h4>
+
+<pre><code>@GetString(table)</code></pre>
+
+    </div>
+</div>

@@ -21,10 +21,9 @@ namespace Sockethead.Razor.Grid
 
     internal class Column<T> : ISimpleGridColumn where T : class
     {
-        //internal Expression<Func<T, object>> Expression { get; set; }
-        internal Func<T, object> CompiledExpression { get; set; }
+        internal Expression<Func<T, object>> DisplayExpr { get; set; }
+        internal Func<T, object> DisplayFunc { get; set; } = model => null;
         internal Sort<T> Sort { get; set; } = new Sort<T>();
-        internal Func<T, object> DisplayBuilder { get; set; } = model => null;
         internal Func<T, object> LinkBuilder { get; set; } = null;
         internal string LinkTarget { get; set; }
         internal Css.CssBuilder LinkCssBuilder { get; set; }
@@ -41,7 +40,7 @@ namespace Sockethead.Razor.Grid
 
         public string DisplayRender(object model)
         {
-            object result = DisplayBuilder((T)model);
+            object result = DisplayFunc((T)model);
             string display = result == null ? "" : result.ToString();
 
             if (IsEncoded)

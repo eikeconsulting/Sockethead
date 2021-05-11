@@ -22,6 +22,8 @@ namespace Sockethead.Razor.Grid
         public List<object> Rows { get; set; }
 
         public ISimpleGridColumn[] Columns { get; set; }
+
+        public bool IsHeaderEnabled { get; set; }
     }
 
     public class SimpleGridAjaxViewModel

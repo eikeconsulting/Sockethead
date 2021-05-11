@@ -9,10 +9,9 @@ namespace Sockethead.Web.Data.Entities
         [Display(Name = "Zilch")]
         Zero, 
         
-        One, Two, Three, Four, 
+        One, 
         
-        [Display(Name = "Two Parts")]
-        TwoParts,
+        Two,
     }
 
     public class SampleModel
@@ -56,7 +55,7 @@ namespace Sockethead.Web.Data.Entities
 
         private static bool GetRandomBool() => Random.NextDouble() > 0.5;
 
-        private static SampleEnum GetRandomEnum() => (SampleEnum)Random.Next((int)SampleEnum.Zero, (int)SampleEnum.TwoParts + 4);
+        private static SampleEnum GetRandomEnum() => (SampleEnum)Random.Next((int)SampleEnum.Zero, (int)SampleEnum.Two + 2);
 
         public override string ToString() => $"Sample Data for {First} {Last}, {JobTitle}";
     }

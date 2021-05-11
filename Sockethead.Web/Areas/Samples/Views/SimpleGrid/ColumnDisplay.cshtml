@@ -1,0 +1,50 @@
+﻿@model IQueryable<Movie>
+
+<div class="row">
+    <div class="col-md-6">
+
+@(await Html
+    .SimpleGrid(Model.Take(3))
+
+    .AddColumn(col => col
+        .For(movie => movie.Name)
+        .DisplayAs(movie => movie.Name.ToUpper()))
+
+    .AddColumn(col => col
+        .Header("Director")
+        .Display("The Director!"))
+
+    .AddColumn(col => col
+        .Header("Cast")
+        .DisplayAsList(movie => movie.Cast))
+
+    .RenderAsync())
+
+    </div>
+
+    <div class="col-md-6">
+
+        <pre><code>@@(await Html
+    .SimpleGrid(Model.Take(3))
+
+    .AddColumn(col => col
+        .For(movie => movie.Name)
+        .DisplayAs(movie => movie.Name.ToUpper()))
+
+    .AddColumn(col => col
+        .Header("Director")
+        .Display("The Director!"))
+
+    .AddColumn(col => col
+        .Header("Cast")
+        .DisplayAsList(movie => movie.Cast))
+
+    .RenderAsync())</code></pre>
+
+        <br />
+        <p>
+        </p>
+
+    </div>
+</div>
+

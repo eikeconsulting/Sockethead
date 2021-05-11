@@ -1,0 +1,84 @@
+﻿@model IQueryable<Movie>
+
+<div class="row">
+    <div class="col-md-6">
+
+@(await Html
+    .SimpleGrid(Model)
+
+    // by default "For" adds Sort for the column
+    .AddColumnFor(movie => movie.Name)
+
+    // turn off sorting for this column
+    .AddColumn(col => col
+        .For(movie => movie.Released)
+        .Sortable(false))
+
+    // this doesn't supply a Sort, so it won't be sortable
+    .AddColumn(col => col
+        .HeaderFor(movie => movie.Released)
+        .DisplayAs(movie => movie.Released))
+
+    // a contrived example to sort by something else than 
+    // what is being displayed in the column
+    .AddColumn(col => col
+        .Header("Sort by Released")
+        .DisplayAs(movie => $"Director: {movie.Director}")
+        .SortableBy(movie => movie.Released))
+
+    // The default/initial sort order of the grid
+    // This applies even if the Grid isn't "Sortable"
+    .DefaultSortBy(movie => movie.Name, SortOrder.Descending)
+
+    // This makes the entire grid Sortable 
+    // Column Headers become sort links
+    .Sortable()
+
+    .RenderAsync())
+
+    </div>
+
+    <div class="col-md-6">
+
+        <pre><code>@@(await Html
+    .SimpleGrid(Model)
+
+    // by default "For" adds Sort for the column
+    .AddColumnFor(movie => movie.Name)
+
+    // turn off sorting for this column
+    .AddColumn(col => col
+        .For(movie => movie.Released)
+        .Sortable(false))
+
+    // this doesn't supply a Sort, so it won't be sortable
+    .AddColumn(col => col
+        .HeaderFor(movie => movie.Released)
+        .DisplayAs(movie => movie.Released))
+
+    // a contrived example to sort by something else than 
+    // what is being displayed in the column
+    .AddColumn(col => col
+        .Header("Sort by Released")
+        .DisplayAs(movie => $"Director: {movie.Director}")
+        .SortableBy(movie => movie.Released))
+
+    // The default/initial sort order of the grid
+    // This applies even if the Grid isn't "Sortable"
+    .DefaultSortBy(movie => movie.Name, SortOrder.Descending)
+
+    // This makes the entire grid Sortable 
+    // Column Headers become sort links
+    .Sortable()
+
+    .RenderAsync())</code></pre>
+
+        <br />
+        <p>
+            Note that adding <code>Sortable(true)</code> or <code>SortableBy(...)</code> 
+            to an individual column does not have any impact unless the entire grid is <code>Sortable</code>.
+        </p>
+
+    </div>
+</div>
+

@@ -40,5 +40,11 @@ namespace Sockethead.Razor.Helpers
             }
             return contentBuilder;
         }
+
+        public static void SetTitle(this IHtmlHelper html, string title)
+        {
+            html.ViewContext.ViewData["Title"] = title;
+        }
+
     }
 }

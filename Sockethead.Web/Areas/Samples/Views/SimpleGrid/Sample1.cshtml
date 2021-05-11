@@ -9,16 +9,12 @@
     .AddColumnFor(model => model.SampleEnum)
 
     .AddColumn(column => column
-        .Header("DisplayEnum")
-        .DisplayAsEnum(model => model.SampleEnum))
-
-    .AddColumn(column => column
         .Header("Enum DisplayFor")
-        .DisplayHtmlContent(model => Html.DisplayFor(modelQueryable => model.SampleEnum), HtmlEncoder))
+        .DisplayHtmlContent(model => Html.DisplayFor(modelQueryable => model.SampleEnum)))
 
     .AddColumn(column => column
         .Header("First Name")
-        .DisplayHtmlContent(model => Html.TextBoxFor(modelQueryable => model.First, null, new { id = $"First_{i++}", @class = "form-control" }), HtmlEncoder))
+        .DisplayHtmlContent(model => Html.TextBoxFor(modelQueryable => model.First, null, new { id = $"First_{i++}", @class = "form-control" })))
 
     .AddColumn(column => column
         .Header("First Name")

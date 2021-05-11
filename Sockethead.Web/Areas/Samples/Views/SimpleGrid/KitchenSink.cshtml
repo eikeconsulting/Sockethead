@@ -86,7 +86,9 @@
 
     .AddColumn(column => column
         .For(model => model.Name)
-        .LinkTo(model => $"https://www.google.com/search?q={System.Web.HttpUtility.UrlEncode(model.Name)}", target: "_blank")
+        .LinkTo(
+            linkBuilder: model => $"https://www.google.com/search?q={System.Web.HttpUtility.UrlEncode(model.Name)}",
+            target: "_blank")
         .Sortable()
         .Css(elements => elements.Header.AddStyle("width:21%")))
 
@@ -111,6 +113,13 @@
         .Encoded(false))
 
     .AddColumnFor(model => model.Released)
+
+    .AddColumn(column => column
+        .DisplayAs(model => "Details")
+        .LinkTo(model =>
+            $"https://www.google.com/search?q={System.Web.HttpUtility.UrlEncode(model.Name)}",
+            target: "_blank",
+            css: css => css.AddClass("btn btn-sm btn-primary")))
 
     .AddCss(elements => elements.Table
         .AddClass("table-striped")

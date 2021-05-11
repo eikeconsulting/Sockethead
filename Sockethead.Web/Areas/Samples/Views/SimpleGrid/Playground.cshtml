@@ -16,6 +16,26 @@
 
 <br />
 
+@(await Html
+    .SimpleGrid(Model.Take(2))
+    .NoHeaders()
+    .AddColumnFor(movie => movie.Name)
+    .AddColumn(col => col.HeaderFor(movie => movie.Cast).DisplayAsList(movie => movie.Cast?.Select(c => c.Name)))
+    .AddColumn(col => col.HeaderFor(movie => movie.Cast).DisplayAsList(movie => movie.Cast))
+    .RenderAsync()
+)
+
+<hr />
+
+
+@(await Html
+    .SimpleGrid(Model.Take(0))
+    .AddColumnFor(movie => movie.Name)
+    .AddColumnFor(movie => movie.Genre)
+    .RenderAsync()
+)
+
+<hr />
 
 @(await Html
     .SimpleGrid(Model)
@@ -95,8 +115,8 @@
 @(Html
     .SimpleGrid(Model.Take(2))
     .AddColumnFor(model => model.Name)
-    .AddColumnForTwoColumnGrid(column =>  column.Header("TwoColumnGrid"), 
-        (gridBuilder, model) => 
+    .AddColumnForTwoColumnGrid(column =>  column.Header("TwoColumnGrid"),
+        (gridBuilder, model) =>
             gridBuilder
                 .Add("Name 1", model.Name)
                 .Add(model)

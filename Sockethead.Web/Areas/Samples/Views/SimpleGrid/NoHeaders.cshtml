@@ -1,0 +1,24 @@
+﻿@model IQueryable<Movie>
+
+<div class="row">
+    <div class="col-6">
+
+        @(await Html
+    .SimpleGrid(Model.Take(3))
+    .AddColumnsFromModel()
+    .NoHeaders()
+    .RenderAsync())
+
+    </div>
+
+    <div class="col-6">
+        <pre><code>@@(await Html
+    .SimpleGrid(Model.Take(3))
+    .AddColumnsFromModel()
+    .NoHeaders()
+    .RenderAsync())
+</code></pre>
+
+    </div>
+
+</div>

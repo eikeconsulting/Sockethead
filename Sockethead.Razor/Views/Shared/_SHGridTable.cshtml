@@ -17,6 +17,8 @@
     }
 }
 <table @Html.Raw(Model.Css.TableCss)>
+    @if (Model.IsHeaderEnabled)
+    {
     <thead class="SimpleGridSortNav">
         <tr @Html.Raw(Model.Css.HeaderCss)>
             @foreach (var col in Model.Columns)
@@ -25,6 +27,7 @@
             }
         </tr>
     </thead>
+    }
     <tbody>
         @if (Model.Rows.Any())
         {
