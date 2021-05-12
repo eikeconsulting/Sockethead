@@ -15,6 +15,11 @@ namespace Sockethead.Web.Areas.Samples.Controllers
         {
             new SocketheadRazorFeature
             {
+                Name = "Installation",
+                Description = "Just install the NuGet package and go!",
+            },
+            new SocketheadRazorFeature
+            {
                 Name = "Basic Usage",
                 Description = "A minimial SimpleGrid.  This includes the Movie model for reference which is used in many of the other Samples as well.",
             },
@@ -60,8 +65,13 @@ namespace Sockethead.Web.Areas.Samples.Controllers
             },
             new SocketheadRazorFeature
             {
+                Name = "Embedding Grids",
+                Description = "Embed TwoColumnGrids and SimpleGrids inside your grid.  How meta!",
+            },
+            new SocketheadRazorFeature
+            {
                 Name = "Sorting",
-                Description = "How to enable dynamic sorting on based on columns and also how to specify the default sort.",
+                Description = "Enable dynamic sorting on based on columns and specify the default sort order.",
             },
             new SocketheadRazorFeature
             {
@@ -70,31 +80,58 @@ namespace Sockethead.Web.Areas.Samples.Controllers
             },
             new SocketheadRazorFeature
             {
-                Name = "Embedding Grids",
-                Description = "Embed TwoColumnGrid and SimpleGrid inside your grid.  How meta!",
+                Name = "Search",
+                Description = "Add custom search capabilities quickly and easily.",
             },
             new SocketheadRazorFeature
             {
                 Name = "CSS",
-                Description = "",
+                Description = "Apply CSS classes and styles to the table, header, and rows.",
+            },
+            new SocketheadRazorFeature
+            {
+                Name = "Row Modifier",
+                Description = "Apply CSS on a row based on a criteria.",
             },
             new SocketheadRazorFeature
             {
                 Name = "Options",
-                Description = "",
-            },
-
-
-            new SocketheadRazorFeature
-            {
-                Name = "Row Modifier",
-                Description = "",
+                Description = "Set some grid options such as maximum rows and the No records message.  Also override partial view with your own.",
             },
             new SocketheadRazorFeature
             {
                 Name = "AJAX",
-                Description = "",
+                Description = "Use AJAX for paging and search in the grid.",
             },
+            new SocketheadRazorFeature
+            {
+                Name = "Forms",
+                Description = "Use a SimpleGrid as form.  This demonstrates checkbox handling.",
+            },
+            new SocketheadRazorFeature
+            {
+                Name = "Extensions",
+                Description = "Create your own custom SimpleGrid extension!",
+            },
+
+            new SocketheadRazorFeature
+            {
+                Name = "Sample1",
+                Model = "SampleData",
+                Description = "Placeholder",
+            },
+            new SocketheadRazorFeature
+            {
+                Name = "Sample2",
+                Model = "SampleData",
+                Description = "Placeholder",
+            },
+            new SocketheadRazorFeature
+            {
+                Name = "Playground",
+                Description = "A sample for me to play around in...",
+            },
+
         };
     
     private static IQueryable<SampleModel> SampleDataQuery => SampleData.SampleModels.AsQueryable();
@@ -130,27 +167,11 @@ namespace Sockethead.Web.Areas.Samples.Controllers
         public PartialViewResult PartialGrid() => PartialView("_PartialGrid", MovieQuery);
 
         [HttpGet]
-        public IActionResult Enum() => View();
-
-        [HttpGet]
         public IActionResult Playground() => View(MovieQuery).SetTitle("Playground");
 
         [HttpPost, ValidateAntiForgeryToken]
         public IActionResult Playground(string[] names) => View(MovieQuery.Where(movie => names.Contains(movie.Name))).SetTitle("Playground Submit Results");
 
-
-        public IActionResult RowModifier()
-        {
-            ViewData["Title"] = "Row Modifier with CSS";
-            return View(MovieQuery);
-        }
-
-        [HttpGet]
-        public IActionResult KitchenSink()
-        {
-            ViewData["Title"] = "Advanced SimpleGrid Example";
-            return View(MovieQuery);
-        }
 
         [HttpGet]
         public IActionResult Sample1()
