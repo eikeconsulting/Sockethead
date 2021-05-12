@@ -1,82 +1,6 @@
-﻿@{
+﻿@model IQueryable<SocketheadRazorFeature>
+@{
     ViewData["Title"] = "Simple Grid";
-
-    IQueryable<SocketheadRazorFeature> features = new List<SocketheadRazorFeature>
-{
-        new SocketheadRazorFeature
-        {
-            Name = "Basic Usage",
-            Description = "A minimial SimpleGrid.  This includes the Movie model for reference which is used in many of the other Samples as well.",
-        },
-        new SocketheadRazorFeature
-        {
-            Name = "Kitchen Sink",
-            Description = "A sample SimpleGrid using many of the options available.",
-        },
-        new SocketheadRazorFeature
-        {
-            Name = "Column Selection",
-            Description = "There are several ways to control which columns to include in your grid.",
-        },
-        new SocketheadRazorFeature
-        {
-            Name = "Column Headers",
-            Description = "How to specify what text to render for column headers.",
-        },
-        new SocketheadRazorFeature
-        {
-            Name = "No Headers",
-            Description = "Surpress column headers altogether.",
-        },
-        new SocketheadRazorFeature
-        {
-            Name = "Column Display",
-            Description = "How to build the item render.",
-        },
-        new SocketheadRazorFeature
-        {
-            Name = "Links",
-            Url = "Links",
-            Description = "Create links in item render",
-        },
-        new SocketheadRazorFeature
-        {
-            Name = "Sorting",
-            Description = "How to enable dynamic sorting on based on columns and also how to specify the default sort.",
-        },
-        new SocketheadRazorFeature
-        {
-            Name = "Pagination",
-            Description = "Add a Pager to the grid for large data sets.",
-        },
-        new SocketheadRazorFeature
-        {
-            Name = "Embedding Grids",
-            Description = "",
-        },
-        new SocketheadRazorFeature
-        {
-            Name = "",
-            Description = "",
-        },
-
-
-
-        new SocketheadRazorFeature
-        {
-            Name = "Row Modifier",
-            Description = "",
-        },
-        new SocketheadRazorFeature
-        {
-            Name = "AJAX",
-            Description = "",
-        },
-
-
-    }
-    .AsQueryable();
-
 }
 
 <div class="row">
@@ -85,10 +9,11 @@
         <p>SimpleGrid is an ASP.Net Core Grid Control.  <br />Here are some samples to demonstrate how to use it.</p>
 
         @(await Html
-                .SimpleGrid(features)
+                .SimpleGrid(Model)
                 .AddColumn(col => col
                     .For(feature => feature.Name)
-                    .LinkTo(feature => feature.Url ?? feature.Name.Replace(" ", ""))
+                    //.LinkTo(feature => feature.Url ?? feature.Name.Replace(" ", ""))
+                    .LinkTo(feature => feature.BuildUrl())
                     .Css(css => css.Item.AddStyle("width: 150px;")))
                 .AddColumn(col => col.For(feature => feature.Description))
                 .AddCssClass("table-striped table-sm table-bordered")
@@ -96,13 +21,8 @@
                 .RenderAsync())
 
         <ul>
-            <li><a href='BasicUsage'>Basic Usage</a></li>
-            <li><a href='KitchenSink'>Kitchen Sink</a></li>
-            <li><a href='ColumnSelection'>Column Selection</a></li>
-            <li><a href='Ajax'>Ajax</a></li>
             <li><a href='Sample1'>Sample1</a></li>
             <li><a href='Sample2'>Sample2</a></li>
-            <li><a href='RowModifier'>Row Modifier</a></li>
             <li><a href='Playground'>Playground</a></li>
         </ul>
 

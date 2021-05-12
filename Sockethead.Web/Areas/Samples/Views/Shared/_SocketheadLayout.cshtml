@@ -36,7 +36,28 @@
     <div class="container">
         <main role="main" class="pb-3 language-csharp">
             <partial name="_Alerts" />
+
             <h2>@ViewData["Title"]</h2>
+
+            @{
+                var prev = ViewData["PrevFeature"] as SocketheadRazorFeature;
+                var next = ViewData["NextFeature"] as SocketheadRazorFeature;
+            }
+
+            @if (prev != null || next != null)
+            {
+                <div style="padding-bottom: 40px;">
+                    @if (prev != null)
+                    {
+                        <a class="float-left" href="@prev.BuildUrl()">&laquo; @prev.Name</a>
+                    }
+                    @if (next != null)
+                    {
+                        <a class="float-right" href="@next.BuildUrl()">@next.Name &raquo;</a>
+                    }
+                </div>
+            }
+
             @RenderBody()
         </main>
     </div>

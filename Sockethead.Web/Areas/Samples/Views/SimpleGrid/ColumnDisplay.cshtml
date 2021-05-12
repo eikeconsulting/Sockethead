@@ -7,16 +7,18 @@
     .SimpleGrid(Model.Take(3))
 
     .AddColumn(col => col
-        .For(movie => movie.Name)
-        .DisplayAs(movie => movie.Name.ToUpper()))
+        .For(movie => movie.Name))
+
+    .AddColumn(col => col
+        .For(movie => movie.Genre)
+        .DisplayAs(movie => movie.Genre.ToUpper()))
 
     .AddColumn(col => col
         .Header("Director")
-        .Display("The Director!"))
+        .DisplayAs(movie => $"Directed by {movie.Director}"))
 
     .AddColumn(col => col
-        .Header("Cast")
-        .DisplayAsList(movie => movie.Cast))
+        .Display("static value"))
 
     .RenderAsync())
 
@@ -28,16 +30,18 @@
     .SimpleGrid(Model.Take(3))
 
     .AddColumn(col => col
-        .For(movie => movie.Name)
-        .DisplayAs(movie => movie.Name.ToUpper()))
+        .For(movie => movie.Name))
+
+    .AddColumn(col => col
+        .For(movie => movie.Genre)
+        .DisplayAs(movie => movie.Genre.ToUpper()))
 
     .AddColumn(col => col
         .Header("Director")
-        .Display("The Director!"))
+        .DisplayAs(movie => $"Directed by {movie.Director}"))
 
     .AddColumn(col => col
-        .Header("Cast")
-        .DisplayAsList(movie => movie.Cast))
+        .Display("static value"))
 
     .RenderAsync())</code></pre>
 

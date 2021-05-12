@@ -30,18 +30,7 @@
     </div>
     <div class="col-md-8">
 
-        <pre><code>@@using System.Web;
-@@model IQueryable&lt;Movie&gt;
-
-@@{ 
-    string GoogleSearchLink(string query)
-    {
-        string encoded = HttpUtility.UrlEncode(query);
-        return $"https://www.google.com/search?q={encoded}";
-    }
-}
-
-@@(await Html
+        <pre><code>@@(await Html
     .SimpleGrid(Model.Take(3))
 
     .AddColumn(col => col
@@ -59,6 +48,13 @@
     .RenderAsync())</code></pre>
 
         <br />
+
+        <pre><code>string GoogleSearchLink(string query)
+{
+    string encoded = System.Web.HttpUtility.UrlEncode(query);
+    return $"https://www.google.com/search?q={encoded}";
+}</code></pre>
+
         <p>
         </p>
 

@@ -8,6 +8,8 @@ namespace Sockethead.Razor.Grid
         public string SearchViewName { get; set; } = "_SHGridSearch";
         public string TableViewName { get; set; } = "_SHGridTable";
         public int MaxRows { get; set; } = 5000;
+
+        public string NoMatchingRecordsMessage { get; set; } = "No matching records.";
     }
 
     public class GridCssOptions

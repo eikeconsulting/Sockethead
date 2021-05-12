@@ -43,7 +43,7 @@
         }
         else
         {
-            <tr><td colspan="@Model.Columns.Count()" class="text-center"><br />No matching records.<br /></td></tr>
+            <tr><td colspan="@Model.Columns.Count()" class="text-center">@Model.Options.NoMatchingRecordsMessage</td></tr>
         }
     </tbody>
 </table>

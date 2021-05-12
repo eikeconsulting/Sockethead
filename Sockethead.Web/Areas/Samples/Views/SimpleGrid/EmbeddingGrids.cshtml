@@ -54,15 +54,15 @@
 
     .AddColumn(column => column
         .Header("Movie")
-        .TwoColumnGrid((model, builder) =>
+        .TwoColumnGrid((movie, builder) =>
         {
-            builder.Add("Name", model.Name);
+            builder.Add("Name", movie.Name);
 
-            builder.Add(model, builder => builder
-                .Add(model => model.Name)
-                .Add(model => model.Director)
-                .Add(model => model.Genre)
-                .Add(model => model.Released));
+            builder.Add(movie, builder => builder
+                .Add(movie => movie.Name)
+                .Add(movie => movie.Director)
+                .Add(movie => movie.Genre)
+                .Add(movie => movie.Released));
         }))
 
     .RenderAsync())
@@ -74,20 +74,19 @@
         <h4>Embedding a TwoColumnGrid (again)</h4>
 
         <pre><code>@@(await Html
-
     .SimpleGrid(Model.Take(2))
 
     .AddColumn(column => column
         .Header("Movie")
-        .TwoColumnGrid((model, builder) =>
+        .TwoColumnGrid((movie, builder) =>
         {
-            builder.Add("Name", model.Name);
+            builder.Add("Name", movie.Name);
 
-            builder.Add(model, builder => builder
-                .Add(model => model.Name)
-                .Add(model => model.Director)
-                .Add(model => model.Genre)
-                .Add(model => model.Released));
+            builder.Add(movie, builder => builder
+                .Add(movie => movie.Name)
+                .Add(movie => movie.Director)
+                .Add(movie => movie.Genre)
+                .Add(movie => movie.Released));
         }))
 
     .RenderAsync())</code></pre>
@@ -112,7 +111,7 @@
     .AddColumn(col => col
         .For(movie => movie.Cast)
         .SimpleGrid(
-            model => model.Cast?.AsQueryable(), 
+            movie => movie.Cast?.AsQueryable(), 
             grid => grid.AddColumnsFromModel()))
 
     .RenderAsync())
@@ -130,7 +129,7 @@
     .AddColumn(col => col
         .For(movie => movie.Cast)
         .SimpleGrid(
-            model => model.Cast?.AsQueryable(), 
+            movie => movie.Cast?.AsQueryable(), 
             grid => grid.AddColumnsFromModel()))
 
     .RenderAsync())</code></pre>

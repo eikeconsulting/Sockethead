@@ -3,7 +3,7 @@
 <div class="row">
     <div class="col-6">
 
-        @(await Html
+@(await Html
     .SimpleGrid(Model.Take(3))
     .AddColumnsFromModel()
     .RenderAsync())
@@ -34,7 +34,7 @@
 <div class="row">
     <div class="col-6">
 
-        @(await Html
+@(await Html
     .SimpleGrid(Model.Take(3))
     .AddColumnFor(movie => movie.Name)
     .AddColumnFor(movie => movie.Director)
@@ -68,7 +68,7 @@
 <div class="row">
     <div class="col-6">
 
-        @(await Html
+@(await Html
     .SimpleGrid(Model.Take(3))
     .AddColumnsFromModel()
     .RemoveColumn(1) // by zero based index
