@@ -1,17 +1,75 @@
 ﻿@model IQueryable<Movie>
 
 <div class="row">
-    <div class="col-6">
+    <div class="col-md-6">
 
 @(await Html
-    .SimpleGrid(Model.Take(3))
+    .SimpleGrid(Model)
     .AddColumnsFromModel()
+    .Options(options =>
+    {
+        // Prevent the Grid from pulling a million records
+        options.MaxRows = 5;
+        
+        // Override Partial Views used to build a Grid
+        //options.TableViewName = ...
+        //options.SearchViewName = ...
+        //options.GridViewName = ...
+    })
     .RenderAsync())
+    </div>
+
+    <div class="col-md-6">
+
+        <h4>Maximum Rows</h4>
+
+        <pre><code>@@(await Html
+    .SimpleGrid(Model)
+    .AddColumnsFromModel()
+    .Options(options =>
+    {
+        // Prevent the Grid from pulling a million records
+        options.MaxRows = 5;
+        
+        // Override Partial Views used to build a Grid
+        //options.TableViewName = ...
+        //options.SearchViewName = ...
+        //options.GridViewName = ...
+    })
+    .RenderAsync())</code></pre>
 
     </div>
 
-    <div class="col-6">
-        <pre><code></code></pre>
+</div>
+
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+
+@(await Html
+    .SimpleGrid(Model.Take(0))
+    .AddColumnsFromModel()
+    .Options(options =>
+    {
+        options.NoMatchingRecordsHtml = "Sorry buddy, there nothing here for you...";
+    })
+    .RenderAsync())
+    </div>
+
+    <div class="col-md-6">
+
+        <h4>No Matching Records</h4>
+
+        <pre><code>@@(await Html
+    .SimpleGrid(Model.Take(0))
+    .AddColumnsFromModel()
+    .Options(options =>
+    {
+        options.NoMatchingRecordsHtml = 
+            "Sorry buddy, there nothing here for you...";
+    })
+    .RenderAsync())</code></pre>
 
     </div>
 

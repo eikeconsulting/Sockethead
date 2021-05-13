@@ -1,0 +1,55 @@
+﻿@model IQueryable<Movie>
+
+<div class="row">
+    <div class="col-md-6">
+
+@(await Html
+    .SimpleGrid(Model.Take(3))
+    .AddColumnsFromModel()
+    .OrderColumns()
+    .RenderAsync())
+
+    </div>
+
+    <div class="col-md-6">
+
+        <h4>Grid</h4>
+
+        <pre><code>@@(await Html
+    .SimpleGrid(Model.Take(3))
+    .AddColumnsFromModel()
+    .OrderColumns()
+    .RenderAsync())</code></pre>
+
+        <br />
+
+        <h4>Model</h4>
+
+        <pre><code>public class Movie
+{
+    [Display(Order = 2)]
+    public string Name { get; set; }
+
+    [Display(Name = "Movie Director", Order = 1)]
+    public string Director { get; set; }
+
+    [DisplayName("Movie Genre")]
+    public string Genre { get; set; }
+
+    [Display(AutoGenerateField = true)]
+    public int? Released { get; set; }
+
+    [Display(AutoGenerateField = false)]
+    public ICollection<CastMember> Cast { get; set; }
+}
+</code></pre>
+
+        <br />
+        <p>
+            Note that <code>OrderColumns()</code> only works on Columns added via <code>AddColumnsFromModel()</code>.
+            Columns that are added manually are not re-ordered.
+        </p>
+
+    </div>
+
+</div>

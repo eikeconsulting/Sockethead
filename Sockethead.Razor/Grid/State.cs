@@ -16,46 +16,39 @@ namespace Sockethead.Razor.Grid
         public SortOrder SortOrder { get; set; } = SortOrder.Ascending;
         public string SearchQuery { get; set; } = null;
         public int SearchNdx { get; set; } = 0;
-        private HttpRequest Request { get; }
 
-        public State(HttpRequest request)
+        private HttpRequest Request { get; }
+        private StateFields Fields { get; }
+
+        public State(HttpRequest request, string id = null)
         {
             Request = request;
 
+            Fields = new StateFields(id);
+
             var query = Request.QueryParamDictionary();
 
-            BaseUrl = query.ContainsKey(BaseUrlName) ? query[BaseUrlName] : null;
+            BaseUrl = query.ContainsKey(Fields.BaseUrlName) ? query[Fields.BaseUrlName] : null;
 
-            PageNum = query.ContainsKey(PageNumName) && int.TryParse(query[PageNumName], out int page) ? page : 1;
-            RowsPerPage = query.ContainsKey(RowsPerPageName) && int.TryParse(query[RowsPerPageName], out int rpp) ? rpp : null;
+            PageNum = query.ContainsKey(Fields.PageNumName) && int.TryParse(query[Fields.PageNumName], out int page) ? page : 1;
+            RowsPerPage = query.ContainsKey(Fields.RowsPerPageName) && int.TryParse(query[Fields.RowsPerPageName], out int rpp) ? rpp : null;
 
-            SortColumn = query.ContainsKey(SortColumnName) && int.TryParse(query[SortColumnName], out int sort) ? sort : 0;
-            SortOrder = query.ContainsKey(SortOrderName) && int.TryParse(query[SortOrderName], out int sortOrder) ? (SortOrder)sortOrder : SortOrder;
+            SortColumn = query.ContainsKey(Fields.SortColumnName) && int.TryParse(query[Fields.SortColumnName], out int sort) ? sort : 0;
+            SortOrder = query.ContainsKey(Fields.SortOrderName) && int.TryParse(query[Fields.SortOrderName], out int sortOrder) ? (SortOrder)sortOrder : SortOrder;
 
-            SearchQuery = query.ContainsKey(SearchQueryName) ? query[SearchQueryName] : null;
-            SearchNdx = query.ContainsKey(SearchNdxName) && int.TryParse(query[SearchNdxName], out int searchNdx) ? searchNdx : 0;
+            SearchQuery = query.ContainsKey(Fields.SearchQueryName) ? query[Fields.SearchQueryName] : null;
+            SearchNdx = query.ContainsKey(Fields.SearchNdxName) && int.TryParse(query[Fields.SearchNdxName], out int searchNdx) ? searchNdx : 0;
         }
-
-        private const string BaseUrlName = "grid-base-url";
-
-        private const string PageNumName = "grid-page";
-        private const string RowsPerPageName = "grid-rows-per-page";
-
-        private const string SortColumnName = "grid-sort-column";
-        private const string SortOrderName = "grid-sort-order";
-
-        private const string SearchQueryName = "grid-search-query";
-        private const string SearchNdxName = "grid-search-ndx";
 
         public string BuildPageUrl(int pageNum, int? rowsPerPage = null)
         {
             var q = new Dictionary<string, string>
             {
-                [PageNumName] = pageNum.ToString()
+                [Fields.PageNumName] = pageNum.ToString()
             };
 
             if (rowsPerPage.HasValue)
-                q[RowsPerPageName] = rowsPerPage.Value.ToString();
+                q[Fields.RowsPerPageName] = rowsPerPage.Value.ToString();
 
             return Request.UrlUpdateQuery(q);
         }
@@ -64,9 +57,9 @@ namespace Sockethead.Razor.Grid
         {
             var q = new Dictionary<string, string>
             {
-                [PageNumName] = null,
-                [SortColumnName] = columnId.ToString(),
-                [SortOrderName] = ((int)sortOrder).ToString(),
+                [Fields.PageNumName] = null,
+                [Fields.SortColumnName] = columnId.ToString(),
+                [Fields.SortOrderName] = ((int)sortOrder).ToString(),
             };
             return Request.UrlUpdateQuery(q);
         }
@@ -74,8 +67,8 @@ namespace Sockethead.Razor.Grid
         public string BuildSearchUrl(string query, int ndx)
         {
             var q = EmptyGridParameters();
-            q[SearchQueryName] = query.Substring(0, 50);
-            q[SearchNdxName] = ndx.ToString();
+            q[Fields.SearchQueryName] = query.Substring(0, 50);
+            q[Fields.SearchNdxName] = ndx.ToString();
             return Request.UrlUpdateQuery(q);
         }
 
@@ -92,15 +85,15 @@ namespace Sockethead.Razor.Grid
             return Request.UrlUpdateQuery(q);
         }
 
-        private static Dictionary<string, string> EmptyGridParameters()
+        private Dictionary<string, string> EmptyGridParameters()
             => new Dictionary<string, string>
             {
-                [PageNumName] = null,
-                [RowsPerPageName] = null,
-                [SortColumnName] = null,
-                [SortOrderName] = null,
-                [SearchQueryName] = null,
-                [SearchNdxName] = null,
+                [Fields.PageNumName] = null,
+                [Fields.RowsPerPageName] = null,
+                [Fields.SortColumnName] = null,
+                [Fields.SortOrderName] = null,
+                [Fields.SearchQueryName] = null,
+                [Fields.SearchNdxName] = null,
             };
 
         public PagerModel BuildPagerModel(int totalRecords, bool displayTotal, int rowsPerPage, int[] rowsPerPageOptions)
@@ -128,10 +121,10 @@ namespace Sockethead.Razor.Grid
             return pager;
         }
 
-        public static string AppendSearchParameters(string url, string query, string searchNdx)
+        public string AppendSearchParameters(string url, string query, string searchNdx)
         {
             string separator = url.Contains('?') ? "&" : "?";
-            return $"{url}{separator}{SearchQueryName}={query}&{SearchNdxName}={searchNdx}";
+            return $"{url}{separator}{Fields.SearchQueryName}={query}&{Fields.SearchNdxName}={searchNdx}";
         }
     }
 }

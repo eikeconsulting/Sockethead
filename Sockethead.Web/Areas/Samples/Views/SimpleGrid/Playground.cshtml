@@ -45,7 +45,7 @@
         .Encoded(false)
         .DisplayAs(model => Html
             .TwoColumnGrid()
-            .Add(model)
+            .AddRowsForModel(model)
             .RenderToString()))
     .AddSearch("Blah", searchFilter: (source, query) => source.Where(movie => movie.Name.Contains(query, StringComparison.OrdinalIgnoreCase)))
     .AddSearch("Boom", searchFilter: (source, query) => source.Where(movie => movie.Name.Contains(query, StringComparison.OrdinalIgnoreCase)))
@@ -96,9 +96,9 @@
         .Encoded(false)
         .DisplayAs(model => Html
             .TwoColumnGrid()
-            .Add("Name 1", model.Name)
-            .Add(model)
-            .Add(
+            .AddRow("Name 1", model.Name)
+            .AddRowsForModel(model)
+            .AddRow(
                 label: $"List of all movies inside the movie {model.Name}",
                 value: Html.SimpleGrid(Model.Take(4))
                     .AddColumnFor(model => model.Name)
@@ -118,8 +118,8 @@
     .AddColumnForTwoColumnGrid(column =>  column.Header("TwoColumnGrid"),
         (gridBuilder, model) =>
             gridBuilder
-                .Add("Name 1", model.Name)
-                .Add(model)
+                .AddRow("Name 1", model.Name)
+                .AddRowsForModel(model)
                 .AddSimpleGrid(
                     label: $"List of all movies inside the movie {model.Name}",
                     model: Model.Take(4),

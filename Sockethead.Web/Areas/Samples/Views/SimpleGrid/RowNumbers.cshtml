@@ -1,0 +1,32 @@
+﻿@model IQueryable<Movie>
+
+@{ int i = 1; }
+
+<div class="row">
+    <div class="col-md-6">
+
+@(await Html
+    .SimpleGrid(Model.Take(5))
+    .AddColumn(col => col.DisplayAs(movie => i++))
+    .AddColumnsFromModel()
+    .RenderAsync())
+
+    </div>
+    <div class="col-md-6">
+
+        <pre><code>@@{ int i = 1; }
+
+@@(await Html
+    .SimpleGrid(Model.Take(5))
+    .AddColumn(col => col.DisplayAs(movie => i++))
+    .AddColumnsFromModel()
+    .RenderAsync())
+</code></pre>
+
+        <p>
+            Okay, I admit, you kinda have to "do it yourself" here...
+        </p>
+
+    </div>
+</div>
+

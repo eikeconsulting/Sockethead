@@ -4,53 +4,24 @@
 
 @(await Html
     .SimpleGrid(Model)
-    //.AddColumnsFromModel()
-    //.OrderColumns()
-    .AddColumnFor(model => model.SampleEnum)
-
-    .AddColumn(column => column
-        .Header("Enum DisplayFor")
-        .DisplayHtmlContent(model => Html.DisplayFor(modelQueryable => model.SampleEnum)))
 
     .AddColumn(column => column
         .Header("First Name")
         .DisplayHtmlContent(model => Html.TextBoxFor(modelQueryable => model.First, null, new { id = $"First_{i++}", @class = "form-control" })))
 
-    .AddColumn(column => column
-        .Header("First Name")
-        .Encoded(false)
-        .Sortable(false))
-
     .AddColumn(column => column.For(model => model.First).Sortable(false))
-    .AddColumn(column => column.Header("First").DisplayAs(model => model.First).SortableBy(model => model.First))
-    .AddColumn(column => column.Header("Full Name").DisplayAs(model => $"{model.Last}, {model.First}"))
-    .Sortable()
+
+    .AddColumn(column => column.For(model => model.RandomDate))
+    .AddColumn(column => column.For(model => model.RandomDate).ClientTime(model => model.RandomDate).Encoded(true))
+    .AddColumn(column => column.For(model => model.RandomDate).ClientTime(model => model.RandomDate))
+
     .DefaultSortBy(model => model.RandomDate)
-    .AddSearch(
-        name: "Name",
-        searchFilter: (source, query) => source.Where(model =>
-            model.First.Contains(query, StringComparison.OrdinalIgnoreCase) ||
-            model.Last.Contains(query, StringComparison.OrdinalIgnoreCase) ))
+
     .RenderAsync()
 )
 
 <div class="language-csharp">
 
-<pre><code>@@(await Html
-    .SimpleGrid(Model)
-    .AddColumnsFromModel()
-    .OrderColumns()
-    .AddColumn(column => column.For(model => model.First).Sortable(false))
-    .AddColumn(column => column.Header("First").DisplayAs(model => model.First).SortableBy(model => model.First))
-    .AddColumn(column => column.Header("Full Name").DisplayAs(model => $"{model.Last}, {model.First}"))
-    .Sortable()
-    .DefaultSortBy(model => model.RandomDate)
-    .AddSearch(
-        name: "Name",
-        searchFilter: (source, query) => source.Where(model =>
-            model.First.Contains(query, StringComparison.OrdinalIgnoreCase) ||
-            model.Last.Contains(query, StringComparison.OrdinalIgnoreCase) ))
-    .RenderAsync()
-)</code></pre>
+<pre><code></code></pre>
 
 </div>

@@ -1,0 +1,49 @@
+﻿@model IQueryable<Movie>
+
+<div class="row">
+    <div class="col-md-12">
+
+        <form method="post">
+@(await Html
+    .SimpleGrid(Model.Take(5))
+    .AddColumn(col => col
+        .DisplayAs(model => $"<input name='Names' type='checkbox' value='{model.Name}' />")
+        .Encoded(false))
+    .AddColumnsFromModel()
+    .RenderAsync())
+            <button class="btn btn-primary">Submit</button>
+        </form>
+
+    </div>
+
+    <div class="col-md-12">
+
+        <br />
+
+        <h4>View</h4>
+
+        <pre><code>&lt;form method="post">
+    @@(await Html
+        .SimpleGrid(Model.Take(5))
+        .AddColumn(col => col
+        .DisplayAs(model => 
+            $"&lt;input name='Names' type='checkbox' value='{model.Name}' />")
+        .Encoded(false))
+        .AddColumnsFromModel()
+        .RenderAsync())
+    &lt;button class="btn btn-primary">Submit&lt;/button>
+&lt;/form></code></pre>
+
+        <br />
+
+        <h4>Controller</h4>
+
+        <pre><code>[HttpPost, ValidateAntiForgeryToken]
+public IActionResult Forms(string[] names)
+{
+    return View(MovieQuery).Success($"You selected: {string.Join(", ", names)}");
+}</code></pre>
+
+    </div>
+
+</div>

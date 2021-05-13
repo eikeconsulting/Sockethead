@@ -24,6 +24,8 @@ namespace Sockethead.Razor.Grid
         public ISimpleGridColumn[] Columns { get; set; }
 
         public bool IsHeaderEnabled { get; set; }
+
+        public string FooterHtml { get; set; }
     }
 
     public class SimpleGridAjaxViewModel
@@ -42,6 +44,7 @@ namespace Sockethead.Razor.Grid
 
     public class SimpleGridSearchViewModel
     {
+        public string GridId { get; set; }
         public string RedirectUrl { get; set; }
         public string Query { get; set; }
         public List<SelectListItem> SearchFilterNames { get; set; }

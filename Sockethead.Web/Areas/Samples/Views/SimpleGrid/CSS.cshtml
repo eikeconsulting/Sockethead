@@ -1,17 +1,82 @@
 ﻿@model IQueryable<Movie>
 
 <div class="row">
-    <div class="col-6">
+    <div class="col-md-6">
 
 @(await Html
-    .SimpleGrid(Model.Take(3))
-    .AddColumnsFromModel()
+    .SimpleGrid(Model)
+
+    .AddColumnFor(movie => movie.Name)
+
+    .AddColumn(col => col
+        .For(movie => movie.Director)
+        .Css(elements => elements.Item
+            .AddStyle("background-color:yellow")))
+
+    .AddColumn(col => col
+        .For(movie => movie.Genre)
+        .Css(elements =>
+        {
+            elements.Header
+                .AddStyle("font-style: italic")
+                .AddStyle("background-color: red");
+
+            elements.Item
+                .AddStyle("font-style: italic");
+        }))
+
+    .Css(elements =>
+    {
+        elements.Table
+            .AddClass("table-striped table-hover")
+            .AddClass("table-bordered");
+
+        elements.Row
+            .AddStyle("color: green");
+
+        elements.Header
+            .AddStyle("color: blue");
+    })
     .RenderAsync())
 
     </div>
 
-    <div class="col-6">
-        <pre><code></code></pre>
+    <div class="col-md-6">
+        <pre><code>@@(await Html
+    .SimpleGrid(Model)
+
+    .AddColumnFor(movie => movie.Name)
+
+    .AddColumn(col => col
+        .For(movie => movie.Director)
+        .Css(elements => elements.Item
+            .AddStyle("background-color:yellow")))
+
+    .AddColumn(col => col
+        .For(movie => movie.Genre)
+        .Css(elements =>
+        {
+            elements.Header
+                .AddStyle("font-style: italic")
+                .AddStyle("background-color: red");
+
+            elements.Item
+                .AddStyle("font-style: italic");
+        }))
+
+    .Css(elements =>
+    {
+        elements.Table
+            .AddClass("table-striped table-hover")
+            .AddClass("table-bordered");
+
+        elements.Row
+            .AddStyle("color: green");
+
+        elements.Header
+            .AddStyle("color: blue");
+    })
+    .RenderAsync())</code></pre>
 
     </div>
 

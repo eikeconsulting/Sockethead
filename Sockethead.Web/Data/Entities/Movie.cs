@@ -6,9 +6,10 @@ namespace Sockethead.Web.Data.Entities
 {
     public class Movie
     {
+        [Display(Order = 2)]
         public string Name { get; set; }
 
-        [Display(Name = "Movie Director")]
+        [Display(Name = "Movie Director", Order = 1)]
         public string Director { get; set; }
 
         [DisplayName("Movie Genre")]

@@ -90,14 +90,14 @@ namespace Sockethead.Razor.Grid
             /// <summary>
             /// Add a row to the TwoColumnGrid via an Expression
             /// </summary>
-            public TwoColumnGridModelBuilder<TModel> Add(Expression<Func<TModel, object>> expression)
+            public TwoColumnGridModelBuilder<TModel> AddRowFor(Expression<Func<TModel, object>> expression)
             {
                 object value = expression.Compile().Invoke(Model);
                 
                 //if (GridBuilder.Html is IHtmlHelper<TModel> html)
                 //    value = html.DisplayFor(expression).ToString() + " boom";
 
-                GridBuilder.Add(expression.FriendlyName(), value == null ? "" : value.ToString());
+                GridBuilder.AddRow(expression.FriendlyName(), value == null ? "" : value.ToString());
                 return this;
             }
         }
@@ -105,15 +105,15 @@ namespace Sockethead.Razor.Grid
         /// <summary>
         /// Add all public properties from the Model into the TwoColumnGrid 
         /// </summary>
-        public TwoColumnGridBuilder Add<T>(T model)
+        public TwoColumnGridBuilder AddRowsForModel<TModel>(TModel model)
         {
-            return Add(ExpressionHelpers.ModelToDictionary(model));
+            return AddRows(ExpressionHelpers.ModelToDictionary(model));
         }
 
         /// <summary>
         /// Add a Model to the TwoColumnGrid and specify exactly which properties to include via a builder callback
         /// </summary>
-        public TwoColumnGridBuilder Add<TModel>(TModel model, Action<TwoColumnGridModelBuilder<TModel>> builderAction)
+        public TwoColumnGridBuilder AddRowsForModel<TModel>(TModel model, Action<TwoColumnGridModelBuilder<TModel>> builderAction)
         {
             builderAction(new TwoColumnGridModelBuilder<TModel>(model, this));
             return this;
@@ -122,7 +122,7 @@ namespace Sockethead.Razor.Grid
         /// <summary>
         /// Add all KeyValuePairs in a dictionary to a TwoColumnGrid
         /// </summary>
-        public TwoColumnGridBuilder Add<T>(Dictionary<string, T> dictionary)
+        public TwoColumnGridBuilder AddRows<T>(Dictionary<string, T> dictionary)
         {
             foreach (var kvp in dictionary)
                 Data.Add(new KeyValuePair<string, string>(kvp.Key, Encode(kvp.Value == null ? "" : kvp.Value.ToString())));
@@ -132,7 +132,7 @@ namespace Sockethead.Razor.Grid
         /// <summary>
         /// Add a manually specified Label/Value pair to a TwoColumnGrid
         /// </summary>
-        public TwoColumnGridBuilder Add(string label, string value, bool encode = true)
+        public TwoColumnGridBuilder AddRow(string label, string value, bool encode = true)
         {
             Data.Add(new KeyValuePair<string, string>(label, encode ? Encode(value) : value));
             return this;
@@ -145,7 +145,7 @@ namespace Sockethead.Razor.Grid
         {
             var grid = Html.TwoColumnGrid();
             gridBuilder(grid);
-            Add(label, grid.RenderToString(), encode: false);
+            AddRow(label, grid.RenderToString(), encode: false);
             return this;
         }
 
@@ -156,7 +156,7 @@ namespace Sockethead.Razor.Grid
         {
             var grid = Html.SimpleGrid(model);
             gridBuilder(grid);
-            Add(label, grid.RenderToString(), encode: false);
+            AddRow(label, grid.RenderToString(), encode: false);
             return this;
         }
 

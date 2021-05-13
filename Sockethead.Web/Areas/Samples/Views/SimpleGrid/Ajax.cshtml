@@ -1,6 +1,70 @@
 ﻿
-@Html.SimpleGridAjax(
-    partialViewEndpoint: "/Samples/SimpleGrid/PartialGrid?foo=baz", 
-    id: "Grid1", 
-    displaySearchField: true)
 
+
+<div class="row">
+    <div class="col-md-6">
+
+        @Html.SimpleGridAjax(
+            partialViewEndpoint: "/Samples/SimpleGrid/PartialGrid?foo=baz",
+            id: "Grid1",
+            displaySearchField: true)
+
+    </div>
+
+    <div class="col-md-6">
+
+        <h4>Main View</h4>
+
+        <pre><code>@@Html.SimpleGridAjax(
+    partialViewEndpoint: "/Samples/SimpleGrid/PartialGrid",
+    id: "Grid1",
+    displaySearchField: true)</code></pre>
+
+        <br />
+
+        <h4>Partial View (_PartialGrid)</h4>
+
+        <pre><code>@@(await Html
+    .SimpleGrid(Model)
+    .AddColumnsFromModel()
+    .Sortable()
+    .AddPager(options =>
+    {
+        options.RowsPerPage = 10;
+        options.RowsPerPageOptions = new[] { 3, 5, 10, 50 };
+    })
+    .AddSearch("Name", (source, query) 
+        => source.Where(movie => movie.Name.Contains(query)))
+    .Options(options =>
+    {
+        options.SearchViewName = null;
+    })
+    .RenderAsync())</code></pre>
+
+        <br />
+
+        <h4>Controller (Partial View)</h4>
+
+        <pre><code>[HttpGet]
+public PartialViewResult PartialGrid() 
+    => PartialView("_PartialGrid", MovieQuery);
+</code></pre>
+
+        <br />
+        <p>
+            To use AJAX, you need to put your SimpleGrid (just the Grid by itself) in a Partial View.
+            Then in your main view call <code>Html.SimpleGridAjax</code> which creates the placeholder object
+            and supporting JavaScript to dynamically load the Partial View.
+            <br /><br />
+            The JavaScript code will intercept column sorting and pagination clicks and instead make a request
+            to the PartialGrid.  Also, a listener is installed in the Search text box to intercept key strokes
+            to update the Grid while typing; it will perform a search on the first search configured (i.e. via
+            a call to <code>AddSearch(...)</code>).
+            Setting the SearchViewName to null will disable (hide) the standard search (non-AJAX) controls.
+            <br /><br />
+            Overall, it works, but the solution is a little kludge, and could use some work...
+        </p>
+
+    </div>
+
+</div>

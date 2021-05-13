@@ -56,13 +56,13 @@
         .Header("Movie")
         .TwoColumnGrid((movie, builder) =>
         {
-            builder.Add("Name", movie.Name);
+            builder.AddRow("Name", movie.Name);
 
-            builder.Add(movie, builder => builder
-                .Add(movie => movie.Name)
-                .Add(movie => movie.Director)
-                .Add(movie => movie.Genre)
-                .Add(movie => movie.Released));
+            builder.AddRowsForModel(movie, builder => builder
+                .AddRowFor(movie => movie.Name)
+                .AddRowFor(movie => movie.Director)
+                .AddRowFor(movie => movie.Genre)
+                .AddRowFor(movie => movie.Released));
         }))
 
     .RenderAsync())
@@ -80,13 +80,13 @@
         .Header("Movie")
         .TwoColumnGrid((movie, builder) =>
         {
-            builder.Add("Name", movie.Name);
+            builder.AddRow("Name", movie.Name);
 
-            builder.Add(movie, builder => builder
-                .Add(movie => movie.Name)
-                .Add(movie => movie.Director)
-                .Add(movie => movie.Genre)
-                .Add(movie => movie.Released));
+            builder.AddRowsForModel(movie, builder => builder
+                .AddRowFor(movie => movie.Name)
+                .AddRowFor(movie => movie.Director)
+                .AddRowFor(movie => movie.Genre)
+                .AddRowFor(movie => movie.Released));
         }))
 
     .RenderAsync())</code></pre>

@@ -1,17 +1,70 @@
-﻿@model IQueryable<Movie>
+﻿@using Sockethead.Web.Extensions;
+@model IQueryable<Movie>
 
 <div class="row">
-    <div class="col-6">
+    <div class="col-md-5">
 
 @(await Html
-    .SimpleGrid(Model.Take(3))
-    .AddColumnsFromModel()
+    .SimpleGrid(Model)
+    .AddColumnFor(movie => movie.Name)
+    .AddColumnFor(movie => movie.Genre)
+    .AddColumn(col => col
+        .MyGoogleSearchButton("Details", movie => movie.Name))
+    .MyFavoriteGridStuff()
     .RenderAsync())
 
     </div>
 
-    <div class="col-6">
-        <pre><code></code></pre>
+    <div class="col-md-7">
+
+        <h4>Grid</h4>
+
+        <pre><code>@@(await Html
+    .SimpleGrid(Model)
+    .AddColumnFor(movie => movie.Name)
+    .AddColumnFor(movie => movie.Genre)
+    .AddColumn(col => col
+        .MyGoogleSearchButton("Details", movie => movie.Name))
+    .MyFavoriteGridStuff()
+    .RenderAsync())</code></pre>
+
+        <br />
+
+        <h4>Custom Extensions</h4>
+
+        <pre><code>public static SimpleGrid&lt;T> MyFavoriteGridStuff&lt;T>(
+    this SimpleGrid&lt;T> grid) where T : class 
+    => grid
+        .Css(elements => elements.Table.AddClass("table-striped"))
+        .AddPager(options =>
+        {
+            options.TopAndBottom();
+            options.RowsPerPage = 5;
+            options.RowsPerPageOptions = new[] { 5, 10, 25 };
+        });
+
+public static ColumnBuilder&lt;T> MyGoogleSearchButton&lt;T>(
+    this ColumnBuilder&lt;T> col,
+    string text,
+    Func&lt;T, string> queryBuilder) where T : class 
+    => col
+        .Display(text)
+        .LinkTo(
+            linkBuilder: model =>
+            {
+                string query = queryBuilder(model);
+                string encoded = System.Web.HttpUtility.UrlEncode(query);
+                return $"https://www.google.com/search?q={encoded}";
+            }, 
+            target: "_blank",
+            css: css => css.AddClass("btn btn-primary"));</code></pre>
+
+        <br />
+        <p>
+            You can create your own extensions for either the entire Grid, or for Column Builder to 
+            encapsulate common setup you use in your app.  Just copy and paste these templates above
+            into your own static extension class and modify to your needs.
+        </p>
 
     </div>
 

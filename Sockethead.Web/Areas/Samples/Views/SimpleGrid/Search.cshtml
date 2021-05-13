@@ -1,17 +1,72 @@
 ﻿@model IQueryable<Movie>
 
 <div class="row">
-    <div class="col-6">
+    <div class="col-md-12">
 
 @(await Html
-    .SimpleGrid(Model.Take(3))
+    .SimpleGrid(Model)
+
     .AddColumnsFromModel()
+
+    .AddSearch("Movie Name",
+        (source, query) => source.Where(movie => movie.Name.Contains(query, StringComparison.OrdinalIgnoreCase)))
+
+    .AddSearch("Name/Director/Genre",
+        (source, query) => source.Where(movie =>
+            movie.Name.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+            movie.Director.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+            movie.Genre.Contains(query, StringComparison.OrdinalIgnoreCase)))
+
+    .AddSearch("Release Year",
+        (source, query) => int.TryParse(query, out int result)
+            ? source.Where(movie => movie.Released == result)
+            : source.Where(movie => false))
+
+    .AddPager(options =>
+    {
+        options.Botttom();
+        options.RowsPerPage = 3;
+    })
+
     .RenderAsync())
 
     </div>
 
-    <div class="col-6">
-        <pre><code></code></pre>
+    <div class="col-md-12">
+        <pre><code>@@(await Html
+    .SimpleGrid(Model)
+
+    .AddColumnsFromModel()
+
+    .AddSearch("Movie Name", 
+        (source, query) => source.Where(movie => movie.Name.Contains(query, StringComparison.OrdinalIgnoreCase)))
+
+    .AddSearch("Name/Director/Genre", 
+        (source, query)  => source.Where(movie =>
+            movie.Name.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+            movie.Director.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+            movie.Genre.Contains(query, StringComparison.OrdinalIgnoreCase)))
+
+    .AddSearch("Release Year", 
+        (source, query) => int.TryParse(query, out int result) 
+            ? source.Where(movie => movie.Released == result)
+            : source.Where(movie => false))
+
+    .AddPager(options =>
+    {
+        options.Botttom();
+        options.RowsPerPage = 3;
+    })
+
+    .RenderAsync())</code></pre>
+
+        <p>
+            Each call to <code>AddSearch</code> adds an item in the dropdown.
+            <br />
+            <br />
+            Note that when using Entity Framework, you don't need <code>StringComparision.OrdinalIgnoreCase</code> as 
+            by default SQL will ignore case and specifying this in Contains may not work.
+        </p>
 
     </div>
 

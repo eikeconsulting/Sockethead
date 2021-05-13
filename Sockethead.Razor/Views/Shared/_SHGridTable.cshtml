@@ -40,10 +40,11 @@
                     }
                 </tr>
             }
+            @Html.Raw(Model.FooterHtml)
         }
         else
         {
-            <tr><td colspan="@Model.Columns.Count()" class="text-center">@Model.Options.NoMatchingRecordsMessage</td></tr>
+            <tr><td colspan="@Model.Columns.Count()" class="text-center">@Html.Raw(Model.Options.NoMatchingRecordsHtml)</td></tr>
         }
     </tbody>
 </table>

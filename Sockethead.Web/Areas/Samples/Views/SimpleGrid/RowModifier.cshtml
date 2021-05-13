@@ -1,11 +1,45 @@
 ﻿@model IQueryable<Movie>
 
+<div class="row">
+    <div class="col-md-6">
+
 @(await Html
     .SimpleGrid(Model)
+
     .AddColumnsFromModel()
-    .AddCss(elements => elements.Table.AddClass("table-striped").AddStyle("color:black"))
-    .AddRowModifier(movie => movie.Director.Contains("James"), css => css.AddStyle("background-color:red"))
-    .AddRowModifier(movie => movie.Name.Contains("Rocky"), css => css.AddStyle("background-color:green"))
-    .Sortable()
+
+    .AddRowModifier(
+        movie => movie.Director.Contains("James"), 
+        css => css.AddStyle("background-color:red"))
+
+    .AddRowModifier(
+        movie => movie.Name.Contains("Rocky"), 
+        css => css.AddStyle("background-color:green"))
+
     .RenderAsync()
 )
+
+    </div>
+
+    <div class="col-md-6">
+        <pre><code>@@(await Html
+    .SimpleGrid(Model)
+
+    .AddColumnsFromModel()
+
+    .AddRowModifier(
+        movie => movie.Director.Contains("James"), 
+        css => css.AddStyle("background-color:red"))
+
+    .AddRowModifier(
+        movie => movie.Name.Contains("Rocky"), 
+        css => css.AddStyle("background-color:green"))
+
+    .RenderAsync()
+)</code></pre>
+
+        <p></p>
+
+    </div>
+
+</div>

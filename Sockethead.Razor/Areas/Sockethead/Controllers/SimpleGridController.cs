@@ -10,6 +10,9 @@ namespace Sockethead.Razor.Areas.Sockethead.Controllers
 
         [HttpPost, ValidateAntiForgeryToken]
         public IActionResult SearchHandler(SimpleGridSearchViewModel vm)
-            => Redirect(State.AppendSearchParameters(vm.RedirectUrl, vm.Query, vm.SearchNdx));
+        {
+            var state = new State(Request, vm.GridId);
+            return Redirect(state.AppendSearchParameters(vm.RedirectUrl, vm.Query, vm.SearchNdx));
+        }
     }
 }

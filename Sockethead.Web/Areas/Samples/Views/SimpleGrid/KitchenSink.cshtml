@@ -40,7 +40,7 @@
             target: "_blank",
             css: css => css.AddClass("btn btn-sm btn-primary")))
 
-    .AddCss(elements => elements.Table
+    .Css(elements => elements.Table
         .AddClass("table-striped")
         .AddClass("table-sm"))
 
@@ -64,7 +64,7 @@
             return source.Where(model => model.Genre.Contains(query, StringComparison.OrdinalIgnoreCase));
         })
 
-    .SetOptions(options =>
+    .Options(options =>
     {
         options.MaxRows = 1000;
     })
@@ -121,7 +121,7 @@
             target: "_blank",
             css: css => css.AddClass("btn btn-sm btn-primary")))
 
-    .AddCss(elements => elements.Table
+    .Css(elements => elements.Table
         .AddClass("table-striped")
         .AddClass("table-sm"))
 
@@ -145,7 +145,7 @@
             return source.Where(model => model.Genre.Contains(query, StringComparison.OrdinalIgnoreCase));
         })
 
-    .SetOptions(options =>
+    .Options(options =>
     {
         options.MaxRows = 1000;
     })

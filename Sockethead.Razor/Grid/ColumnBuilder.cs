@@ -218,7 +218,7 @@ namespace Sockethead.Razor.Grid
         /// <typeparam name="TGrid">Type of the Model for the new TwoColumnGrid</typeparam>
         /// <param name="gridModelBuilder">Function to return the Model to use</param>
         public ColumnBuilder<T> TwoColumnGrid<TGrid>(Func<T, TGrid> gridModelBuilder)
-            => TwoColumnGrid((model, grid) => grid.Add(gridModelBuilder(model)));
+            => TwoColumnGrid((model, grid) => grid.AddRowsForModel(gridModelBuilder(model)));
 
         /// <summary>
         /// Render a DateTime as a time html tag to be processed on the client side

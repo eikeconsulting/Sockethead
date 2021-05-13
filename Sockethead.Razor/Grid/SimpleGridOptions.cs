@@ -7,9 +7,18 @@ namespace Sockethead.Razor.Grid
         public string GridViewName { get; set; } = "_SHGrid";
         public string SearchViewName { get; set; } = "_SHGridSearch";
         public string TableViewName { get; set; } = "_SHGridTable";
+
+        /// <summary>
+        /// Maximum number of rows to render at one time
+        /// This is a saftey feature if you are querying a huge table
+        /// </summary>
         public int MaxRows { get; set; } = 5000;
 
-        public string NoMatchingRecordsMessage { get; set; } = "No matching records.";
+        /// <summary>
+        /// Message to display when there are no records to display
+        /// May optionally include HTML (i.e. this won't get encoded)
+        /// </summary>
+        public string NoMatchingRecordsHtml { get; set; } = "No matching records.";
     }
 
     public class GridCssOptions

@@ -1,7 +1,7 @@
 ﻿@model IQueryable<Movie>
 
 <div class="row">
-    <div class="col-6">
+    <div class="col-md-6">
 
         @(await Html
     .SimpleGrid(Model)
@@ -9,14 +9,15 @@
     .RenderAsync())
 
     </div>
-    <div class="col-6">
+    <div class="col-md-6">
 
         <h4>Model</h4>
         <pre><code>public class Movie
 {
+    [Display(Order = 2)]
     public string Name { get; set; }
 
-    [Display(Name = "Movie Director")]
+    [Display(Name = "Movie Director", Order = 1)]
     public string Director { get; set; }
 
     [DisplayName("Movie Genre")]
@@ -60,26 +61,17 @@ public IActionResult BasicUsage()
 
 
         @{
-            var table = await Html
+            string table = Html
             .SimpleGrid(Model.Take(3))
             .AddColumnsFromModel()
-            .RenderAsync();
-
-            string GetString(Microsoft.AspNetCore.Html.IHtmlContent content)
-            {
-                using (var writer = new System.IO.StringWriter())
-                {
-                    content.WriteTo(writer, System.Text.Encodings.Web.HtmlEncoder.Default);
-                    return writer.ToString();
-                }
-            }
+            .RenderToString();
         }
 
         <br />
 
         <h4>HTML Rendered</h4>
 
-<pre><code>@GetString(table)</code></pre>
+<pre><code>@table</code></pre>
 
     </div>
 </div>

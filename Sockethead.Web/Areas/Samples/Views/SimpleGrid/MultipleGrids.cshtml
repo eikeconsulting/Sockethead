@@ -1,0 +1,60 @@
+﻿@model IQueryable<Movie>
+
+<div class="row">
+    <div class="col-md-4">
+
+@(await Html
+    .SimpleGrid(Model)
+    .AddColumnFor(movie => movie.Name)
+    .AddPager(options => options.RowsPerPage = 3)
+    .RenderAsync())
+@(await Html
+    .SimpleGrid(Model)
+    .AddColumnFor(movie => movie.Name)
+    .AddPager(options => options.RowsPerPage = 3)
+    .RenderAsync())
+
+    </div>
+
+    <div class="col-md-4">
+
+@(await Html
+    .SimpleGrid(Model, "Grid1")
+    .AddColumnFor(movie => movie.Name)
+    .AddPager(options => options.RowsPerPage = 3)
+    .RenderAsync())
+
+    </div>
+
+    <div class="col-md-4">
+
+@(await Html
+    .SimpleGrid(Model, "Grid2")
+    .AddColumnFor(movie => movie.Name)
+    .AddPager(options => options.RowsPerPage = 3)
+    .RenderAsync())
+
+    </div>
+
+
+</div>
+<div class="row">
+
+    <div class="col-md-6">
+        <pre><code>@@(await Html
+    .SimpleGrid(Model, "Grid1")
+    .AddColumnFor(movie => movie.Name)
+    .AddPager(options => options.RowsPerPage = 3)
+    .RenderAsync())
+</code></pre>
+
+        <p>
+            The first two grids will page together while the second and third will be independent since 
+            they are given unique IDs.
+            <br /><br />
+            You simple place the Grid ID in the <code>Html.SimpleGrid(...)</code> call.
+        </p>
+
+    </div>
+
+</div>

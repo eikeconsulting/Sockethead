@@ -5,6 +5,7 @@ using System.Linq;
 using Sockethead.Razor.Helpers;
 using Sockethead.Web.Areas.Samples.ViewModels;
 using System.Collections.Generic;
+using Sockethead.Razor.Alert.Extensions;
 
 namespace Sockethead.Web.Areas.Samples.Controllers
 {
@@ -35,6 +36,11 @@ namespace Sockethead.Web.Areas.Samples.Controllers
             },
             new SocketheadRazorFeature
             {
+                Name = "Order Columns",
+                Description = "Order the columns based on the Display.Order Attribute",
+            },
+            new SocketheadRazorFeature
+            {
                 Name = "Column Headers",
                 Description = "How to specify what text to render for column headers.",
             },
@@ -50,6 +56,16 @@ namespace Sockethead.Web.Areas.Samples.Controllers
             },
             new SocketheadRazorFeature
             {
+                Name = "Row Numbers",
+                Description = "Include a column with the column number.",
+            },
+            new SocketheadRazorFeature
+            {
+                Name = "Encoding",
+                Description = "Disable encoding to embed raw HTML",
+            },
+            new SocketheadRazorFeature
+            {
                 Name = "Links",
                 Description = "Create links in item render",
             },
@@ -62,6 +78,11 @@ namespace Sockethead.Web.Areas.Samples.Controllers
             {
                 Name = "Enum",
                 Description = "Render an enumerated value as an int, field name, or Display Name.",
+            },
+            new SocketheadRazorFeature
+            {
+                Name = "Footer",
+                Description = "Add a footer row to the Grid.",
             },
             new SocketheadRazorFeature
             {
@@ -85,13 +106,18 @@ namespace Sockethead.Web.Areas.Samples.Controllers
             },
             new SocketheadRazorFeature
             {
+                Name = "MultipleGrids",
+                Description = "Provide a GridId if you want to paginate or search multiple grids on one page.",
+            },
+            new SocketheadRazorFeature
+            {
                 Name = "CSS",
                 Description = "Apply CSS classes and styles to the table, header, and rows.",
             },
             new SocketheadRazorFeature
             {
                 Name = "Row Modifier",
-                Description = "Apply CSS on a row based on a criteria.",
+                Description = "Apply CSS on a row based on criteria.",
             },
             new SocketheadRazorFeature
             {
@@ -105,8 +131,15 @@ namespace Sockethead.Web.Areas.Samples.Controllers
             },
             new SocketheadRazorFeature
             {
-                Name = "Forms",
+                Name = "Form",
+                Url = "Form",
                 Description = "Use a SimpleGrid as form.  This demonstrates checkbox handling.",
+            },
+            new SocketheadRazorFeature
+            {
+                Name = "Form2",
+                Url = "Form2",
+                Description = "Use a SimpleGrid as form.  This demonstrates editing models and recieving updated data in your controller.",
             },
             new SocketheadRazorFeature
             {
@@ -118,23 +151,19 @@ namespace Sockethead.Web.Areas.Samples.Controllers
             {
                 Name = "Sample1",
                 Model = "SampleData",
-                Description = "Placeholder",
+                Description = "Placeholder.  Working on dates and more complex forms.",
             },
-            new SocketheadRazorFeature
-            {
-                Name = "Sample2",
-                Model = "SampleData",
-                Description = "Placeholder",
-            },
+            /*
             new SocketheadRazorFeature
             {
                 Name = "Playground",
+                Url = "Playground",
                 Description = "A sample for me to play around in...",
             },
-
+            */
         };
-    
-    private static IQueryable<SampleModel> SampleDataQuery => SampleData.SampleModels.AsQueryable();
+
+        private static IQueryable<SampleModel> SampleDataQuery => SampleData.SampleModels.AsQueryable();
         private static IQueryable<Movie> MovieQuery => SampleData.Movies.AsQueryable();
 
         [HttpGet]
@@ -143,8 +172,7 @@ namespace Sockethead.Web.Areas.Samples.Controllers
         [HttpGet]
         public IActionResult Dashboard() => View(Features.AsQueryable());
 
-        [HttpGet]
-        public IActionResult Sample(string name)
+        private string SetSampleLinks(string name)
         {
             string modelName = "Movies";
             for (int i = 0; i < Features.Count; i++)
@@ -152,40 +180,71 @@ namespace Sockethead.Web.Areas.Samples.Controllers
                 if (Features[i].Name == name)
                 {
                     modelName = Features[i].Model;
-                    if (i > 0) ViewData["PrevFeature"] = Features[i-1];
-                    if (i+1 < Features.Count) ViewData["NextFeature"] = Features[i+1];
+                    if (i > 0) ViewData["PrevFeature"] = Features[i - 1];
+                    if (i + 1 < Features.Count) ViewData["NextFeature"] = Features[i + 1];
                     break;
                 }
             }
+            return modelName;
+        }
 
-            var model = modelName == "Movies" ? MovieQuery : (object)SampleDataQuery;
+        [HttpGet]
+        public IActionResult Sample(string name)
+        {
+            string modelName = SetSampleLinks(name);
+
+            object model = modelName == "Movies" ? MovieQuery : (object)SampleDataQuery;
 
             return View(viewName: name.Replace(" ", ""), model: model).SetTitle(name);
+        }
+
+        [HttpGet]
+        public IActionResult Form()
+        {
+            SetSampleLinks("Form");
+            return View(MovieQuery).SetTitle("Forms");
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public IActionResult Form(string[] names)
+        {
+            SetSampleLinks("Form");
+            return View(MovieQuery)
+                .SetTitle("Form")
+                .Success($"You selected: {string.Join(", ", names)}");
+        }
+
+        [HttpGet]
+        public IActionResult Form2()
+        {
+            SetSampleLinks("Form2");
+            return View(MovieQuery).SetTitle("Form2");
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public IActionResult Form2(Movie[] movies)
+        {
+            SetSampleLinks("Form2");
+            return View(movies.AsQueryable())
+                .SetTitle("Form2")
+                .Success($"Recieved: {movies.Length} movies");
         }
 
         [HttpGet]
         public PartialViewResult PartialGrid() => PartialView("_PartialGrid", MovieQuery);
 
         [HttpGet]
-        public IActionResult Playground() => View(MovieQuery).SetTitle("Playground");
+        public IActionResult Playground()
+        {
+            SetSampleLinks("Playground");
+            return View(MovieQuery).SetTitle("Playground");
+        }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public IActionResult Playground(string[] names) => View(MovieQuery.Where(movie => names.Contains(movie.Name))).SetTitle("Playground Submit Results");
-
-
-        [HttpGet]
-        public IActionResult Sample1()
+        public IActionResult Playground(string[] names)
         {
-            ViewData["Title"] = "Sample1";
-            return View(SampleDataQuery);
+            return View(MovieQuery.Where(movie => names.Contains(movie.Name)))
+                .SetTitle("Playground Submit Results");
         }
-
-        [HttpGet]
-        public IActionResult Sample2()
-        {
-            ViewData["Title"] = "Sample2";
-            return View(SampleDataQuery);
-        }
-
     }
 }

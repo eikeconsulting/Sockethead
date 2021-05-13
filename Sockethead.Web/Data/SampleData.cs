@@ -20,11 +20,20 @@ namespace Sockethead.Web.Data
                     new CastMember { Name = "David Prowse", Character = "Darth Vader" },
                 }
             },
+            new Movie { Name = "Reservoir Dogs", Director="Quentin Tarantino", Genre = "Thriller", Released = 1992 },
+            new Movie { Name = "Airplane!", Genre = "Slapstick", Director="David and Jerry Zucker and Jim Abrahams", Released = 1980,
+                Cast = new List<CastMember>
+                {
+                    new CastMember { Name = "Leslie Nielsen", Character = "Dr. Rumack" },
+                    new CastMember { Name = "Robert Hays", Character = "Ted Striker" },
+                    new CastMember { Name = "Julie Hagerty", Character = "Elaine" },
+                    new CastMember { Name = "lloyd Bridges", Character = "Steve McCroskey" },
+                    new CastMember { Name = "Kareem Abdul-Jabbar", Character = "Roger Murdock" },
+                }
+            },
             new Movie { Name = "Terminator", Genre = "Action", Director = "James Cameron", Released = 1984 },
             new Movie { Name = "Terminator 2: Judgement Day", Genre = "Action", Director = "James Cameron", Released = 1991 },
             new Movie { Name = "Wonder Woman 1984", Genre = "Action", Director = "", Released = 2020 },
-            new Movie { Name = "Reservoir Dogs", Director="Quentin Tarantino", Genre = "Thriller", Released = 1992 },
-            new Movie { Name = "Airplane!", Genre = "Slapstick", Director="David and Jerry Zucker and Jim Abrahams", Released = 1980 },
             new Movie { Name = "Close Encounters of the Third Kind", Director = "Steven Spielberg", Genre = "Sci-Fi", Released = 1997 },
             new Movie { Name = "Rocky", Director = "John G. Avildsen", Genre = "Action" },
             new Movie { Name = "Brave Heart", Director = "Mel Gibson", Genre = "Action" },

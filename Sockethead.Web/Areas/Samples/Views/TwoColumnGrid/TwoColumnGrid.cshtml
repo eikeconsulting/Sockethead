@@ -10,13 +10,13 @@
         <div class="col-md-6">
             @(Html
             .TwoColumnGrid()
-            .Add(movie)
+            .AddRowsForModel(movie)
             .Render())
         </div>
         <div class="col-md-6">
 <pre><code>@@(Html
     .TwoColumnGrid()
-    .Add(movie)
+    .AddRowsForModel(movie)
     .Render())
 </code></pre>
         </div>
@@ -29,26 +29,30 @@
         <div class="col-md-6">
             @(Html
             .TwoColumnGrid()
-            .Add(movie)
+            .AddRowsForModel(movie)
             .AddRowProcessor(kvp =>
             {
                 if (kvp.Key == "Name")
                     return new KeyValuePair<string, string>();
 
-                return new KeyValuePair<string, string>(kvp.Key, kvp.Value.ToUpper());
+                return new KeyValuePair<string, string>(
+                    kvp.Key, 
+                    kvp.Value.ToUpper());
             })
             .Render())
         </div>
         <div class="col-md-6">
 <pre><code>@@(Html
     .TwoColumnGrid()
-    .Add(movie)
+    .AddRowsForModel(movie)
     .AddRowProcessor(kvp =>
     {
         if (kvp.Key == "Name")
             return new KeyValuePair<string, string>();
 
-        return new KeyValuePair<string, string>(kvp.Key, kvp.Value.ToUpper());
+        return new KeyValuePair<string, string>(
+            kvp.Key, 
+            kvp.Value.ToUpper());
     })
     .Render()))
 </code></pre>
@@ -64,24 +68,23 @@
     <div class="row">
         <div class="col-md-6">
 
-            @(Html
-            .TwoColumnGrid()
-            .Add(movie, builder => builder
-                .Add(model => model.Name)
-                .Add(model => model.Genre)
-                .Add(model => model.Director))
-            .Render())
+@(Html
+    .TwoColumnGrid()
+    .AddRowsForModel(movie, builder => builder
+        .AddRowFor(model => model.Name)
+        .AddRowFor(model => model.Genre)
+        .AddRowFor(model => model.Director))
+    .Render())
 
         </div>
         <div class="col-md-6">
             <pre><code>@@(Html
     .TwoColumnGrid()
-    .Add(movie, builder => builder
-        .Add(model => model.Name)
-        .Add(model => model.Genre)
-        .Add(model => model.Director))
-    .Render())
-</code></pre>
+    .AddRowsForModel(movie, builder => builder
+        .AddRowFor(model => model.Name)
+        .AddRowFor(model => model.Genre)
+        .AddRowFor(model => model.Director))
+    .Render())</code></pre>
         </div>
     </div>
 
@@ -91,34 +94,33 @@
     <div class="row">
         <div class="col-md-6">
 
-            @(await Html
-            .TwoColumnGrid()
-            .Add("First Row", "I like this")
-            .Add(movie)
-            .Add("Another", "Row here")
-            .Add(new Dictionary<string, object>
-            {
-                ["One"] = 1,
-                ["Two"] = "Two",
-                ["Now"] = DateTime.Now,
-            })
-            .RenderAsync())
-
-        </div>
-        <div class="col-md-6">
-            <pre><code>@@(await Html
+@(await Html
     .TwoColumnGrid()
-    .Add("First Row", "I like this")
-    .Add(movie)
-    .Add("Another", "Row here")
-    .Add(new Dictionary&lt;string, object&gt;
+    .AddRow("First Row", "I like this")
+    .AddRowsForModel(movie)
+    .AddRow("Another", "Row here")
+    .AddRows(new Dictionary<string, object>
     {
         ["One"] = 1,
         ["Two"] = "Two",
         ["Now"] = DateTime.Now,
     })
     .RenderAsync())
-</code></pre>
+
+        </div>
+        <div class="col-md-6">
+            <pre><code>@@(await Html
+    .TwoColumnGrid()
+    .AddRow("First Row", "I like this")
+    .AddRowsForModel(movie)
+    .AddRow("Another", "Row here")
+    .AddRows(new Dictionary<string, object>
+    {
+        ["One"] = 1,
+        ["Two"] = "Two",
+        ["Now"] = DateTime.Now,
+    })
+    .RenderAsync())</code></pre>
         </div>
     </div>
 
@@ -128,7 +130,7 @@
         <div class="col-md-6">
             @(await Html
             .TwoColumnGrid()
-            .Add(movie)
+            .AddRowsForModel(movie)
             .Css(elements =>
             {
                 elements.ClearAll();
@@ -144,7 +146,7 @@
         <div class="col-md-6">
 <pre><code>@@(await Html
     .TwoColumnGrid()
-    .Add(movie)
+    .AddRowsForModel(movie)
     .Css(elements =>
     {
         elements.ClearAll();
@@ -170,29 +172,28 @@
             {
                 <div>Allow Dupes: @b</div>
                 @(await Html
-                .TwoColumnGrid()
-                .Add("Row A", "A Stuff")
-                .Add(movie)
-                .Add("Row B", "B Stuff")
-                .Add("Row B", "B Stuff Again")
-                .Add(movie)
-                .Add("Row C", "C Stuff")
-                .Options(options => options.AllowDuplicates = b)
-                .RenderAsync());
+                    .TwoColumnGrid()
+                    .AddRow("Row A", "A Stuff")
+                    .AddRowsForModel(movie)
+                    .AddRow("Row B", "B Stuff")
+                    .AddRow("Row B", "B Stuff Again")
+                    .AddRowsForModel(movie)
+                    .AddRow("Row C", "C Stuff")
+                    .Options(options => options.AllowDuplicates = b)
+                    .RenderAsync())
             }
         </div>
         <div class="col-md-6">
 <pre><code>@@(await Html
     .TwoColumnGrid()
-    .Add("Row A", "A Stuff")
-    .Add(movie)
-    .Add("Row B", "B Stuff")
-    .Add("Row B", "B Stuff Again")
-    .Add(movie)
-    .Add("Row C", "C Stuff")
-    .Options(options => options.AllowDuplicates = ...)
-    .RenderAsync());
-</code></pre>
+    .AddRow("Row A", "A Stuff")
+    .AddRowsForModel(movie)
+    .AddRow("Row B", "B Stuff")
+    .AddRow("Row B", "B Stuff Again")
+    .AddRowsForModel(movie)
+    .AddRow("Row C", "C Stuff")
+    .Options(options => options.AllowDuplicates = b)
+    .RenderAsync())</code></pre>
         </div>
 
     </div>
@@ -209,7 +210,7 @@
             {
                 options.TwoColumnGridStyle = TwoColumnGridStyle.DescriptionList;
             })
-            .Add(movie)
+            .AddRowsForModel(movie)
             .RenderAsync())
 
         </div>
@@ -221,7 +222,7 @@
         options.TwoColumnGridStyle = 
             TwoColumnGridStyle.DescriptionList;
     })
-    .Add(movie)
+    .AddRowsForModel(movie)
     .RenderAsync())
 </code></pre>
         </div>
@@ -236,19 +237,19 @@
         <div class="col-md-6">
             @(await Html
             .TwoColumnGrid()
-            .Add(movie)
+            .AddRowsForModel(movie)
             .AddTwoColumnGrid(
                 label: "Embedded TwoColumnGrid",
-                gridBuilder: grid => grid.Add(movie))
+                gridBuilder: grid => grid.AddRowsForModel(movie))
             .RenderAsync())
         </div>
         <div class="col-md-6">
 <pre><code>@@(await Html
     .TwoColumnGrid()
-    .Add(movie)
+    .AddRowsForModel(movie)
     .AddTwoColumnGrid(
         label: "Embedded TwoColumnGrid",
-        gridBuilder: grid => grid.Add(movie))
+        gridBuilder: grid => grid.AddRowsForModel(movie))
     .RenderAsync())
 </code></pre>
         </div>
@@ -263,7 +264,7 @@
         <div class="col-md-6">
             @(await Html
             .TwoColumnGrid()
-            .Add(movie)
+            .AddRowsForModel(movie)
             .AddSimpleGrid(
                 label: "Embedded SimpleGrid",
                 model: Model.Take(3),
@@ -273,7 +274,7 @@
         <div class="col-md-6">
 <pre><code>@@(await Html
     .TwoColumnGrid()
-    .Add(movie)
+    .AddRowsForModel(movie)
     .AddSimpleGrid(
         label: "Embedded SimpleGrid", 
         model: Model.Take(3), 

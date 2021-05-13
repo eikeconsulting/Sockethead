@@ -1,16 +1,15 @@
-﻿@using System.Web;
-@model IQueryable<Movie>
+﻿@model IQueryable<Movie>
 @{ 
     string GoogleSearchLink(string query)
     {
-        string encoded = HttpUtility.UrlEncode(query);
+        string encoded = System.Web.HttpUtility.UrlEncode(query);
         return $"https://www.google.com/search?q={encoded}";
     }
 }
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-5">
 
-        @(await Html
+@(await Html
     .SimpleGrid(Model.Take(3))
 
     .AddColumn(col => col
@@ -19,7 +18,7 @@
         .LinkTo(model => GoogleSearchLink(model.Name)))
 
     .AddColumn(col => col
-        .Display("Click Me!")
+        .Display("Google Search")
         .LinkTo(
             linkBuilder: model => GoogleSearchLink(model.Name),
             target: "_blank",
@@ -28,7 +27,7 @@
     .RenderAsync())
 
     </div>
-    <div class="col-md-8">
+    <div class="col-md-7">
 
         <pre><code>@@(await Html
     .SimpleGrid(Model.Take(3))
@@ -39,7 +38,7 @@
         .LinkTo(model => GoogleSearchLink(model.Name)))
 
     .AddColumn(col => col
-        .Display("Click Me!")
+        .Display("Google Search")
         .LinkTo(
             linkBuilder: model => GoogleSearchLink(model.Name),
             target: "_blank",

@@ -1,17 +1,21 @@
 ﻿@model IQueryable<Movie>
 
 <div class="row">
-    <div class="col-6">
 
-@(await Html
-    .SimpleGrid(Model.Take(3))
-    .AddColumnsFromModel()
-    .RenderAsync())
+    <div class="col-md-6">
 
-    </div>
+        <h4>Install the latest Package</h4>
+        <pre><code>PM> Install-Package Sockethead.Razor
+</code></pre>
 
-    <div class="col-6">
-        <pre><code></code></pre>
+        <p>
+            <br />
+            Then bam, you're ready to start creating SimpleGrids!  No JavaScript or CSS includes are necessary.
+            <br />
+            <br />
+            You may also want to include the namespace in your ViewImports.cshtml:<br />
+            <code>@@using Sockethead.Razor.Grid;</code>
+        </p>
 
     </div>
 

@@ -1,0 +1,79 @@
+﻿@model IQueryable<Movie>
+
+<div class="row">
+    <div class="col-md-12">
+
+        <form method="post">
+@(await Html
+    .SimpleGrid(Model.Take(5))
+    .AddColumn(col => col
+        .DisplayAs(movie =>
+            $"<input type='hidden' name='Movies.Index' value='{movie.Name}'>" +
+            $"<input type='hidden' name='Movies[{movie.Name}].Name' value='{movie.Name}'>" +
+            $"{movie.Name}")
+        .Header("Movie")
+        .Encoded(false))
+
+    .AddColumnFor(movie => movie.Director)
+
+    .AddColumn(col => col
+        .DisplayAs(movie => 
+            $"<input type='text' name='Movies[{movie.Name}].Director' value='{movie.Director}' />")
+        .Header("Edit Director")
+        .Encoded(false))
+
+    .RenderAsync())
+            <button class="btn btn-primary">Submit</button>
+        </form>
+
+    </div>
+
+    <div class="col-md-12">
+
+        <br />
+
+        <h4>View</h4>
+
+        <pre><code>&lt;form method="post">
+    @@(await Html
+        .SimpleGrid(Model.Take(5))
+        .AddColumn(col => col
+            .DisplayAs(movie =>
+                $"&lt;input type='hidden' name='Movies.Index' value='{movie.Name}'>" +
+                $"&lt;input type='hidden' name='Movies[{movie.Name}].Name' value='{movie.Name}'>" +
+                $"{movie.Name}")
+            .Header("Movie")
+            .Encoded(false))
+
+        .AddColumnFor(movie => movie.Director)
+
+        .AddColumn(col => col
+            .DisplayAs(movie => 
+                $"&lt;input type='text' name='Movies[{movie.Name}].Director' value='{movie.Director}' />")
+            .Header("Edit Director")
+            .Encoded(false))
+
+        .RenderAsync())
+    &lt;button class="btn btn-primary">Submit&lt;/button>
+&lt;/form></code></pre>
+
+        <br />
+
+        <h4>Controller</h4>
+
+        <pre><code>[HttpGet]
+public IActionResult Form2()
+{
+    return View(MovieQuery);
+}
+
+[HttpPost, ValidateAntiForgeryToken]
+public IActionResult Form2(Movie[] movies)
+{
+    return View(movies.AsQueryable())
+        .Success($"Recieved: {movies.Length} movies");
+}</code></pre>
+
+    </div>
+
+</div>

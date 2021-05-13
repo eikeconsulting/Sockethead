@@ -19,17 +19,19 @@ namespace Sockethead.Razor.Grid
         /// </summary>
         /// <param name="html">HTML Helper</param>
         /// <param name="source">Data Source</param>
-        public SimpleGrid(IHtmlHelper html, IQueryable<T> source)
+        public SimpleGrid(IHtmlHelper html, IQueryable<T> source, string gridId = null)
         {
             Html = html;
             Source = source;
-            State = new State(Html.ViewContext.HttpContext.Request);
+            GridId = gridId;
+            State = new State(Html.ViewContext.HttpContext.Request, gridId);
         }
 
         private IHtmlHelper Html { get; }
         private IQueryable<T> Source { get; }
+        private string GridId { get; }
         private State State { get; }
-        private SimpleGridOptions Options { get; } = new SimpleGridOptions();
+        private SimpleGridOptions SimpleGridOptions { get; } = new SimpleGridOptions();
         private PagerOptions PagerOptions { get; } = new PagerOptions();
         private Sort<T> Sort { get; } = new Sort<T>();
         private List<Column<T>> Columns { get; set; } = new List<Column<T>>();
@@ -38,6 +40,7 @@ namespace Sockethead.Razor.Grid
         private List<RowModifier> RowModifiers { get; } = new List<RowModifier>();
         private bool IsSortable { get; set; } = false;
         private bool IsHeaderEnabled { get; set; } = true;
+        private string FooterHtml { get; set; }
 
         private class RowModifier
         {
@@ -233,7 +236,7 @@ namespace Sockethead.Razor.Grid
         /// <summary>
         /// Add custom css classes and styles to various elements of the Grid.
         /// </summary>
-        public SimpleGrid<T> AddCss(Action<GridCssOptions> cssOptionsSetter)
+        public SimpleGrid<T> Css(Action<GridCssOptions> cssOptionsSetter)
         {
             cssOptionsSetter.Invoke(CssOptions);
             return this;
@@ -242,12 +245,12 @@ namespace Sockethead.Razor.Grid
         /// <summary>
         /// Add a CSS class to the TABLE element
         /// </summary>
-        public SimpleGrid<T> AddCssClass(string cssClass) => AddCss(options => options.Table.AddClass(cssClass));
+        public SimpleGrid<T> AddCssClass(string cssClass) => Css(options => options.Table.AddClass(cssClass));
 
         /// <summary>
         /// Add a CSS style to the TABLE element
         /// </summary>
-        public SimpleGrid<T> AddCssStyle(string cssStyle) => AddCss(options => options.Table.AddStyle(cssStyle));
+        public SimpleGrid<T> AddCssStyle(string cssStyle) => Css(options => options.Table.AddStyle(cssStyle));
 
         /// <summary>
         /// Specify an expression to sort the Grid by default
@@ -290,9 +293,9 @@ namespace Sockethead.Razor.Grid
         /// <summary>
         /// Specify Grid Options
         /// </summary>
-        public SimpleGrid<T> SetOptions(Action<SimpleGridOptions> optionsSetter)
+        public SimpleGrid<T> Options(Action<SimpleGridOptions> optionsSetter)
         {
-            optionsSetter.Invoke(Options);
+            optionsSetter.Invoke(SimpleGridOptions);
             return this;
         }
 
@@ -304,6 +307,12 @@ namespace Sockethead.Razor.Grid
         {
             PagerOptions.Enabled = true;
             pagerOptionsSetter?.Invoke(PagerOptions);
+            return this;
+        }
+
+        public SimpleGrid<T> Footer(string footerHtml)
+        {
+            FooterHtml = footerHtml;
             return this;
         }
 
@@ -359,9 +368,11 @@ namespace Sockethead.Razor.Grid
                     RowCss = CssOptions.Row.ToString(),
                 },
 
+                FooterHtml = FooterHtml,
+
                 GetRowCss = row => RowModifiers.FirstOrDefault(rc => rc.RowFilter(row as T))?.CssBuilder.ToString(),
 
-                Options = Options,
+                Options = SimpleGridOptions,
 
                 // build pager view model
                 PagerOptions = PagerOptions,
@@ -377,6 +388,7 @@ namespace Sockethead.Razor.Grid
                 SimpleGridSearchViewModel = SimpleGridSearches.Any()
                     ? new SimpleGridSearchViewModel
                     {
+                        GridId = GridId,
                         RedirectUrl = State.BuildResetUrl(),
                         SearchFilterNames = SimpleGridSearches.Select((search, i) => new SelectListItem
                         {
@@ -415,15 +427,15 @@ namespace Sockethead.Razor.Grid
 
             // resolve the data (rows)
             // Note: we can't call ToListAsync here without a reference to Microsoft.EntityFrameworkCore
-            int rowsToTake = Options.MaxRows;
+            int rowsToTake = SimpleGridOptions.MaxRows;
 
             if (State.RowsPerPage.HasValue)
                 rowsToTake = State.RowsPerPage.Value;
             else if (PagerOptions.Enabled)
                 rowsToTake = PagerOptions.RowsPerPage;
 
-            if (rowsToTake > Options.MaxRows)
-                rowsToTake = Options.MaxRows;
+            if (rowsToTake > SimpleGridOptions.MaxRows)
+                rowsToTake = SimpleGridOptions.MaxRows;
 
             vm.Rows = query
                 .Skip((State.PageNum - 1) * rowsToTake)

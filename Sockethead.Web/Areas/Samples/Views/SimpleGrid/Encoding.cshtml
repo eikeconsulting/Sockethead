@@ -1,0 +1,43 @@
+﻿@model IQueryable<Movie>
+
+<div class="row">
+    <div class="col-md-5">
+
+@(await Html
+    .SimpleGrid(Model.Where(movie => movie.Name.Contains("bold")))
+
+    .AddColumn(col => col
+        .For(movie => movie.Name)
+        .Header("Encoded")
+        .Encoded(true)) // default is true
+
+    .AddColumn(col => col
+        .For(movie => movie.Name)
+        .Header("Un-encoded")
+        .Encoded(false))
+
+    .RenderAsync())
+
+    </div>
+
+    <div class="col-md-7">
+        <pre><code>@@(await Html
+    .SimpleGrid(Model.Where(movie => movie.Name.Contains("bold")))
+
+    .AddColumn(col => col
+        .For(movie => movie.Name)
+        .Header("Encoded")
+        .Encoded(true)) // default is true
+
+    .AddColumn(col => col
+        .For(movie => movie.Name)
+        .Header("Un-encoded")
+        .Encoded(false))
+
+    .RenderAsync())</code></pre>
+
+        <p></p>
+
+    </div>
+
+</div>

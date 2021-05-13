@@ -4,26 +4,15 @@
 @(await Html
     .SimpleGrid(Model)
     .AddColumnsFromModel()
-    
-    /*
-    .AddColumnForTwoColumnGrid(col => col
-        .Header("Cast"), 
-            (grid, movie) => grid
-                .Add(movie.Cast.ToDictionary(
-                    keySelector: c => c.Name, 
-                    elementSelector: cast => (object)cast.Character)))
-    */
-    .AddColumn(col => col.DisplayAs(model => "link").LinkTo(model => "https://www.google.com"))
     .Sortable()
     .AddPager(options =>
     {
         options.RowsPerPage = 10;
         options.RowsPerPageOptions = new[] { 3, 5, 10, 50 };
     })
-    .AddSearch("Name", (source, query) => source.Where(movie => movie.Name.Contains(query, StringComparison.OrdinalIgnoreCase)))
-    .SetOptions(options =>
+    .AddSearch("Name", (source, query) => source.Where(movie => movie.Name.Contains(query)))
+    .Options(options =>
     {
         options.SearchViewName = null;
-        //options.MaxRows = 10;
     })
     .RenderAsync())
