@@ -127,7 +127,7 @@ namespace Sockethead.Razor.Grid
         /// Add columns from the model via Reflection
         /// This is a quick and dirty way to quickly build the grid out with all properties of the Model
         /// </summary>
-        public SimpleGrid<T> AddColumnsFromModel()
+        public SimpleGrid<T> AddColumnsForModel()
         {
             foreach (var property in typeof(T).GetProperties())
             {
@@ -176,7 +176,7 @@ namespace Sockethead.Razor.Grid
 
         /// <summary>
         /// Rearrange the Order of the columns based on the Order property of DisplayAttribute
-        /// Note that this only affects columns added from "AddColumnsFromModel", and columns added
+        /// Note that this only affects columns added from "AddColumnsForModel", and columns added
         /// after this call will be ordered as they are added
         /// </summary>
         public SimpleGrid<T> OrderColumns()

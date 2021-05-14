@@ -6,7 +6,7 @@
 @(await Html
     .SimpleGrid(Model)
 
-    .AddColumnsFromModel()
+    .AddColumnsForModel()
 
     .AddRowModifier(
         movie => movie.Director.Contains("James"), 
@@ -25,7 +25,7 @@
         <pre><code>@@(await Html
     .SimpleGrid(Model)
 
-    .AddColumnsFromModel()
+    .AddColumnsForModel()
 
     .AddRowModifier(
         movie => movie.Director.Contains("James"), 

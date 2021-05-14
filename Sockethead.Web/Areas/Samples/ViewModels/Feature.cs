@@ -1,6 +1,6 @@
 ﻿namespace Sockethead.Web.Areas.Samples.ViewModels
 {
-    public class SocketheadRazorFeature
+    public class Feature
     {
         public string Name { get; set; }
         public string Model { get; set; } = "Movies";

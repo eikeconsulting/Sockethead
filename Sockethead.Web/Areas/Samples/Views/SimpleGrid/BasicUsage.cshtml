@@ -5,7 +5,7 @@
 
         @(await Html
     .SimpleGrid(Model)
-    .AddColumnsFromModel()
+    .AddColumnsForModel()
     .RenderAsync())
 
     </div>
@@ -47,7 +47,7 @@ public class CastMember
 
 @@(await Html
     .SimpleGrid(Model)
-    .AddColumnsFromModel()
+    .AddColumnsForModel()
     .RenderAsync())</code></pre>
 
         <br />
@@ -63,7 +63,7 @@ public IActionResult BasicUsage()
         @{
             string table = Html
             .SimpleGrid(Model.Take(3))
-            .AddColumnsFromModel()
+            .AddColumnsForModel()
             .RenderToString();
         }
 

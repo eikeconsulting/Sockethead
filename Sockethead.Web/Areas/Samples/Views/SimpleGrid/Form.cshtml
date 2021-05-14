@@ -4,12 +4,13 @@
     <div class="col-md-12">
 
         <form method="post">
-@(await Html
-    .SimpleGrid(Model.Take(5))
+
+@(await Html.SimpleGrid(Model.Take(5))
     .AddColumn(col => col
+        .HeaderCheckboxAll("Names")
         .DisplayAs(model => $"<input name='Names' type='checkbox' value='{model.Name}' />")
         .Encoded(false))
-    .AddColumnsFromModel()
+    .AddColumnsForModel()
     .RenderAsync())
             <button class="btn btn-primary">Submit</button>
         </form>
@@ -23,13 +24,13 @@
         <h4>View</h4>
 
         <pre><code>&lt;form method="post">
-    @@(await Html
-        .SimpleGrid(Model.Take(5))
+    @@(await Html.SimpleGrid(Model.Take(5))
+        .HeaderCheckboxAll("Names")
         .AddColumn(col => col
         .DisplayAs(model => 
             $"&lt;input name='Names' type='checkbox' value='{model.Name}' />")
         .Encoded(false))
-        .AddColumnsFromModel()
+        .AddColumnsForModel()
         .RenderAsync())
     &lt;button class="btn btn-primary">Submit&lt;/button>
 &lt;/form></code></pre>

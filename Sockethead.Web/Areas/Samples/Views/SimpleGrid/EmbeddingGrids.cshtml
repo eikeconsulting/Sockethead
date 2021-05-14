@@ -112,7 +112,7 @@
         .For(movie => movie.Cast)
         .SimpleGrid(
             movie => movie.Cast?.AsQueryable(), 
-            grid => grid.AddColumnsFromModel()))
+            grid => grid.AddColumnsForModel()))
 
     .RenderAsync())
 
@@ -130,7 +130,7 @@
         .For(movie => movie.Cast)
         .SimpleGrid(
             movie => movie.Cast?.AsQueryable(), 
-            grid => grid.AddColumnsFromModel()))
+            grid => grid.AddColumnsForModel()))
 
     .RenderAsync())</code></pre>
 

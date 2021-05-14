@@ -5,7 +5,7 @@
 
 @(await Html
     .SimpleGrid(Model.Take(3))
-    .AddColumnsFromModel()
+    .AddColumnsForModel()
     .NoHeaders()
     .RenderAsync())
 
@@ -14,7 +14,7 @@
     <div class="col-md-6">
         <pre><code>@@(await Html
     .SimpleGrid(Model.Take(3))
-    .AddColumnsFromModel()
+    .AddColumnsForModel()
     .NoHeaders()
     .RenderAsync())</code></pre>
 

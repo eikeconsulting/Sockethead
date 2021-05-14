@@ -49,6 +49,12 @@ namespace Sockethead.Razor.Grid
         /// <returns></returns>
         public ColumnBuilder<T> Header(string header) { Column.HeaderValue = header; return this; }
 
+        public ColumnBuilder<T> HeaderCheckboxAll(string name)
+            => Header(
+                $"<input type=\"checkbox\" onclick=\"for (c in document.getElementsByName('{name}')) " + 
+                $"document.getElementsByName('{name}').item(c).checked = this.checked\">");
+
+
         /// <summary>
         /// What to render
         /// </summary>

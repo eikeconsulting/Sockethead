@@ -1,21 +1,21 @@
 ﻿@{ 
     ViewData["Title"] = "Welcome!";
 
-    IQueryable<SocketheadRazorFeature> features = new List<SocketheadRazorFeature>
+    IQueryable<Feature> features = new List<Feature>
     {
-        new SocketheadRazorFeature
+        new Feature
         {
             Name = "Simple Grid",
             Url = "/Samples/SimpleGrid/Dashboard",
             Description = "A full featured ASP.Net Core Razor grid control.  It is used to render this table, too!",
         },
-        new SocketheadRazorFeature
+        new Feature
         {
             Name = "Two Column Grid",
             Url = "/Samples/TwoColumnGrid/TwoColumnGrid",
             Description = "A two column grid for easily rendering a Description List",
         },
-        new SocketheadRazorFeature
+        new Feature
         {
             Name = "Form Builder",
             Url = "/Samples/FormBuilder/FormBuilder",

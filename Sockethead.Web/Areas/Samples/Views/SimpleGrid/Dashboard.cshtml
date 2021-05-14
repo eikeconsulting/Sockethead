@@ -1,12 +1,11 @@
-﻿@model IQueryable<SocketheadRazorFeature>
-@{
-    ViewData["Title"] = "Simple Grid";
-}
+﻿@model IQueryable<Feature>
 
 <div class="row">
     <div class="col-md-12">
 
-        <p>SimpleGrid is an ASP.Net Core Grid Control.  <br />Here are some samples to demonstrate how to use it.</p>
+        <p>
+        SimpleGrid is an ASP.Net Core Grid Control.  Here are some samples to demonstrate how to use it.
+        </p>
 
         @(await Html
                 .SimpleGrid(Model)

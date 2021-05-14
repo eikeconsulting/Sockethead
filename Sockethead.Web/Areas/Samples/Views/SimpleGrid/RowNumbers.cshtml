@@ -8,7 +8,7 @@
 @(await Html
     .SimpleGrid(Model.Take(5))
     .AddColumn(col => col.DisplayAs(movie => i++))
-    .AddColumnsFromModel()
+    .AddColumnsForModel()
     .RenderAsync())
 
     </div>
@@ -19,7 +19,7 @@
 @@(await Html
     .SimpleGrid(Model.Take(5))
     .AddColumn(col => col.DisplayAs(movie => i++))
-    .AddColumnsFromModel()
+    .AddColumnsForModel()
     .RenderAsync())
 </code></pre>
 

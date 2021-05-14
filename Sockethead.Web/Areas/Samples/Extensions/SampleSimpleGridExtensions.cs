@@ -1,7 +1,7 @@
 ﻿using Sockethead.Razor.Grid;
 using System;
 
-namespace Sockethead.Web.Extensions
+namespace Sockethead.Web.Areas.Samples.Extensions
 {
     public static class SampleSimpleGridExtensions
     {

@@ -5,7 +5,7 @@
 
 @(await Html
     .SimpleGrid(Model.Take(3))
-    .AddColumnsFromModel()
+    .AddColumnsForModel()
     .RenderAsync())
 
     </div>
@@ -16,7 +16,7 @@
 
         <pre><code>@@(await Html
     .SimpleGrid(Model.Take(3))
-    .AddColumnsFromModel()
+    .AddColumnsForModel()
     .RenderAsync())
 </code></pre>
 
@@ -70,7 +70,7 @@
 
 @(await Html
     .SimpleGrid(Model.Take(3))
-    .AddColumnsFromModel()
+    .AddColumnsForModel()
     .RemoveColumn(1) // by zero based index
     .RemoveColumn("Released") // by column header
     .RenderAsync())
@@ -82,7 +82,7 @@
 
         <pre><code>@@(await Html
     .SimpleGrid(Model.Take(3))
-    .AddColumnsFromModel()
+    .AddColumnsForModel()
     .RemoveColumn(1) // by zero based index
     .RemoveColumn("Released") // by column header
     .RenderAsync())

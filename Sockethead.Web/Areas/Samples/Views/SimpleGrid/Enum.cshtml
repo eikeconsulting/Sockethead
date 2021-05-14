@@ -1,8 +1,6 @@
 ﻿@{
-    var Model = new[] { 0, 1, 2, 3 }
-        .Select(i => new SampleModel { SampleEnum = (SampleEnum)i })
-        .ToList()
-        .AsQueryable();
+    IEnumerable<SampleModel> Model = new[] { 0, 1, 2, 3 }
+        .Select(i => new SampleModel { SampleEnum = (SampleEnum)i });
 }
 
 <div class="row">
@@ -85,13 +83,11 @@
 
         <h4>Model</h4>
 
-        <pre><code> var Model = new[] { 0, 1, 2, 3 }
+        <pre><code>IEnumerable&lt;SampleModel> Model = new[] { 0, 1, 2, 3 }
     .Select(i => new SampleModel 
     { 
         SampleEnum = (SampleEnum)i 
-    })
-    .ToList()
-    .AsQueryable();</code></pre>
+    });</code></pre>
 
         <p></p>
 

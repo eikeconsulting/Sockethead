@@ -268,7 +268,7 @@
             .AddSimpleGrid(
                 label: "Embedded SimpleGrid",
                 model: Model.Take(3),
-                gridBuilder: grid => grid.AddColumnsFromModel())
+                gridBuilder: grid => grid.AddColumnsForModel())
             .RenderAsync())
         </div>
         <div class="col-md-6">
@@ -278,7 +278,7 @@
     .AddSimpleGrid(
         label: "Embedded SimpleGrid", 
         model: Model.Take(3), 
-        gridBuilder: grid => grid.AddColumnsFromModel())
+        gridBuilder: grid => grid.AddColumnsForModel())
     .RenderAsync())
 </code></pre>
         </div>

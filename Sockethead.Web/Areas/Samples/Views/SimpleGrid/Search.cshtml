@@ -6,7 +6,7 @@
 @(await Html
     .SimpleGrid(Model)
 
-    .AddColumnsFromModel()
+    .AddColumnsForModel()
 
     .AddSearch("Movie Name",
         (source, query) => source.Where(movie => movie.Name.Contains(query, StringComparison.OrdinalIgnoreCase)))
@@ -36,7 +36,7 @@
         <pre><code>@@(await Html
     .SimpleGrid(Model)
 
-    .AddColumnsFromModel()
+    .AddColumnsForModel()
 
     .AddSearch("Movie Name", 
         (source, query) => source.Where(movie => movie.Name.Contains(query, StringComparison.OrdinalIgnoreCase)))

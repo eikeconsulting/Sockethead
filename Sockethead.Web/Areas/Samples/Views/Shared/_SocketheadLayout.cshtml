@@ -40,8 +40,8 @@
             <h2>@ViewData["Title"]</h2>
 
             @{
-                var prev = ViewData["PrevFeature"] as SocketheadRazorFeature;
-                var next = ViewData["NextFeature"] as SocketheadRazorFeature;
+                var prev = ViewData["PrevFeature"] as Feature;
+                var next = ViewData["NextFeature"] as Feature;
             }
 
             @if (prev != null || next != null)

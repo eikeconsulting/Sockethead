@@ -36,7 +36,8 @@ namespace Sockethead.Razor.Grid
 
         public ColumnHeader HeaderDetails { get; } = new ColumnHeader();
 
-        internal string HeaderRender() => HttpUtility.HtmlEncode(HeaderValue);
+        //internal string HeaderRender() => HttpUtility.HtmlEncode(HeaderValue);
+        internal string HeaderRender() => HeaderValue;
 
         public string DisplayRender(object model)
         {

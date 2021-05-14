@@ -5,7 +5,7 @@
 
 @(await Html
     .SimpleGrid(Model.Take(3))
-    .AddColumnsFromModel()
+    .AddColumnsForModel()
     .OrderColumns()
     .RenderAsync())
 
@@ -17,7 +17,7 @@
 
         <pre><code>@@(await Html
     .SimpleGrid(Model.Take(3))
-    .AddColumnsFromModel()
+    .AddColumnsForModel()
     .OrderColumns()
     .RenderAsync())</code></pre>
 
@@ -46,7 +46,7 @@
 
         <br />
         <p>
-            Note that <code>OrderColumns()</code> only works on Columns added via <code>AddColumnsFromModel()</code>.
+            Note that <code>OrderColumns()</code> only works on Columns added via <code>AddColumnsForModel()</code>.
             Columns that are added manually are not re-ordered.
         </p>
 

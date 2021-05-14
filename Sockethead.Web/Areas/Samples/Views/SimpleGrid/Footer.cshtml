@@ -1,25 +1,33 @@
 ﻿@model IQueryable<Movie>
 
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-5">
 
 @(await Html
     .SimpleGrid(Model)
-    .AddColumnsFromModel()
+    .AddColumnFor(movie => movie.Name)
+    .AddColumnFor(movie => movie.Genre)
+    .AddColumnFor(movie => movie.Released)
     .Footer(
-        $"<tr><td colspan='3'>Average of all Released Years</td>" + 
-        $"<td>{(int)Model.Average(movie => movie.Released)}</td></tr>")
+        $"<tr style='font-weight: bold'>" + 
+        $"<td colspan='2'>Average of all Released Years</td>" + 
+        $"<td>{(int)Model.Average(movie => movie.Released)}</td>" + 
+        "</tr>")
     .RenderAsync())
 
     </div>
 
-    <div class="col-md-6">
+    <div class="col-md-7">
         <pre><code>@@(await Html
     .SimpleGrid(Model)
-    .AddColumnsFromModel()
+    .AddColumnFor(movie => movie.Name)
+    .AddColumnFor(movie => movie.Genre)
+    .AddColumnFor(movie => movie.Released)
     .Footer(
-        $"&lt;tr>&lt;td colspan='3'>Average of all Released Years&lt;/td>" + 
-        $"&lt;td>{(int)Model.Average(movie => movie.Released)}&lt;/td>&lt;/tr>")
+        $"&lt;tr style='font-weight: bold'>" + 
+        $"&lt;td colspan='2'>Average of all Released Years&lt;/td>" + 
+        $"&lt;td>{(int)Model.Average(movie => movie.Released)}&lt;/td>" + 
+        "&lt;/tr>")
     .RenderAsync())</code></pre>
 
         <p></p>

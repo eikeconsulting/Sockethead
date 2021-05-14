@@ -8,7 +8,7 @@
     .AddColumn(col => col
         .DisplayAs(model => $"<input name='Names' type='checkbox' value='{model.Name}' />")
         .Encoded(false))
-    .AddColumnsFromModel()
+    .AddColumnsForModel()
     .RenderAsync()
 )
     <button class="btn btn-primary">Submit</button>
@@ -39,7 +39,7 @@
 
 @(await Html
     .SimpleGrid(Model)
-    .AddColumnsFromModel()
+    .AddColumnsForModel()
     .AddColumn(column => column
         .Header("TwoColumnGrid in a SimpleGrid!")
         .Encoded(false)
@@ -57,7 +57,7 @@
 
 @(await Html
     .SimpleGrid(Model)
-    .AddColumnsFromModel()
+    .AddColumnsForModel()
     .AddColumn(column => column
         .Header("TwoColumnGrid in a SimpleGrid!")
         //.TwoColumnGrid((model, grid) => grid.Add(model))
@@ -73,7 +73,7 @@
 
 @(await Html
     .SimpleGrid(Model)
-    .AddColumnsFromModel()
+    .AddColumnsForModel()
     .AddColumn(column => column
         .Header("This inside itself")
         .SimpleGrid(model => Model.Take(5), grid => grid
