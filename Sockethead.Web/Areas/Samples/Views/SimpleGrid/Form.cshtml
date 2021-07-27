@@ -25,11 +25,10 @@
 
         <pre><code>&lt;form method="post">
     @@(await Html.SimpleGrid(Model.Take(5))
-        .HeaderCheckboxAll("Names")
         .AddColumn(col => col
-        .DisplayAs(model => 
-            $"&lt;input name='Names' type='checkbox' value='{model.Name}' />")
-        .Encoded(false))
+            .HeaderCheckboxAll("Names")
+            .DisplayAs(model => $"&lt;input name='Names' type='checkbox' value='{model.Name}' />")
+            .Encoded(false))
         .AddColumnsForModel()
         .RenderAsync())
     &lt;button class="btn btn-primary">Submit&lt;/button>

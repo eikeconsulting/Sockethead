@@ -117,23 +117,25 @@ namespace Sockethead.Razor.Helpers
         /// <typeparam name="T">Type of the object (must be known at compile time)</typeparam>
         /// <param name="model">object to convert</param>
         public static Dictionary<string, object> ModelToDictionary<T>(T model)
-            => typeof(T)
+            => ModelToLambdas<T>()
+                .ToDictionary(
+                    lambda => FriendlyName(lambda), 
+                    lambda => lambda.Compile().Invoke(model));
+
+        public static IEnumerable<Expression<Func<TModel, object>>> ModelToLambdas<TModel>()
+            => typeof(TModel)
                 .GetProperties()
-                .Select(pi => new { pi, lambda = BuildGetterLambda<T>(pi) })
-                .Where(x =>
+                .Select(BuildGetterLambda<TModel>)
+                .Where(lambda =>
                 {
-                    DisplayAttribute display = x.lambda.GetAttribute<DisplayAttribute, T, object>();
+                    DisplayAttribute display = lambda.GetAttribute<DisplayAttribute, TModel, object>();
 
                     // Skip if DisplayAttribute.AutoGenerateField is turned off
                     return
                         display == null ||
                         !display.GetAutoGenerateField().HasValue ||
                         display.GetAutoGenerateField().Value;
-                })
-                .ToDictionary(
-                    x => FriendlyName(x.lambda), 
-                    x => x.lambda.Compile().Invoke(model));
-
+                });
 
         public static Type GetObjectType<TObj>(Expression<Func<TObj, object>> expr)
         {

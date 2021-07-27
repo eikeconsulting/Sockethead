@@ -74,6 +74,11 @@ namespace Sockethead.Web.Areas.Samples.Utilities
             },
             new Feature
             {
+                Name = "Date and Time",
+                Description = "Handle local timezone DateTime.",
+            },
+            new Feature
+            {
                 Name = "Footer",
                 Description = "Add a footer row to the Grid.",
             },
@@ -99,7 +104,7 @@ namespace Sockethead.Web.Areas.Samples.Utilities
             },
             new Feature
             {
-                Name = "MultipleGrids",
+                Name = "Multiple Grids",
                 Description = "Provide a GridId if you want to paginate or search multiple grids on one page.",
             },
             new Feature
@@ -140,13 +145,13 @@ namespace Sockethead.Web.Areas.Samples.Utilities
                 Description = "Create your own custom SimpleGrid extension!",
             },
 
+            /*
             new Feature
             {
                 Name = "Sample1",
                 Model = "SampleData",
                 Description = "Placeholder.  Working on dates and more complex forms.",
             },
-            /*
             new Feature
             {
                 Name = "Playground",

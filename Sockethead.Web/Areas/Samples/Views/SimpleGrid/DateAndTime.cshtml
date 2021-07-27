@@ -1,0 +1,172 @@
+﻿@using System;
+@{
+    var Model = new List<SampleModel>
+    {
+        new SampleModel 
+        { 
+            RandomDate = DateTime.Now, 
+            First = "DateTime.Now", 
+        },
+        new SampleModel 
+        { 
+            RandomDate = DateTime.UtcNow, 
+            First = "DateTime.UtcNow", 
+        },
+        new SampleModel 
+        { 
+            RandomDate = new DateTime(2021, 4, 1, 0, 0, 0, DateTimeKind.Utc), 
+            First = "Midnight April 1, 2021 UTC", 
+        },
+        new SampleModel 
+        { 
+            RandomDate = new DateTime(2021, 4, 1, 12, 0, 0, DateTimeKind.Utc), 
+            First = "Noon April 1, 2021 UTC", 
+        },
+    };
+
+}
+
+<div class="row">
+    <div class="col-12">
+        <h4>Introduction</h4>
+        <p>
+            By default, SimpleGrid will output <code>System.DateTime</code> Expressions as an HTML tag of the form:
+            <br />
+            <pre><code>&lt;time>2021-05-15T20:33:27Z&lt;/time></code></pre>
+            This is done either when calling <code>For()</code> or <code>DisplayExpression()</code> (which is called by For) or by
+            calling <code>ClientTime()</code>.  Then you can use the JavaScript provided below to convert the <code>&lt;time></code> tag to
+            the user's local time.
+            <br /><br />
+            To simply display the DateTime field as-is use <code>DisplayAs()</code>.
+
+        </p>
+
+        <hr />
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+
+        <h4>Output</h4>
+
+@(await Html
+
+    .SimpleGrid(Model)
+
+    .AddColumn(col => col
+        .For(sample => sample.First)
+        .Header("Date Description"))
+
+    .AddColumn(col => col
+        .For(sample => sample.RandomDate)
+        .Header("For"))
+
+    .AddColumn(col => col
+        .DisplayAs(sample => sample.RandomDate)
+        .Header("DisplayAs"))
+
+    .AddColumn(col => col
+        .ClientTime(sample => sample.RandomDate)
+        .Header("ClientTime"))
+
+    .AddColumn(col => col
+        .ClientTime(sample => sample.RandomDate)
+        .Encoded(true)
+        .Header("ClientTime Encoded"))
+
+    .RenderAsync())
+
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+
+        <h4>Model</h4>
+
+        <pre><code>var Model = new List&lt;SampleModel>
+{
+    new SampleModel 
+    { 
+        RandomDate = DateTime.Now, 
+        First = "DateTime.Now", 
+    },
+    new SampleModel 
+    { 
+        RandomDate = DateTime.UtcNow, 
+        First = "DateTime.UtcNow", 
+    },
+    new SampleModel 
+    { 
+        RandomDate = new DateTime(2021, 4, 1, 0, 0, 0), 
+        First = "Midnight April 1, 2021 UTC", 
+    },
+    new SampleModel 
+    { 
+        RandomDate = new DateTime(2021, 4, 1, 12, 0, 0), 
+        First = "Noon April 1, 2021 UTC", 
+    },
+};</code></pre>
+
+        <p></p>
+
+    </div>
+
+    <div class="col-md-6">
+
+        <h4>Grid</h4>
+
+        <pre><code>@@(await Html
+
+    .SimpleGrid(Model)
+
+    .AddColumn(col => col
+        .For(sample => sample.First)
+        .Header("Date Description"))
+
+    .AddColumn(col => col
+        .For(sample => sample.RandomDate)
+        .Header("For"))
+
+    .AddColumn(col => col
+        .DisplayAs(sample => sample.RandomDate)
+        .Header("DisplayAs"))
+
+    .AddColumn(col => col
+        .ClientTime(sample => sample.RandomDate)
+        .Header("ClientTime"))
+
+    .AddColumn(col => col
+        .ClientTime(sample => sample.RandomDate)
+        .Encoded(true)
+        .Header("ClientTime Encoded"))
+
+    .RenderAsync())</code></pre>
+
+        <h4>JavaScript</h4>
+
+        <pre><code>$("time").each(function (elem) {
+    var utctimeval = $(this).html();
+    var date = new Date(utctimeval);
+    $(this).html(date.toLocaleString());
+});</code></pre>
+
+    </div>
+</div>
+
+
+@section Scripts
+{
+
+<script type="text/javascript">
+
+    $("time").each(function (elem) {
+        var utctimeval = $(this).html();
+        var date = new Date(utctimeval);
+        $(this).html(date.toLocaleString());
+    });
+
+</script>
+
+}

@@ -285,4 +285,53 @@
 
     </div>
 
+
+    <h4>Enums and Dates</h4>
+    @{ 
+        var sample = new SampleModel
+        {
+            SampleEnum = SampleEnum.Zero,
+            RandomDate = new DateTime(2021, 04, 01, 12, 0, 0),
+        };
+    }
+    <div class="row">
+        <div class="col-md-6">
+            @(await Html
+            .TwoColumnGrid()
+            .AddRowsForModel(sample)
+            .AddRow("====", "====")
+            .AddRowsForModel(sample, builder => builder
+                .AddRowFor(model => model.SampleEnum)
+                .AddRowFor(model => model.RandomDate)
+                .AddRow("Enum", sample.SampleEnum.ToString())
+                .AddRow("Date", sample.RandomDate.ToString()))
+            .RenderAsync())
+        </div>
+        <div class="col-md-6">
+<pre><code>var sample = new SampleModel
+{
+    SampleEnum = SampleEnum.Zero,
+    RandomDate = new DateTime(2021, 04, 01, 12, 0, 0),
+};
+
+@@(await Html
+    .TwoColumnGrid()
+    .AddRowsForModel(sample)
+    .AddRow("====", "====")
+    .AddRowsForModel(sample, builder => builder
+        .AddRowFor(model => model.SampleEnum)
+        .AddRowFor(model => model.RandomDate)
+        .AddRow("Enum", sample.SampleEnum.ToString())
+        .AddRow("Date", sample.RandomDate.ToString()))
+    .RenderAsync())
+</code></pre>
+
+            <p>
+                See the SimpleGrid sample on Enums and Dates for more details.
+            </p>
+
+        </div>
+
+    </div>
+
 </div>

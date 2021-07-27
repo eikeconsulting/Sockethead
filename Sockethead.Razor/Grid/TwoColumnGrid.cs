@@ -92,14 +92,32 @@ namespace Sockethead.Razor.Grid
             /// </summary>
             public TwoColumnGridModelBuilder<TModel> AddRowFor(Expression<Func<TModel, object>> expression)
             {
-                object value = expression.Compile().Invoke(Model);
-                
-                //if (GridBuilder.Html is IHtmlHelper<TModel> html)
-                //    value = html.DisplayFor(expression).ToString() + " boom";
+                string label = expression.FriendlyName();
+                Func<TModel, object> compiled = expression.Compile();
+                object value = compiled(Model);
 
-                GridBuilder.AddRow(expression.FriendlyName(), value == null ? "" : value.ToString());
+                if (value == null)
+                    return AddRow(label, "");
+
+                Type type = ExpressionHelpers.GetObjectType(expression);
+
+                if (type.IsSubclassOf(typeof(Enum)))
+                    return AddRow(label, (value as Enum).GetDisplayName());
+
+                if (type.Equals(typeof(DateTime)) ||
+                    type.Equals(typeof(DateTime?)))
+                    return AddRow(label, GridBuilder.Html
+                        .ClientTime((DateTime)value).ToString(), encode: false);
+                
+                return AddRow(label, value.ToString());
+            }
+
+            public TwoColumnGridModelBuilder<TModel> AddRow(string label, string value, bool encode = true)
+            {
+                GridBuilder.AddRow(label, value, encode);
                 return this;
             }
+
         }
 
         /// <summary>
@@ -107,7 +125,12 @@ namespace Sockethead.Razor.Grid
         /// </summary>
         public TwoColumnGridBuilder AddRowsForModel<TModel>(TModel model)
         {
-            return AddRows(ExpressionHelpers.ModelToDictionary(model));
+            //return AddRows(ExpressionHelpers.ModelToDictionary(model));
+            return AddRowsForModel(model, builder =>
+            {
+                foreach (var lambda in ExpressionHelpers.ModelToLambdas<TModel>())
+                    builder.AddRowFor(lambda);
+            });
         }
 
         /// <summary>

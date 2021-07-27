@@ -57,7 +57,7 @@ namespace Sockethead.Web.Areas.Samples.Controllers
         public IActionResult Form()
         {
             SetSampleLinks("Form");
-            return View(MovieQuery).SetTitle("Forms");
+            return View(MovieQuery).SetTitle("Form");
         }
 
         [HttpPost, ValidateAntiForgeryToken]

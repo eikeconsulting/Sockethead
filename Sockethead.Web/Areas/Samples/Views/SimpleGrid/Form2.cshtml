@@ -18,9 +18,13 @@
 
     .AddColumn(col => col
         .DisplayAs(movie => 
-            $"<input type='text' name='Movies[{movie.Name}].Director' value='{movie.Director}' />")
+            $"<input class='form-control' type='text' name='Movies[{movie.Name}].Director' value='{movie.Director}' />")
         .Header("Edit Director")
         .Encoded(false))
+
+    // This works as well:
+    //.AddColumn(col => col
+    //    .DisplayHtmlContent(movie => Html.TextBox($"Movies[{movie.Name}].Director", $"{movie.Director}", new { @class = "form-control" })))
 
     .RenderAsync())
             <button class="btn btn-primary">Submit</button>
@@ -37,6 +41,7 @@
         <pre><code>&lt;form method="post">
     @@(await Html
         .SimpleGrid(Model.Take(5))
+
         .AddColumn(col => col
             .DisplayAs(movie =>
                 $"&lt;input type='hidden' name='Movies.Index' value='{movie.Name}'>" +
@@ -49,9 +54,14 @@
 
         .AddColumn(col => col
             .DisplayAs(movie => 
-                $"&lt;input type='text' name='Movies[{movie.Name}].Director' value='{movie.Director}' />")
+                $"&lt;input class='form-control' type='text' name='Movies[{movie.Name}].Director' value='{movie.Director}' />")
             .Header("Edit Director")
             .Encoded(false))
+
+        // This works as well:
+        //.AddColumn(col => col
+        //    .DisplayHtmlContent(movie => 
+        //        Html.TextBox($"Movies[{movie.Name}].Director", $"{movie.Director}", new { @@class = "form-control" })))
 
         .RenderAsync())
     &lt;button class="btn btn-primary">Submit&lt;/button>

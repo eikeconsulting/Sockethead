@@ -73,12 +73,16 @@ namespace Sockethead.Razor.Grid
         public ColumnBuilder<T> DisplayExpression(Expression<Func<T, object>> expression)
         {
             Func<T, object> compiled = (Column.DisplayExpr = expression).Compile();
+            Type type = ExpressionHelpers.GetObjectType(expression);
 
-            return ExpressionHelpers
-                .GetObjectType(expression)
-                .IsSubclassOf(typeof(Enum))
-                    ? DisplayAs(model => (compiled(model) as Enum).GetDisplayName())
-                    : DisplayAs(compiled);
+            if (type.IsSubclassOf(typeof(Enum)))
+                return DisplayAs(model => (compiled(model) as Enum).GetDisplayName());
+
+            if (type.Equals(typeof(DateTime)) ||
+                type.Equals(typeof(DateTime?)))
+                return ClientTime(model => (DateTime)compiled(model));
+
+            return DisplayAs(compiled);
         }
 
         public ColumnBuilder<T> DisplayAsList(Func<T, IEnumerable<object>> displayBuilder)
