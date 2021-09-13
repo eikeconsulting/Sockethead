@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Sockethead.EFCore.Entities;
+using Sockethead.EFCore.Helpers;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -26,6 +27,8 @@ namespace Sockethead.EFCore.AuditLogging
         /// <returns></returns>
         public async Task CommitAsync(IAuditMetaData auditMetaData)
         {
+            SoftDeleteHelper.ProcessSoftDelete(Db.ChangeTracker);
+
             foreach (BaseEntity entity in Db.ChangeTracker.Entries()
                 .Where(dbEntry => dbEntry.State == EntityState.Modified)
                 .Select(dbEntry => dbEntry.Entity)
