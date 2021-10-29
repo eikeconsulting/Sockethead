@@ -7,10 +7,12 @@ using Sockethead.Web.Areas.Samples.ViewModels;
 using System.Collections.Generic;
 using Sockethead.Razor.Alert.Extensions;
 using Sockethead.Web.Areas.Samples.Utilities;
+using Sockethead.Razor.Diagnostics;
 
 namespace Sockethead.Web.Areas.Samples.Controllers
 {
     [Area("Samples")]
+    [TimeTracker]
     public class SimpleGridController : Controller
     {
         static List<Feature> Features { get; } = SimpleGridFeatures.Features;

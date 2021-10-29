@@ -67,11 +67,6 @@ should be included in the main layout page to make this render correctly:
     </script>
 
 
-### TinyTable
-TinyTable takes a Dictionary<string, object> and renders a pretty Bootstrap Table:
-
-    <partial name="_TinyTable" model="<your dictionary>" />
-
 ### RazorViewRenderer (for Email Generation)
 Namespace: Sockethead.Razor.Utilities
 
@@ -128,13 +123,20 @@ Inspired by https://andrewlock.net/post-redirect-get-using-tempdata-in-asp-net-c
 ### Diagnostics
 Namespace: Sockethead.Razor.Diagnostics
 
-Html.BuildTime - returns a Timestamp when the project was built for display in 
+#### Html.BuildTime 
+returns a Timestamp when the project was built for display in 
 the page footer or wherever you like.
 
-TimeTracker Attribute
+#### TimeTracker
 Apply to a Controller or Controller method and it adds a StopWatch to the 
-HTTP context.  Then you can retrieve the page execution time 
-(only the Controller part) in the footer.
+HTTP context.  
+
+    [TimeTracker]
+    public class MyController : Controller
+
+Then you can retrieve the page execution time (only the Controller part) in the footer.
+
+     <span>Elapsed Time: @Html.ElaspsedPageRenderTimeMs() ms</span>
 
    
 
