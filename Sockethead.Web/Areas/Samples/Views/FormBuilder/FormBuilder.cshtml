@@ -50,7 +50,7 @@
 
         <hr />
 
-        @using (Html.BeginForm(actionName: "FormBuilder", controllerName: "Pager", method: FormMethod.Post))
+        @using (Html.BeginForm(actionName: "FormBuilder", controllerName: "FormBuilder", method: FormMethod.Post))
         {
             @Html.ValidationSummary(excludePropertyErrors: true, message: null, htmlAttributes: new { @class = "text-danger" })
             @Html.HiddenFor(model => model.Id)

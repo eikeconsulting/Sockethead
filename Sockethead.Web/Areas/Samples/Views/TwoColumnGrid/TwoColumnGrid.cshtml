@@ -1,4 +1,5 @@
-﻿@model IQueryable<Movie>
+﻿@using System.Globalization
+@model IQueryable<Movie>
 @{
     var movie = Model.First();
 }
@@ -8,16 +9,16 @@
     <h4>Basic Usage</h4>
     <div class="row">
         <div class="col-md-6">
-            @(Html
-            .TwoColumnGrid()
-            .AddRowsForModel(movie)
-            .Render())
+            @(await Html
+                .TwoColumnGrid()
+                .AddRowsForModel(movie)
+                .RenderAsync())
         </div>
         <div class="col-md-6">
-<pre><code>@@(Html
+<pre><code>@@(await Html
     .TwoColumnGrid()
     .AddRowsForModel(movie)
-    .Render())
+    .RenderAsync())
 </code></pre>
         </div>
     </div>
@@ -27,34 +28,28 @@
     <h4>Row Processor</h4>
     <div class="row">
         <div class="col-md-6">
-            @(Html
-            .TwoColumnGrid()
-            .AddRowsForModel(movie)
-            .AddRowProcessor(kvp =>
-            {
-                if (kvp.Key == "Name")
-                    return new KeyValuePair<string, string>();
-
-                return new KeyValuePair<string, string>(
-                    kvp.Key, 
-                    kvp.Value.ToUpper());
-            })
-            .Render())
+            @(await Html
+                .TwoColumnGrid()
+                .AddRowsForModel(movie)
+                .AddRowProcessor(kvp =>
+                {
+                    if (kvp.Key == "Name")
+                        return new();
+                    return new (kvp.Key, kvp.Value.ToUpper());
+                })
+                .RenderAsync())
         </div>
         <div class="col-md-6">
-<pre><code>@@(Html
+<pre><code>@@(await Html
     .TwoColumnGrid()
     .AddRowsForModel(movie)
     .AddRowProcessor(kvp =>
     {
         if (kvp.Key == "Name")
-            return new KeyValuePair<string, string>();
-
-        return new KeyValuePair<string, string>(
-            kvp.Key, 
-            kvp.Value.ToUpper());
+            return new();
+        return new (kvp.Key, kvp.Value.ToUpper());
     })
-    .Render()))
+    .RenderAsync()))
 </code></pre>
         </div>
     </div>
@@ -68,23 +63,23 @@
     <div class="row">
         <div class="col-md-6">
 
-@(Html
+@(await Html
     .TwoColumnGrid()
     .AddRowsForModel(movie, builder => builder
         .AddRowFor(model => model.Name)
         .AddRowFor(model => model.Genre)
         .AddRowFor(model => model.Director))
-    .Render())
+    .RenderAsync())
 
         </div>
         <div class="col-md-6">
-            <pre><code>@@(Html
+            <pre><code>@@(await Html
     .TwoColumnGrid()
     .AddRowsForModel(movie, builder => builder
         .AddRowFor(model => model.Name)
         .AddRowFor(model => model.Genre)
         .AddRowFor(model => model.Director))
-    .Render())</code></pre>
+    .RenderAsync())</code></pre>
         </div>
     </div>
 
@@ -114,7 +109,7 @@
     .AddRow("First Row", "I like this")
     .AddRowsForModel(movie)
     .AddRow("Another", "Row here")
-    .AddRows(new Dictionary<string, object>
+    .AddRows(new Dictionary@("<")string, object>
     {
         ["One"] = 1,
         ["Two"] = "Two",
@@ -297,15 +292,15 @@
     <div class="row">
         <div class="col-md-6">
             @(await Html
-            .TwoColumnGrid()
-            .AddRowsForModel(sample)
-            .AddRow("====", "====")
-            .AddRowsForModel(sample, builder => builder
-                .AddRowFor(model => model.SampleEnum)
-                .AddRowFor(model => model.RandomDate)
-                .AddRow("Enum", sample.SampleEnum.ToString())
-                .AddRow("Date", sample.RandomDate.ToString()))
-            .RenderAsync())
+                .TwoColumnGrid()
+                .AddRowsForModel(sample)
+                .AddRow("====", "====")
+                .AddRowsForModel(sample, builder => builder
+                    .AddRowFor(model => model.SampleEnum)
+                    .AddRowFor(model => model.RandomDate)
+                    .AddRow("Enum", sample.SampleEnum.ToString())
+                    .AddRow("Date", sample.RandomDate.ToString(CultureInfo.InvariantCulture)))
+                .RenderAsync())
         </div>
         <div class="col-md-6">
 <pre><code>var sample = new SampleModel
