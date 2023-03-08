@@ -44,7 +44,7 @@ namespace Sockethead.EFCore.AuditLogging
             {
                 try
                 {
-                    Logger.LogInformation("Audit log cleanup task running at: {time}", DateTimeOffset.Now);
+                    Logger.LogInformation("Audit log cleanup task running at: {time}", DateTime.UtcNow);
 
                     int totalLogsDeleted = await CleanupAuditLogsAsync(stoppingToken);
 
