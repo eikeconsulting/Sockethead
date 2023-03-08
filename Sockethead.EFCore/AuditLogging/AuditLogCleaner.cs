@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 namespace Sockethead.EFCore.AuditLogging
 {
     /// <summary>
-    /// A background service that periodically cleans up old audit logs from a database. It takes in optional parameters for
+    /// A background service that periodically cleans up old audit logs from the AuditLog database. It takes in optional parameters for
     /// the cleanup interval, audit log age, and batch size, defaulting to 1 hour, 30 days, and 500 records, respectively,
     /// if no values are provided. The service deletes logs based on UTC time whenever it is invoked. The batch size parameter
     /// controls how many records are deleted in each batch to avoid overwhelming the database with a large number of deletions
