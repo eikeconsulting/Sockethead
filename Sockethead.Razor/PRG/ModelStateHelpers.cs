@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace Sockethead.Razor.PRG
 {
@@ -36,6 +37,8 @@ namespace Sockethead.Razor.PRG
 
             foreach (var item in errorList)
             {
+                item.RawValue = item.RawValue is JArray jArray ? jArray.ToObject<object[]>() : item.RawValue;
+                
                 modelState.SetModelValue(item.Key, item.RawValue, item.AttemptedValue);
                 foreach (var error in item.ErrorMessages)
                     modelState.AddModelError(item.Key, error);
