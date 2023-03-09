@@ -24,6 +24,10 @@ namespace Sockethead.EFCore.AuditLogging
             AuditLogDbContext = auditLogDbContext;
             Logger = logger;
         }
+        
+        public IQueryable<AuditLog> OnlyAuditLog
+            => AuditLogDbContext
+                .AuditLogs;
 
         public IQueryable<AuditLog> AuditLogQuery 
             => AuditLogDbContext
