@@ -203,11 +203,29 @@ Now, inject this MyRepo instead of your ApplicationDbContext
 and instead of calling "SaveChangesAsync" call "CommitAsync" and (optionally) pass 
 an IAuditMetaData to provide the email and name of the user that made the change.
 
+#### Configuring Audit Logs Cleanup
+The package provides a background service called `AuditLogCleaner` that can be used to periodically clean up old audit logs from the AuditLog database. You can configure the service by adding the following code to your Startup.cs file:
+
+
+    services
+        .AddHostedService(provider =>
+            new AuditLogCleaner(
+                provider.GetRequiredService<ILogger<AuditLogCleaner>>(),
+                provider.GetRequiredService<IServiceScopeFactory>(),
+                TimeSpan.FromHours(1), // run every hour
+                TimeSpan.FromDays(30), // keep logs for up to 30 days
+                500
+            )
+        );
+
+The above code configures the `AuditLogCleaner` service to run every hour, delete logs that are older than 30 days, and delete up to 500 records at once. You can customize these settings to suit your requirements.
+
+After configuring the service, it will automatically clean up old audit logs in the background at the configured interval.
+
 #### AuditLogger TODOs
 1. Audit Log UI!
 1. Unit Tests
 1. Integration Tests
-1. Mechanism to flush out AuditLogs either by age or a filter.
 
 
 
