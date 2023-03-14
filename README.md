@@ -237,14 +237,17 @@ Sockethead.ExtensionsAndUtilities is a collection of utilities and extension met
 ### Extensions
 
 #### Collection Extensions
-Provides a set of extension methods that add additional functionality to collections.
 * `EmptyIfNull` - Returns empty collection if source is null
 
+#### String Extensions
+* `ToInt32OrDefault` - Attempts to convert the string to an int. If the conversion is successful, the method returns the converted int value. If the conversion fails, the method returns a default value specified by the caller.
+* `Truncate` - Returns a truncated version of a given string up to a specified maximum length
+* `StripAccentsFromUnicodeCharacters` - Removes accents from Unicode characters in a given string.
+* `ToEnum` - Converts the string representation to specified Enum. Returns defaultValue if value was not converted successfully.
 
 ### Utilities
 
 #### Date Utils
-Offers a range of supporting functions that enhance the functionality of working with dates
 * `GetDateRange` - Returns a range of DateTime that starts with the startDate and ends with the endDate, inclusive of both endpoints.
 
 
