@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Sockethead.EFCore\Sockethead.EFCore.csproj" />
+    <ProjectReference Include="..\Sockethead.ExtensionsAndUtilities\Sockethead.ExtensionsAndUtilities.csproj" />
   </ItemGroup>
 
   <ItemGroup>
