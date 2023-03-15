@@ -264,6 +264,10 @@ Sockethead.ExtensionsAndUtilities is a collection of utilities and extension met
 * `ToBase64` - Converts an object to its Base64-encoded string representation.
 * `FromBase64` - Converts a Base64-encoded string to an object of type T.
 
+#### Mail Address Collection Extensions
+* `Add` - It takes a list of MailAddress and adds each MailAddress to the collection.
+* `ParseAndAdd` - Parse a string (may contain one or multiple email addresses separated by comma or semicolon) and add to a MailAddressCollection.
+
 ### Utilities
 
 #### Date Utils
