@@ -245,6 +245,10 @@ Sockethead.ExtensionsAndUtilities is a collection of utilities and extension met
 * `StripAccentsFromUnicodeCharacters` - Removes accents from Unicode characters in a given string.
 * `ToEnum` - Converts the string representation to specified Enum. Returns defaultValue if value was not converted successfully.
 
+#### Random Extensions
+* `NextForTimes` - Returns an IEnumerable of random integers up to a maximum value, with the number of integers determined by a specified count.
+* `UniqueNextForTimes` - Returns an IEnumerable of unique random integers up to a maximum value, with the number of integers determined by a specified count.
+
 ### Utilities
 
 #### Date Utils
