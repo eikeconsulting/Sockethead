@@ -268,6 +268,9 @@ Sockethead.ExtensionsAndUtilities is a collection of utilities and extension met
 * `Add` - It takes a list of MailAddress and adds each MailAddress to the collection.
 * `ParseAndAdd` - Parse a string (may contain one or multiple email addresses separated by comma or semicolon) and add to a MailAddressCollection.
 
+#### Form File Extensions
+* `ToBase64` - Converts the file content to its Base64-encoded string representation.
+
 ### Utilities
 
 #### Date Utils
