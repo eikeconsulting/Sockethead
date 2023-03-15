@@ -260,6 +260,7 @@ Sockethead.ExtensionsAndUtilities is a collection of utilities and extension met
 * `Deserialize` - Deserializes a JSON string input to an object of type T using the Newtonsoft.Json library. If the input string is null, the method returns the default value of type T.
 
 #### Object Extensions
+* `ToDictionary<T>` - Convert the object to a Dictionary. Use only public properties of type T.
 * `ToBase64` - Converts an object to its Base64-encoded string representation.
 * `FromBase64` - Converts a Base64-encoded string to an object of type T.
 
