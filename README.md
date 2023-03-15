@@ -236,14 +236,20 @@ Sockethead.ExtensionsAndUtilities is a collection of utilities and extension met
 
 ### Extensions
 
-#### Collection Extensions
-* `EmptyIfNull` - Returns empty collection if source is null
+#### Queryable Extensions
+* `If` - Transforms a queryable source based on a condition and returns the transformed source, otherwise returns the original source.
+* `WhereIf` - Include "predicate" if "condition" is true.
+* `Paginate` - Enables pagination of a queryable source by returning a specific number of elements based on a zero-indexed page number and a specified page size.
+* `IgnoreQueryFiltersIf` - Applies the IgnoreQueryFilters feature if the provided condition is true, otherwise returns the original source.
 
 #### String Extensions
 * `ToInt32OrDefault` - Attempts to convert the string to an int. If the conversion is successful, the method returns the converted int value. If the conversion fails, the method returns a default value specified by the caller.
 * `Truncate` - Returns a truncated version of a given string up to a specified maximum length
 * `StripAccentsFromUnicodeCharacters` - Removes accents from Unicode characters in a given string.
 * `ToEnum` - Converts the string representation to specified Enum. Returns defaultValue if value was not converted successfully.
+
+#### Collection Extensions
+* `EmptyIfNull` - Returns empty collection if source is null
 
 #### Random Extensions
 * `NextForTimes` - Returns an IEnumerable of random integers up to a maximum value, with the number of integers determined by a specified count.
