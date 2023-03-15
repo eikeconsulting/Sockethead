@@ -253,6 +253,10 @@ Sockethead.ExtensionsAndUtilities is a collection of utilities and extension met
 * `ToJson` - Converts an input object to its JSON representation using the Newtonsoft.Json library, with indentation and camel-cased property names. If the input object is null, the method returns null.
 * `Deserialize` - Deserializes a JSON string input to an object of type T using the Newtonsoft.Json library. If the input string is null, the method returns the default value of type T.
 
+#### Object Extensions
+* `ToBase64` - Converts an object to its Base64-encoded string representation.
+* `FromBase64` - Converts a Base64-encoded string to an object of type T.
+
 ### Utilities
 
 #### Date Utils
