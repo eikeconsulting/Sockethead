@@ -249,6 +249,10 @@ Sockethead.ExtensionsAndUtilities is a collection of utilities and extension met
 * `NextForTimes` - Returns an IEnumerable of random integers up to a maximum value, with the number of integers determined by a specified count.
 * `UniqueNextForTimes` - Returns an IEnumerable of unique random integers up to a maximum value, with the number of integers determined by a specified count.
 
+#### Json Extensions
+* `ToJson` - Converts an input object to its JSON representation using the Newtonsoft.Json library, with indentation and camel-cased property names. If the input object is null, the method returns null.
+* `Deserialize` - Deserializes a JSON string input to an object of type T using the Newtonsoft.Json library. If the input string is null, the method returns the default value of type T.
+
 ### Utilities
 
 #### Date Utils
