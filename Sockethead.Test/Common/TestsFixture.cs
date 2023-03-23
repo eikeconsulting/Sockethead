@@ -28,7 +28,6 @@ namespace Sockethead.Test.Common
                         config.GetConnectionString("AuditLogConnection")))
                 .AddScoped<AuditLogGenerator>()
                 .AddScoped<AuditLogger>()
-                .AddSingleton<AuditLogCleaner>()
                 .AddLogging()
                 .BuildServiceProvider();
         }
