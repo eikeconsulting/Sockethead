@@ -135,11 +135,21 @@ namespace Sockethead.EFCore.AuditLogging
             return totalLogsDeleted;
         }
 
-        public static async Task<AuditLog> GetOldestRecordToKeepAsync(AuditLogger auditLogger, int thresholdValue) =>
-            await auditLogger.OnlyAuditLog
+        public static async Task<AuditLog> GetOldestRecordToKeepAsync(AuditLogger auditLogger, int thresholdValue)
+        {
+            // Fetch the timestamp first of the threshold record
+            DateTime oldestRecordToKeepTimestamp = await auditLogger.OnlyAuditLog
                 .OrderByDescending(log => log.TimeStamp)
+                .Select(log => log.TimeStamp)
                 .Skip(thresholdValue - 1)
                 .FirstOrDefaultAsync();
+            
+            // Now retrieve the threshold record
+            return await auditLogger.OnlyAuditLog
+                .OrderByDescending(log => log.TimeStamp)
+                .FirstOrDefaultAsync(log => log.TimeStamp == oldestRecordToKeepTimestamp);
+        }
+
 
         public static DateTime GetOldestAllowedTimestamp(TimeSpan timeWindow) =>
             DateTime.UtcNow.Subtract(timeWindow);
