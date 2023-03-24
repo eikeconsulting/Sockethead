@@ -12,7 +12,7 @@ using Sockethead.EFCore.Entities;
 using Sockethead.Test.Common;
 using Xunit;
 
-namespace Sockethead.Test.EFCore
+namespace Sockethead.Test.IntegrationTests.EFCore
 {
     public class AuditLogCleanerTests : IClassFixture<TestsFixture>
     {
