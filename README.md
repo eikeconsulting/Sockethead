@@ -204,25 +204,34 @@ and instead of calling "SaveChangesAsync" call "CommitAsync" and (optionally) pa
 an IAuditMetaData to provide the email and name of the user that made the change.
 
 #### Configuring Audit Logs Cleanup
-The package provides a background service called `AuditLogCleaner` that can be used to periodically clean up old audit logs from the AuditLog database. You can configure the service by using the `RegisterAuditLogCleanerBackgroundService` extension method for the `IServiceCollection` interface to your Startup.cs file:
+The package provides a background service called `AuditLogCleaner` that can be used to periodically clean up old audit logs from the AuditLog database. The `RegisterAuditLogCleanerBackgroundService` extension method can be used to register the Audit Log Cleaner background service in the `IServiceCollection` interface. This extension method expects the following parameters:
+
+- `AuditLogCleanupPolicy` - An optional parameter that specifies the policy to be used for cleaning up audit logs. If no policy is provided, the default policy will be used.
+- `AuditLogCleanupSettings` - An optional parameter that specifies the settings to be used for cleaning up audit logs. If no settings are provided, the default settings will be used.
+- `IAuditLogCleanupActionHandler` - An optional parameter that specifies an implementation of the `IAuditLogCleanupActionHandler` interface to perform the action on the logs that are being cleaned up. If no implementation is provided, then no action is performed.
+
+More details about above parameters are added below.
+
+In your Startup class, add the following code to register the `AuditLogCleaner` background service:
 
 
     services
         .RegisterAuditLogCleanerBackgroundService(
-            new AuditLogCleanupPolicy
+            auditLogCleanupPolicy: new AuditLogCleanupPolicy
             {
                 TimeWindow = TimeSpan.FromDays(30),
                 ThresholdValue = null,
                 ExcludeTables = new []{"User"}
             },
-            new AuditLogCleanupSettings
+            auditLogCleanupSettings: new AuditLogCleanupSettings
             {
                 BatchSize = 500,
                 CleanupInterval = TimeSpan.FromHours(1)
-            }
+            },
+            auditLogCleanupActionHandler: new SampleAuditLogCleanupActionHandler()
         );
 
-The above code configures the `AuditLogCleaner` service based on specified cleanup policy and settings. You can customize the cleanup policy and settings to suit your requirements.
+The above code configures the `AuditLogCleaner` service based on specified cleanup policy, settings and logs action handler. You can customize the above parameters to suit your requirements.
 
 **AuditLogCleanupPolicy**
 
@@ -247,6 +256,14 @@ Provides settings for controlling the audit logs cleanup process.
 `CleanupInterval` - Specifies the time interval at which the cleanup service should be invoked. It can be set to any valid TimeSpan value, such as one hour or five minutes, to determine how frequently the service will run and purge old audit logs. The default value for CleanupInterval is one hour.
 
 After configuring the service, it will automatically clean up old audit logs in the background based on specified cleanup policy and settings at the configured interval.
+
+**IAuditLogCleanupActionHandler**
+
+You can optionally provide an implementation of the `IAuditLogCleanupActionHandler` interface to perform additional actions on the logs that are being cleaned up, such as saving them to a text file. By default, no action is performed if no implementation is provided.
+
+To create a custom implementation for performing additional actions on the logs being cleaned up, you can create a class that implements the `IAuditLogCleanupActionHandler` interface and define the desired logic within the `DeletedLogsHandler` method.
+
+For instance, in the above code we have provided a sample implementation named `SampleAuditLogCleanupActionHandler`. The `DeletedLogsHandler` method of this class is called with the list of logs that are being cleaned up, which saves the logs to a text file.
 
 #### AuditLogger TODOs
 1. Audit Log UI!
