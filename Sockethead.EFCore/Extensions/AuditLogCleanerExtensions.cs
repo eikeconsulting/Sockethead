@@ -16,9 +16,11 @@ namespace Sockethead.EFCore.Extensions
         /// database. If null, then default policy would be used.</param>
         /// <param name="auditLogCleanupSettings">Provides settings for controlling the audit logs cleanup process.
         /// If null, then default settings are used.</param>
+        /// <param name="auditLogCleanupActionHandler">Performs the action on the logs that are being cleaned up.</param>
         /// <returns></returns>
         public static IServiceCollection RegisterAuditLogCleanerBackgroundService(this IServiceCollection services,
-            AuditLogCleanupPolicy auditLogCleanupPolicy = null, AuditLogCleanupSettings auditLogCleanupSettings = null)
+            AuditLogCleanupPolicy auditLogCleanupPolicy = null, AuditLogCleanupSettings auditLogCleanupSettings = null,
+            IAuditLogCleanupActionHandler auditLogCleanupActionHandler = null)
         {
             return services
                 .AddHostedService(provider =>
@@ -26,7 +28,8 @@ namespace Sockethead.EFCore.Extensions
                         provider.GetRequiredService<ILogger<AuditLogCleaner>>(),
                         provider.GetRequiredService<IServiceScopeFactory>(),
                         auditLogCleanupPolicy,
-                        auditLogCleanupSettings
+                        auditLogCleanupSettings,
+                        auditLogCleanupActionHandler
                     )
                 );
         }

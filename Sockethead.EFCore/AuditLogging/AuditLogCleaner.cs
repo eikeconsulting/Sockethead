@@ -19,6 +19,8 @@ namespace Sockethead.EFCore.AuditLogging
     /// is used to delete records older than 30 days.
     /// AuditLogCleanupSettings specifies settings for the cleanup operation, such as batch size and cleanup interval.
     /// If no settings are defined, the default settings of 500 records per batch and a cleanup interval of 1 hour are used.
+    /// IAuditLogCleanupActionHandler performs the action on the logs that are being cleaned up. If null, then no action
+    /// is performed.
     /// </summary>
     public class AuditLogCleaner : BackgroundService
     {
@@ -26,11 +28,13 @@ namespace Sockethead.EFCore.AuditLogging
         private readonly IServiceScopeFactory ScopeFactory;
         private AuditLogCleanupPolicy AuditLogCleanupPolicy { get; }
         private AuditLogCleanupSettings AuditLogCleanupSettings { get; }
+        private IAuditLogCleanupActionHandler AuditLogCleanupActionHandler { get; }
 
         public AuditLogCleaner(ILogger<AuditLogCleaner> logger,
             IServiceScopeFactory scopeFactory,
             AuditLogCleanupPolicy auditLogCleanupPolicy,
-            AuditLogCleanupSettings auditLogCleanupSettings)
+            AuditLogCleanupSettings auditLogCleanupSettings,
+            IAuditLogCleanupActionHandler auditLogCleanupActionHandler)
         {
             Logger = logger;
             ScopeFactory = scopeFactory;
@@ -44,6 +48,8 @@ namespace Sockethead.EFCore.AuditLogging
                 AuditLogCleanupSettings.BatchSize = 500;
             if (AuditLogCleanupSettings.CleanupInterval == default)
                 AuditLogCleanupSettings.CleanupInterval = TimeSpan.FromHours(1);
+
+            AuditLogCleanupActionHandler = auditLogCleanupActionHandler;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -76,9 +82,10 @@ namespace Sockethead.EFCore.AuditLogging
             AuditLog oldestRecordToKeep;
             
             int totalLogsDeleted = 0;
-            IQueryable<AuditLog> auditLogsToDeleteQuery =
-                auditLogger.OnlyAuditLog
-                    .OrderBy(o => o.TimeStamp);
+            IQueryable<AuditLog> auditLogsToDeleteQuery = auditLogger.OnlyAuditLog;
+
+            if (AuditLogCleanupActionHandler != null)
+                auditLogsToDeleteQuery = auditLogsToDeleteQuery.Include(a => a.AuditLogChanges);
 
             if (AuditLogCleanupPolicy.TimeWindow != null && AuditLogCleanupPolicy.ThresholdValue == null)
             {
@@ -120,13 +127,16 @@ namespace Sockethead.EFCore.AuditLogging
             
             // Apply Batch Size
             auditLogsToDeleteQuery = auditLogsToDeleteQuery
+                .OrderBy(a => a.TimeStamp)
                 .Take((int)AuditLogCleanupSettings.BatchSize)
                 .AsNoTracking();
             do
             {
                 var auditLogsToDeleteList = await auditLogsToDeleteQuery.ToListAsync(cancellationToken: stoppingToken);
-                // ToDo: Pass this list of audit logs to be deleted to a method and archives them by saving the logs.
-                
+
+                if (AuditLogCleanupActionHandler != null)
+                    await AuditLogCleanupActionHandler.DeletedLogsHandler(auditLogsToDeleteList);
+
                 await auditLogger.AuditLogDbContext.BulkDeleteAsync(auditLogsToDeleteList, cancellationToken: stoppingToken);
                 totalLogsDeleted += auditLogsToDeleteList.Count;
             }
