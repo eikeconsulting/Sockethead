@@ -25,6 +25,7 @@ namespace Sockethead.EFCore.AuditLogging
         /// 4. Commit (Save) the changes in the DbContext
         /// </summary>
         /// <param name="auditMetaData"></param>
+        /// <param name="auditLogInsertionPolicy"></param>
         /// <returns></returns>
         public async Task CommitAsync(IAuditMetaData auditMetaData, AuditLogInsertionPolicy auditLogInsertionPolicy = null)
         {
