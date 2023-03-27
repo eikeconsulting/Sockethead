@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Sockethead.EFCore.Dto;
 
 namespace Sockethead.EFCore.AuditLogging
 {
@@ -52,8 +53,10 @@ namespace Sockethead.EFCore.AuditLogging
         /// </summary>
         /// <param name="db">Target DbContext to inspect</param>
         /// <param name="meta">Additional metadata to apply to each AuditLog generated</param>
+        /// <param name="auditLogInsertionPolicy">Defines a policy for inserting audit logs into AuditLog database</param>
         /// <returns>Result the SaveChanges call on the db</returns>
-        public async Task<int> SaveAndAuditAsync(DbContext db, IAuditMetaData meta = null)
+        public async Task<int> SaveAndAuditAsync(DbContext db, IAuditMetaData meta = null,
+            AuditLogInsertionPolicy auditLogInsertionPolicy = null)
         {
             db.ChangeTracker.DetectChanges();
 
@@ -81,6 +84,10 @@ namespace Sockethead.EFCore.AuditLogging
                         if (auditLogs[i].Id == 0 && auditLogs[i].EntityState == EntityState.Added)
                             auditLogs[i].RecordId = auditLogsPost[i].RecordId;
                 }
+
+                // Apply insertion policy
+                if (auditLogInsertionPolicy != null)
+                    auditLogs = auditLogInsertionPolicy.ApplyPolicy(auditLogs);
 
                 // now commit the Audit Logs
                 await AuditLogDbContext.AuditLogs.AddRangeAsync(auditLogs);
