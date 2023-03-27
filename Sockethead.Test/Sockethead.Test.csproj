@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Sockethead.EFCore\Sockethead.EFCore.csproj" />
+    <ProjectReference Include="..\Sockethead.Web\Sockethead.Web.csproj" />
   </ItemGroup>
 
   <ItemGroup>
