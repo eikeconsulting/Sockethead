@@ -227,12 +227,12 @@ After configuring the service, it will automatically clean up old audit logs in 
 1. Unit Tests
 1. Integration Tests
 
-## Sockethead.ExtensionsAndUtilities
-Sockethead.ExtensionsAndUtilities is a collection of utilities and extension methods that can be utilized in any project. It provides various useful utilities and extensions for string, JSON, collection, date, and more.
+## Sockethead.Common
+Sockethead.Common is a collection of common utilities and extension methods that can be utilized in any project. It provides various useful utilities and extensions for string, JSON, collection, date, and more.
 
 ### Installation
 
-    install-package Sockethead.ExtensionsAndUtilities
+    install-package Sockethead.Common
 
 ### Extensions
 
