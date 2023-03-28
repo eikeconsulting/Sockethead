@@ -241,6 +241,13 @@ Sockethead.Common is a collection of common utilities and extension methods that
 * `WhereIf` - Include "predicate" if "condition" is true.
 * `Paginate` - Enables pagination of a queryable source by returning a specific number of elements based on a zero-indexed page number and a specified page size.
 * `IgnoreQueryFiltersIf` - Applies the IgnoreQueryFilters feature if the provided condition is true, otherwise returns the original source.
+* `ForEachInChunks` - This is equivalent to the standard ForEach extension, but divides the original collection into chunks rather than pulling it all in one query.
+* `ForEachInChunksAsync` -  This is an asynchronous equivalent of the `ForEachInChunks` method, which divides the original collection into chunks rather than pulling it all in one query.
+* `ChunkAsync` - Breaks the original collection into smaller "chunks" based on a specified chunk size, and return these chunks as a sequence of lists. This method allows for asynchronous processing of large collections, where pulling all the data into memory at once may not be feasible or efficient.
+* `ForEachInChunksForShrinkingListAsync` - This allows you to loop over a list of items that shrinks the original query as you process it. It will terminate in one of two cases:
+  - The query returns zero results .
+  - The query returns the same or more results than the previous time through the loop.
+* `ShrinkingListChunker` - Process a Queryable whose result set changes as you process each chunk.
 
 #### String Extensions
 * `ToInt32OrDefault` - Attempts to convert the string to an int. If the conversion is successful, the method returns the converted int value. If the conversion fails, the method returns a default value specified by the caller.
