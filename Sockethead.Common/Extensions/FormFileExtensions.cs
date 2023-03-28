@@ -2,7 +2,7 @@
 using System.IO;
 using Microsoft.AspNetCore.Http;
 
-namespace Sockethead.ExtensionsAndUtilities.Extensions
+namespace Sockethead.Common.Extensions
 {
     public static class FormFileExtensions
     {

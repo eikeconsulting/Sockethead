@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Sockethead.ExtensionsAndUtilities.Extensions
+namespace Sockethead.Common.Extensions
 {
     /// <summary>
     /// Provides a set of extension methods that add additional functionality to collections

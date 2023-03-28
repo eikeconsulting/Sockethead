@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 
-namespace Sockethead.ExtensionsAndUtilities.Extensions
+namespace Sockethead.Common.Extensions
 {
     /// <summary>
     /// Contains extension methods for the string data type.

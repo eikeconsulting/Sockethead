@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace Sockethead.ExtensionsAndUtilities.Extensions
+namespace Sockethead.Common.Extensions
 {
     /// <summary>
     /// One line serialization/deserialization using Newtonsoft.Json library

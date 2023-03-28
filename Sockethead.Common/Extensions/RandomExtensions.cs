@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Sockethead.ExtensionsAndUtilities.Extensions
+namespace Sockethead.Common.Extensions
 {
     /// <summary>
     /// Provides a set of extension methods that add additional functionality to Random

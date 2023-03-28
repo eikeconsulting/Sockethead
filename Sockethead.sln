@@ -26,7 +26,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sockethead.Test", "Sockethead.Test\Sockethead.Test.csproj", "{DA212919-C124-46FB-BBBE-637285610BF1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sockethead.ExtensionsAndUtilities", "Sockethead.ExtensionsAndUtilities\Sockethead.ExtensionsAndUtilities.csproj", "{1E0DB69C-9CB5-4C2F-863F-19023E902707}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sockethead.Common", "Sockethead.Common\Sockethead.Common.csproj", "{1E0DB69C-9CB5-4C2F-863F-19023E902707}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Sockethead.ExtensionsAndUtilities.Extensions;
+using Sockethead.Common.Extensions;
 using Xunit;
 
 namespace Sockethead.Test.UnitTests.Extensions

@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Net.Mail;
 
-namespace Sockethead.ExtensionsAndUtilities.Extensions
+namespace Sockethead.Common.Extensions
 {
     public static class MailAddressCollectionExtensions
     {
