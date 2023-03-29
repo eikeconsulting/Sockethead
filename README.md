@@ -296,6 +296,9 @@ Sockethead.Common is a collection of common utilities and extension methods that
 * `GetMonth` - Extracts the month information from the provided integer date value.
 * `GetYear` - Extracts the year information from the provided integer date value.
 
+#### Random Utils
+* `GetRandomInstanceByDate` - Returns a new instance of the Random class, using the specified date as the seed value. The returned instance generates a same sequence of random numbers for a specified date.
+
 
 # License
 [MIT](https://opensource.org/licenses/MIT)
