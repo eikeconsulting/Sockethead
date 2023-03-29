@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -72,21 +71,13 @@ namespace Sockethead.EFCore.AuditLogging
                 await Task.Delay(AuditLogCleanupSettings.CleanupInterval, stoppingToken);
             }
         }
-
-        public async Task<int> CleanupAuditLogsAsync(CancellationToken stoppingToken)
+        
+        private async Task<IQueryable<AuditLog>> ApplyAuditLogCleanupPolicyAsync(IQueryable<AuditLog> auditLogsToDeleteQuery, 
+            AuditLogger auditLogger, CancellationToken stoppingToken)
         {
-            using IServiceScope scope = ScopeFactory.CreateScope();
-            AuditLogger auditLogger = scope.ServiceProvider.GetRequiredService<AuditLogger>();
-
             DateTime oldestAllowedAuditLogTime;
             AuditLog oldestRecordToKeep;
             
-            int totalLogsDeleted = 0;
-            IQueryable<AuditLog> auditLogsToDeleteQuery = auditLogger.OnlyAuditLog;
-
-            if (AuditLogCleanupActionHandler != null)
-                auditLogsToDeleteQuery = auditLogsToDeleteQuery.Include(a => a.AuditLogChanges);
-
             if (AuditLogCleanupPolicy.TimeWindow != null && AuditLogCleanupPolicy.ThresholdValue == null)
             {
                 oldestAllowedAuditLogTime = GetOldestAllowedTimestamp(AuditLogCleanupPolicy.TimeWindow.Value);
@@ -124,23 +115,28 @@ namespace Sockethead.EFCore.AuditLogging
             if (AuditLogCleanupPolicy.ExcludeTables != null && AuditLogCleanupPolicy.ExcludeTables.Any())
                 auditLogsToDeleteQuery =
                     auditLogsToDeleteQuery.Where(log => !AuditLogCleanupPolicy.ExcludeTables.Contains(log.TableName));
+
+            return auditLogsToDeleteQuery;
+        }
+
+        public async Task<int> CleanupAuditLogsAsync(CancellationToken stoppingToken)
+        {
+            using IServiceScope scope = ScopeFactory.CreateScope();
+            AuditLogger auditLogger = scope.ServiceProvider.GetRequiredService<AuditLogger>();
+
+            IQueryable<AuditLog> auditLogsToDeleteQuery = auditLogger.OnlyAuditLog;
+
+            if (AuditLogCleanupActionHandler != null)
+                auditLogsToDeleteQuery = auditLogsToDeleteQuery.Include(a => a.AuditLogChanges);
+
+            auditLogsToDeleteQuery = await ApplyAuditLogCleanupPolicyAsync(auditLogsToDeleteQuery, auditLogger, stoppingToken);
             
-            // Apply Batch Size
+            // Apply OrderBy
             auditLogsToDeleteQuery = auditLogsToDeleteQuery
-                .OrderBy(a => a.TimeStamp)
-                .Take((int)AuditLogCleanupSettings.BatchSize)
-                .AsNoTracking();
-            do
-            {
-                var auditLogsToDeleteList = await auditLogsToDeleteQuery.ToListAsync(cancellationToken: stoppingToken);
+                .OrderBy(a => a.TimeStamp);
 
-                if (AuditLogCleanupActionHandler != null)
-                    await AuditLogCleanupActionHandler.DeletedLogsHandler(auditLogsToDeleteList);
-
-                await auditLogger.AuditLogDbContext.BulkDeleteAsync(auditLogsToDeleteList, cancellationToken: stoppingToken);
-                totalLogsDeleted += auditLogsToDeleteList.Count;
-            }
-            while (auditLogsToDeleteQuery.Any());
+            int totalLogsDeleted = await auditLogger.DeleteAuditLogsInBatchesAsync(auditLogsToDeleteQuery,
+                (int)AuditLogCleanupSettings.BatchSize, AuditLogCleanupActionHandler, stoppingToken);
 
             return totalLogsDeleted;
         }
