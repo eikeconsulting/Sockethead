@@ -283,11 +283,12 @@ Sockethead.Common is a collection of common utilities and extension methods that
 * `AccumulateSum` - This method is a specific overload of Accumulate that is used to accumulate the sum of decimal values into a key in a dictionary.
 * `ToObject` -  Converts a dictionary of string keys and object values to an instance of a class.
 
-### Utilities
-
-#### Date Utils
+#### Date Extensions
 * `GetDateRange` - Returns a range of DateTime that starts with the startDate and ends with the endDate, inclusive of both endpoints.
+* `GetMonthRange` - Returns a range of DateTime objects that starts with startDate and ends with endDate, inclusive of both endpoints, incrementing by one month at a time.
+* `GetYearRange` - Returns a range of DateTime objects that starts with startDate and ends with endDate, inclusive of both endpoints, incrementing by one year at a time.
 
+### Utilities
 
 
 
