@@ -10,5 +10,9 @@
             Property1 = prop1;
             Property2 = prop2;
         }
+
+        public TestModel()
+        {
+        }
     }
 }

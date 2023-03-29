@@ -278,6 +278,11 @@ Sockethead.Common is a collection of common utilities and extension methods that
 #### Form File Extensions
 * `ToBase64` - Converts the file content to its Base64-encoded string representation.
 
+#### Dictionary Extensions
+* `Accumulate` -  This method can be used to accumulate values for a key in a dictionary using a custom accumulator function. It adds the key and the new value to the dictionary if it doesn't exist, otherwise, it applies the accumulator function to the existing value and the new value.
+* `AccumulateSum` - This method is a specific overload of Accumulate that is used to accumulate the sum of decimal values into a key in a dictionary.
+* `ToObject` -  Converts a dictionary of string keys and object values to an instance of a class.
+
 ### Utilities
 
 #### Date Utils
