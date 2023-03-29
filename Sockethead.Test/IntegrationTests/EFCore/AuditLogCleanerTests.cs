@@ -61,9 +61,8 @@ namespace Sockethead.Test.IntegrationTests.EFCore
             AuditLogCleaner auditLogCleaner =
                 new AuditLogCleaner(Logger, ServiceScopeFactory, policy, GetAuditLogCleanupSettings(), null);
 
-            DateTime oldestAllowedAuditLogTime = AuditLogCleaner.GetOldestAllowedTimestamp(policy.TimeWindow.Value);
             IQueryable<AuditLog> auditLogsQuery =
-                AuditLogCleaner.ApplyTimestampFilter(AuditLogger.OnlyAuditLog, oldestAllowedAuditLogTime);
+                AuditLogCleaner.ApplyTimeWindowCleanupPolicy(AuditLogger.OnlyAuditLog, policy.TimeWindow.Value);
         
             if(!await auditLogsQuery.AnyAsync())
                 return;
@@ -80,12 +79,11 @@ namespace Sockethead.Test.IntegrationTests.EFCore
             AuditLogCleanupPolicy policy = GetAuditLogCleanupPolicy(null, 1000);
             AuditLogCleaner auditLogCleaner =
                 new AuditLogCleaner(Logger, ServiceScopeFactory, policy, GetAuditLogCleanupSettings(), null);
-
-            AuditLog oldestRecordToKeep =
-                await AuditLogCleaner.GetOldestRecordToKeepAsync(AuditLogger, policy.ThresholdValue.Value);
+            
             IQueryable<AuditLog> auditLogsQuery =
-                AuditLogCleaner.ApplyTimestampFilter(AuditLogger.OnlyAuditLog, oldestRecordToKeep.TimeStamp);
-
+                await AuditLogCleaner.ApplyThresholdValueCleanupPolicyAsync(AuditLogger.OnlyAuditLog,
+                    policy.ThresholdValue.Value, AuditLogger);
+            
             if(!await auditLogsQuery.AnyAsync())
                 return;
 

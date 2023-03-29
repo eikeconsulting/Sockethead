@@ -75,31 +75,25 @@ namespace Sockethead.EFCore.AuditLogging
         private async Task<IQueryable<AuditLog>> ApplyAuditLogCleanupPolicyAsync(IQueryable<AuditLog> auditLogsToDeleteQuery, 
             AuditLogger auditLogger, CancellationToken stoppingToken)
         {
-            DateTime oldestAllowedAuditLogTime;
-            AuditLog oldestRecordToKeep;
-            
             if (AuditLogCleanupPolicy.TimeWindow != null && AuditLogCleanupPolicy.ThresholdValue == null)
             {
-                oldestAllowedAuditLogTime = GetOldestAllowedTimestamp(AuditLogCleanupPolicy.TimeWindow.Value);
-                auditLogsToDeleteQuery = ApplyTimestampFilter(auditLogsToDeleteQuery, oldestAllowedAuditLogTime);
+                auditLogsToDeleteQuery =
+                    ApplyTimeWindowCleanupPolicy(auditLogsToDeleteQuery, AuditLogCleanupPolicy.TimeWindow.Value);
             }
 
             else if (AuditLogCleanupPolicy.TimeWindow == null && AuditLogCleanupPolicy.ThresholdValue != null)
             {
-                oldestRecordToKeep =
-                    await GetOldestRecordToKeepAsync(auditLogger, AuditLogCleanupPolicy.ThresholdValue.Value);
-
-                if (oldestRecordToKeep != null)
-                    auditLogsToDeleteQuery = ApplyTimestampFilter(auditLogsToDeleteQuery, oldestRecordToKeep.TimeStamp);
+                auditLogsToDeleteQuery = await ApplyThresholdValueCleanupPolicyAsync(auditLogsToDeleteQuery,
+                    AuditLogCleanupPolicy.ThresholdValue.Value, auditLogger);
             }
             
             else if (AuditLogCleanupPolicy.TimeWindow != null && AuditLogCleanupPolicy.ThresholdValue != null)
             {
-                oldestAllowedAuditLogTime = GetOldestAllowedTimestamp(AuditLogCleanupPolicy.TimeWindow.Value);
+                DateTime oldestAllowedAuditLogTime = GetOldestAllowedTimestamp(AuditLogCleanupPolicy.TimeWindow.Value);
                 int totalRecords = await auditLogger.OnlyAuditLog.CountAsync(cancellationToken: stoppingToken);
                 if (totalRecords > AuditLogCleanupPolicy.ThresholdValue)
                 {
-                    oldestRecordToKeep =
+                    AuditLog oldestRecordToKeep =
                         await GetOldestRecordToKeepAsync(auditLogger, AuditLogCleanupPolicy.ThresholdValue.Value);
                     
                     auditLogsToDeleteQuery = oldestRecordToKeep != null
@@ -117,6 +111,22 @@ namespace Sockethead.EFCore.AuditLogging
                     auditLogsToDeleteQuery.Where(log => !AuditLogCleanupPolicy.ExcludeTables.Contains(log.TableName));
 
             return auditLogsToDeleteQuery;
+        }
+
+        public static IQueryable<AuditLog> ApplyTimeWindowCleanupPolicy(IQueryable<AuditLog> auditLogsToDeleteQuery, 
+            TimeSpan timeWindow)
+        {
+            DateTime oldestAllowedAuditLogTime = GetOldestAllowedTimestamp(timeWindow);
+            return ApplyTimestampFilter(auditLogsToDeleteQuery, timestamp: oldestAllowedAuditLogTime);
+        }
+
+        public static async Task<IQueryable<AuditLog>> ApplyThresholdValueCleanupPolicyAsync(
+            IQueryable<AuditLog> auditLogsToDeleteQuery, int thresholdValue, AuditLogger auditLogger)
+        {
+            AuditLog oldestRecordToKeep =
+                await GetOldestRecordToKeepAsync(auditLogger, thresholdValue);
+
+            return ApplyTimestampFilter(auditLogsToDeleteQuery, oldestRecordToKeep?.TimeStamp ?? DateTime.MinValue);
         }
 
         public async Task<int> CleanupAuditLogsAsync(CancellationToken stoppingToken)
