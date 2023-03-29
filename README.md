@@ -290,6 +290,11 @@ Sockethead.Common is a collection of common utilities and extension methods that
 
 ### Utilities
 
+#### Date Utils
+* `GetDateValue` - Converts the specified day, month, and year to its equivalent integer value. For example, day:2/month:10/year:2022 would return 20221002.
+* `GetDay` - Extracts the day information from the provided integer date value.
+* `GetMonth` - Extracts the month information from the provided integer date value.
+* `GetYear` - Extracts the year information from the provided integer date value.
 
 
 # License
