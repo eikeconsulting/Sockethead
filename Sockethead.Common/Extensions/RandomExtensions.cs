@@ -25,7 +25,7 @@ namespace Sockethead.Common.Extensions
             if (maxValue < numberOfTimes)
                 throw new ArgumentException("maxValue is less than numberOfTimes.");
 
-            HashSet<int> values = new();
+            HashSet<int> values = new HashSet<int>();
 
             for (int i = 0; i < numberOfTimes;)
             {
