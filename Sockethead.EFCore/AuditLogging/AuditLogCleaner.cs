@@ -23,8 +23,8 @@ namespace Sockethead.EFCore.AuditLogging
     /// </summary>
     public class AuditLogCleaner : BackgroundService
     {
-        private readonly ILogger<AuditLogCleaner> Logger;
-        private readonly IServiceScopeFactory ScopeFactory;
+        private ILogger<AuditLogCleaner> Logger { get; }
+        private IServiceScopeFactory ScopeFactory { get; }
         private AuditLogCleanupPolicy AuditLogCleanupPolicy { get; }
         private AuditLogCleanupSettings AuditLogCleanupSettings { get; }
         private IAuditLogCleanupActionHandler AuditLogCleanupActionHandler { get; }
