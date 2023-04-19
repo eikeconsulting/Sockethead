@@ -1,0 +1,13 @@
+﻿@model Sockethead.Razor.Forms.SubmitButtonVm
+
+@if (string.IsNullOrEmpty(Model.Action))
+{
+    <input type="submit" value="@Model.Label" class="btn @Model.Css" />
+}
+else
+{
+    string controller = Model.Controller ?? ViewContext.RouteData.Values["controller"].ToString();
+
+    <input type="submit" value="@Model.Label" class="btn @Model.Css" asp-action="@Model.Action" asp-controller="@controller" />
+}
+&nbsp;&nbsp;

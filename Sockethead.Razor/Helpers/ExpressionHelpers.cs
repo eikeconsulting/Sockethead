@@ -147,6 +147,9 @@ namespace Sockethead.Razor.Helpers
             }
             return expr.Body.Type;
         }
+        
+        public static DataType? GetDataTypeAttribute<T, V>(this Expression<Func<T, V>> expression)
+            => GetAttribute<DataTypeAttribute, T, V>(expression)?.DataType;
 
     }
 }

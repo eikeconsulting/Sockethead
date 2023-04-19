@@ -21,7 +21,7 @@ namespace Sockethead.Web.Areas.Samples.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public IActionResult FormBuilder(SampleModel formData)
         {
-            return View(SampleDataQuery.First()).Success($"Submitted form with {formData}");
+            return View(formData).Success($"Submitted form with {formData}");
         }
     }
 }

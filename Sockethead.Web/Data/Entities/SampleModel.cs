@@ -39,6 +39,7 @@ namespace Sockethead.Web.Data.Entities
 
         public SampleEnum SampleEnum { get; set; } = GetRandomEnum();
 
+        [DataType(DataType.MultilineText)]
         public string FooBarBazBBBlah { get; set; }
 
         private static int NextId = 1001;
@@ -58,5 +59,27 @@ namespace Sockethead.Web.Data.Entities
         private static SampleEnum GetRandomEnum() => (SampleEnum)Random.Next((int)SampleEnum.Zero, (int)SampleEnum.Two + 2);
 
         public override string ToString() => $"Sample Data for {First} {Last}, {JobTitle}";
+        
+        [DataType(DataType.Date)]
+        public DateTime RandomOtherDate { get; set; } = GetRandomDate();
+        
+        [RegularExpression(@"^\d+\.\d{0,2}$", ErrorMessage = "Only two decimal places allowed")]
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double RandomDouble { get; set; } = Random.NextDouble() * 100;
+        
+        [RegularExpression(@"^\d+\.\d{0,2}$", ErrorMessage = "Only two decimal places allowed")]
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public decimal RandomDecimal { get; set; } = (decimal)(Random.NextDouble() * 100);
+        public float Float { get; set; } = (float)0.12;
+        public double? NullableDouble { get; set; }
+        [DataType(DataType.EmailAddress)] 
+        public string Email { get; set; } = "myemail@sockethead.com";
+
+        [DataType(DataType.Password)] 
+        public string Password { get; set; } = "password";
+        
+        public string City { get; set; }
+        public string OtherCity { get; set; }
+
     }
 }

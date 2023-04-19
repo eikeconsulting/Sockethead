@@ -1,133 +1,52 @@
 ﻿@using Sockethead.Razor.Forms;
 @using System.Linq.Expressions;
 @using Microsoft.AspNetCore.Html;
+@using Microsoft.AspNetCore.Routing.Template
 @model SampleModel
 @{
     ViewData["Title"] = "Form Builder";
-
-    IHtmlContent TextBoxRow(Expression<Func<SampleModel, string>> expression)
-    {
-        var builder = new HtmlContentBuilder();
-        builder.AppendHtml("<div class='form-group'>");
-        builder.AppendHtml(Html.LabelFor(expression, htmlAttributes: new { @class = "control-label" }));
-        builder.AppendHtml(Html.TextBoxFor(expression, htmlAttributes: new { @class = "form-control" }));
-        builder.AppendHtml(Html.ValidationMessageFor(expression, null, htmlAttributes: new { @class = "text-danger" }));
-        builder.AppendHtml("</div>");
-        return builder;
-    }
+    List<SelectListItem> cityList = new List<SelectListItem> 
+        { new("New York", "NY"), new("London", "LDN") };
 }
 
-<h4>Sample Model (work in progress)</h4>
-<hr />
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="FormBuilder">
-            @{
-                var form = Html.SimpleForm(Model);
-                //this.ViewContext.Writer.;
-                //Microsoft.AspNetCore.Mvc.ViewFeatures.ModelExpression
-                //Microsoft.AspNetCore.Mvc.TagHelpers.SelectTagHelper
-            }
-            @(form
-                .HiddenFor(model => model.Id)
-                .TextBoxFor(model => model.First)
-                .TextBoxFor(model => model.Last)
-                .TextBoxFor(model => model.JobTitle)
-                .TextBoxFor(model => model.RandomDate)
-                .Render())
-
-            <div class="form-group">
-                <label asp-for="RandomDate" class="control-label"></label>
-                <input asp-for="RandomDate" class="form-control" />
-                <span asp-validation-for="RandomDate" class="text-danger"></span>
-            </div>
-
-            @(form
-                .TextBoxFor(model => model.FooBarBazBBBlah)
-                .Render())
-
-        </form>
-
-        <hr />
-
-        @using (Html.BeginForm(actionName: "FormBuilder", controllerName: "Pager", method: FormMethod.Post))
-        {
-            @Html.ValidationSummary(excludePropertyErrors: true, message: null, htmlAttributes: new { @class = "text-danger" })
-            @Html.HiddenFor(model => model.Id)
-            @TextBoxRow(model => model.First)
-            @TextBoxRow(model => model.Last)
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        }
-
-        <hr />
-
+    <div class="col-md-6">
+        @(await Html.SimpleForm(Model, new FormOptions {ActionName = "FormBuilder"})
+            .HiddenFor(model => model.Id)
+            .EditorFor(model => model.First, isReadOnly: true)
+            .EditorFor(model => model.Last)
+            .EditorFor(model => model.JobTitle)
+            .EditorFor(model => model.Email)
+            .EditorFor(model => model.Password)
+            .EditorFor(model => model.RandomDate)
+            .EditorFor(model => model.RandomOtherDate)
+            .EditorFor(model => model.Flag)
+            .EditorFor(model => model.FooBarBazBBBlah)
+            .EnumEditorFor(model => model.SampleEnum)
+            .EditorFor(model => model.RandomDouble)
+            .EditorFor(model => model.RandomDecimal)
+            .EditorFor(model => model.Float)
+            .EditorFor(model => model.NullableDouble)
+            .AppendHtml(
+                @<div class="form-group">
+                    <label>Append Html - First Name: @Model.First</label>
+                </div>
+            )
+            .AppendHtmlIf(true,
+                @<div class="form-group">
+                    <label>Append Html if condition is true.</label>
+                </div>
+            )
+            .AppendHtml("<div>Encoded HTML</div>")
+            .SelectListEditorFor(model => model.City, cityList)
+            .RadioEditorFor(model => model.OtherCity, cityList, inline: false)
+            .SubmitButton("Save Changes")
+            .RenderAsync())
+    </div>
+    <div class="col-md-6">
+            
     </div>
 
-    <div class="col-md-4">
-        <form asp-action="FormBuilder">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            @Html.HiddenFor(model => model.Id)
-            <div class="form-group">
-                @Html.LabelFor(model => model.First, htmlAttributes: new { @class = "control-label" })
-                @Html.TextBoxFor(model => model.First, htmlAttributes: new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.First, null, htmlAttributes: new { @class = "text-danger" })
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
-
-    <div class="col-md-4">
-        <form asp-action="FormBuilder">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Id" class="control-label"></label>
-                <input asp-for="Id" class="form-control" />
-                <span asp-validation-for="Id" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="First" class="control-label"></label>
-                <input asp-for="First" class="form-control" />
-                <span asp-validation-for="First" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Last" class="control-label"></label>
-                <input asp-for="Last" class="form-control" />
-                <span asp-validation-for="Last" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="JobTitle" class="control-label"></label>
-                <input asp-for="JobTitle" class="form-control" />
-                <span asp-validation-for="JobTitle" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="RandomDate" class="control-label"></label>
-                <input asp-for="RandomDate" class="form-control" />
-                <span asp-validation-for="RandomDate" class="text-danger"></span>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="Flag" /> @Html.DisplayNameFor(model => model.Flag)
-                </label>
-            </div>
-            <div class="form-group">
-                <label asp-for="SampleEnum" class="control-label"></label>
-                <input asp-for="SampleEnum" class="form-control" />
-                <span asp-validation-for="SampleEnum" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="FooBarBazBBBlah" class="control-label"></label>
-                <input asp-for="FooBarBazBBBlah" class="form-control" />
-                <span asp-validation-for="FooBarBazBBBlah" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
 </div>
 
 

@@ -1,0 +1,14 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model Sockethead.Razor.Forms.ISimpleForm
+
+@{
+    string controller = Model.FormOptions.ControllerName ?? ViewContext.RouteData.Values["controller"].ToString();
+}
+
+<form asp-action="@Model.FormOptions.ActionName" asp-controller="@controller" enctype="multipart/form-data"
+      method="@Model.FormOptions.Method">
+    <div class=@($"{Model.CssClass}")>
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        @(Model.RenderFormRows())
+    </div>
+</form>
