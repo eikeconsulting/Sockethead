@@ -2,6 +2,7 @@
 using Sockethead.EFCore.Entities;
 using System.Linq;
 using System.Threading.Tasks;
+using Sockethead.EFCore.Dto;
 
 namespace Sockethead.EFCore.AuditLogging
 {
@@ -24,8 +25,9 @@ namespace Sockethead.EFCore.AuditLogging
         /// 4. Commit (Save) the changes in the DbContext
         /// </summary>
         /// <param name="auditMetaData"></param>
+        /// <param name="auditLogInsertionPolicy"></param>
         /// <returns></returns>
-        public async Task CommitAsync(IAuditMetaData auditMetaData)
+        public async Task CommitAsync(IAuditMetaData auditMetaData, AuditLogInsertionPolicy auditLogInsertionPolicy = null)
         {
             Db.ChangeTracker.DetectChanges();
 
@@ -51,7 +53,7 @@ namespace Sockethead.EFCore.AuditLogging
                 .OfType<BaseEntity>())
                 entity.Touch();
 
-            await AuditLogger.SaveAndAuditAsync(Db, auditMetaData);
+            await AuditLogger.SaveAndAuditAsync(Db, auditMetaData, auditLogInsertionPolicy);
         }
     }
 }

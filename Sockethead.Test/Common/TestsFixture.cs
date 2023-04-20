@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Sockethead.EFCore.AuditLogging;
+using Sockethead.Web.Data;
 
 namespace Sockethead.Test.Common
 {
@@ -26,8 +27,12 @@ namespace Sockethead.Test.Common
                 .AddDbContext<AuditLogDbContext>(options =>
                     options.UseSqlServer(
                         config.GetConnectionString("AuditLogConnection")))
+                .AddDbContext<ApplicationDbContext>(options =>
+                    options.UseSqlServer(
+                        config.GetConnectionString("DefaultConnection")))
                 .AddScoped<AuditLogGenerator>()
                 .AddScoped<AuditLogger>()
+                .AddScoped<MyRepo>()
                 .AddLogging()
                 .BuildServiceProvider();
         }

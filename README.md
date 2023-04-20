@@ -202,6 +202,21 @@ To add your MyRepo and other AuditLog dependencies to your startup:
 Now, inject this MyRepo instead of your ApplicationDbContext 
 and instead of calling "SaveChangesAsync" call "CommitAsync" and (optionally) pass 
 an IAuditMetaData to provide the email and name of the user that made the change.
+You can also pass an optional AuditLogInsertionPolicy object to specify which logs to include or exclude.
+
+Here's an example of how to use the `AuditLogInsertionPolicy`:
+
+    var policy = new AuditLogInsertionPolicy
+    {
+        IncludeTables = new[] { "Table1", "Table2" },
+        SensitiveProperties = new[] { "Table1.Property1", "Table2.Property2" }
+    };
+    
+    await _myRepo.CommitAsync(auditMetaData, policy);
+
+The `IncludeTables` property is an array of table names that specifies which logs should be included. If IncludeTables is null, all logs are allowed. If IncludeTables is an empty array, no logs are allowed.
+
+The `SensitiveProperties` property is an array of property names that should be excluded from the logs. If a change is filtered out, it means that the corresponding property in the database is considered sensitive and should not be logged.
 
 #### Configuring Audit Logs Cleanup
 The package provides a background service called `AuditLogCleaner` that can be used to periodically clean up old audit logs from the AuditLog database. The `RegisterAuditLogCleanerBackgroundService` extension method can be used to register the Audit Log Cleaner background service in the `IServiceCollection` interface. This extension method expects the following parameters:
