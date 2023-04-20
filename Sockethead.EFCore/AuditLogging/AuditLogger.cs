@@ -5,7 +5,10 @@ using Sockethead.EFCore.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using Sockethead.EFCore.Dto;
+using EFCore.BulkExtensions;
 
 namespace Sockethead.EFCore.AuditLogging
 {
@@ -52,8 +55,10 @@ namespace Sockethead.EFCore.AuditLogging
         /// </summary>
         /// <param name="db">Target DbContext to inspect</param>
         /// <param name="meta">Additional metadata to apply to each AuditLog generated</param>
+        /// <param name="auditLogInsertionPolicy">Defines a policy for inserting audit logs into AuditLog database</param>
         /// <returns>Result the SaveChanges call on the db</returns>
-        public async Task<int> SaveAndAuditAsync(DbContext db, IAuditMetaData meta = null)
+        public async Task<int> SaveAndAuditAsync(DbContext db, IAuditMetaData meta = null,
+            AuditLogInsertionPolicy auditLogInsertionPolicy = null)
         {
             db.ChangeTracker.DetectChanges();
 
@@ -82,6 +87,10 @@ namespace Sockethead.EFCore.AuditLogging
                             auditLogs[i].RecordId = auditLogsPost[i].RecordId;
                 }
 
+                // Apply insertion policy
+                if (auditLogInsertionPolicy != null)
+                    auditLogs = auditLogInsertionPolicy.ApplyPolicy(auditLogs);
+
                 // now commit the Audit Logs
                 await AuditLogDbContext.AuditLogs.AddRangeAsync(auditLogs);
                 await AuditLogDbContext.SaveChangesAsync();
@@ -104,6 +113,39 @@ namespace Sockethead.EFCore.AuditLogging
                         return auditLog;
                     })
                     .ToList();
+        }
+
+        /// <summary>
+        /// Performs the deletion of logs in batches of size specified. 
+        /// </summary>
+        /// <param name="auditLogsToDeleteQuery">Represents the audit logs to delete</param>
+        /// <param name="batchSize">Performs the deletion of logs in batches of size specified</param>
+        /// <param name="auditLogCleanupActionHandler">Performs the action on the logs that are being cleaned up. If null,
+        /// then no action is performed.</param>
+        /// <param name="stoppingToken">Allows cancellation of the operation</param>
+        /// <returns>Returns the total number of logs deleted</returns>
+        public async Task<int> DeleteAuditLogsInBatchesAsync(IQueryable<AuditLog> auditLogsToDeleteQuery, int batchSize,
+            IAuditLogCleanupActionHandler auditLogCleanupActionHandler, CancellationToken stoppingToken)
+        {
+            auditLogsToDeleteQuery = auditLogsToDeleteQuery
+                .Take(batchSize)
+                .AsNoTracking();
+            
+            int totalLogsDeleted = 0;
+            
+            do
+            {
+                var auditLogsToDeleteList = await auditLogsToDeleteQuery.ToListAsync(cancellationToken: stoppingToken);
+
+                if (auditLogCleanupActionHandler != null)
+                    await auditLogCleanupActionHandler.DeletedLogsHandler(auditLogsToDeleteList);
+
+                await AuditLogDbContext.BulkDeleteAsync(auditLogsToDeleteList, cancellationToken: stoppingToken);
+                totalLogsDeleted += auditLogsToDeleteList.Count;
+            }
+            while (auditLogsToDeleteQuery.Any());
+            
+            return totalLogsDeleted;
         }
     }
 }

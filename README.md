@@ -202,25 +202,83 @@ To add your MyRepo and other AuditLog dependencies to your startup:
 Now, inject this MyRepo instead of your ApplicationDbContext 
 and instead of calling "SaveChangesAsync" call "CommitAsync" and (optionally) pass 
 an IAuditMetaData to provide the email and name of the user that made the change.
+You can also pass an optional AuditLogInsertionPolicy object to specify which logs to include or exclude.
+
+Here's an example of how to use the `AuditLogInsertionPolicy`:
+
+    var policy = new AuditLogInsertionPolicy
+    {
+        IncludeTables = new[] { "Table1", "Table2" },
+        SensitiveProperties = new[] { "Table1.Property1", "Table2.Property2" }
+    };
+    
+    await _myRepo.CommitAsync(auditMetaData, policy);
+
+The `IncludeTables` property is an array of table names that specifies which logs should be included. If IncludeTables is null, all logs are allowed. If IncludeTables is an empty array, no logs are allowed.
+
+The `SensitiveProperties` property is an array of property names that should be excluded from the logs. If a change is filtered out, it means that the corresponding property in the database is considered sensitive and should not be logged.
 
 #### Configuring Audit Logs Cleanup
-The package provides a background service called `AuditLogCleaner` that can be used to periodically clean up old audit logs from the AuditLog database. You can configure the service by adding the following code to your Startup.cs file:
+The package provides a background service called `AuditLogCleaner` that can be used to periodically clean up old audit logs from the AuditLog database. The `RegisterAuditLogCleanerBackgroundService` extension method can be used to register the Audit Log Cleaner background service in the `IServiceCollection` interface. This extension method expects the following parameters:
+
+- `AuditLogCleanupPolicy` - An optional parameter that specifies the policy to be used for cleaning up audit logs. If no policy is provided, the default policy will be used.
+- `AuditLogCleanupSettings` - An optional parameter that specifies the settings to be used for cleaning up audit logs. If no settings are provided, the default settings will be used.
+- `IAuditLogCleanupActionHandler` - An optional parameter that specifies an implementation of the `IAuditLogCleanupActionHandler` interface to perform the action on the logs that are being cleaned up. If no implementation is provided, then no action is performed.
+
+More details about above parameters are added below.
+
+In your Startup class, add the following code to register the `AuditLogCleaner` background service:
 
 
     services
-        .AddHostedService(provider =>
-            new AuditLogCleaner(
-                provider.GetRequiredService<ILogger<AuditLogCleaner>>(),
-                provider.GetRequiredService<IServiceScopeFactory>(),
-                TimeSpan.FromHours(1), // run every hour
-                TimeSpan.FromDays(30), // keep logs for up to 30 days
-                500
-            )
+        .RegisterAuditLogCleanerBackgroundService(
+            auditLogCleanupPolicy: new AuditLogCleanupPolicy
+            {
+                TimeWindow = TimeSpan.FromDays(30),
+                ThresholdValue = null,
+                ExcludeTables = new []{"User"}
+            },
+            auditLogCleanupSettings: new AuditLogCleanupSettings
+            {
+                BatchSize = 500,
+                CleanupInterval = TimeSpan.FromHours(1)
+            },
+            auditLogCleanupActionHandler: new SampleAuditLogCleanupActionHandler()
         );
 
-The above code configures the `AuditLogCleaner` service to run every hour, delete logs that are older than 30 days, and delete up to 500 records at once. You can customize these settings to suit your requirements.
+The above code configures the `AuditLogCleaner` service based on specified cleanup policy, settings and logs action handler. You can customize the above parameters to suit your requirements.
 
-After configuring the service, it will automatically clean up old audit logs in the background at the configured interval.
+**AuditLogCleanupPolicy**
+
+Encapsulates the policy for cleaning up audit logs from the Audit Log database.
+
+`TimeWindow` - This parameter serves the purpose of removing records that exceed a specified time window, with the comparison being made relative to UTC time. When assigned a value of TimeSpan.FromDays(30), any records that are more than 30 days old will be deleted. This is an optional parameter.
+
+`ThresholdValue` - An optional parameter which determines the number of latest audit log records to retain.
+
+If both the `TimeWindow` and `ThresholdValue` properties are set, the cleanup policy will consider both criteria when deleting audit logs. For instance, if the ThresholdValue is set to one million and the TimeWindow is set to 30 days, then this would keep the most recent one million records within the database, purging any records older than 30 days within that set of one million.
+
+If both the `TimeWindow` and `ThresholdValue` properties are not set, then default policy would be used which uses Time Window of 30 days for the cleanup process.
+
+`ExcludeTables` - Exclude specified tables from the cleanup process.
+
+**AuditLogCleanupSettings**
+
+Provides settings for controlling the audit logs cleanup process.
+
+`BatchSize` - The batch size parameter controls how many audit log records are deleted in each batch to avoid overwhelming the database with a large number of deletions at once. It must be a positive integer. The default value for BatchSize is 500.
+
+`CleanupInterval` - Specifies the time interval at which the cleanup service should be invoked. It can be set to any valid TimeSpan value, such as one hour or five minutes, to determine how frequently the service will run and purge old audit logs. The default value for CleanupInterval is one hour.
+
+After configuring the service, it will automatically clean up old audit logs in the background based on specified cleanup policy and settings at the configured interval.
+
+**IAuditLogCleanupActionHandler**
+
+You can optionally provide an implementation of the `IAuditLogCleanupActionHandler` interface to perform additional actions on the logs that are being cleaned up, such as saving them to a text file. By default, no action is performed if no implementation is provided.
+
+To create a custom implementation for performing additional actions on the logs being cleaned up, you can create a class that implements the `IAuditLogCleanupActionHandler` interface and define the desired logic within the `DeletedLogsHandler` method.
+
+For instance, in the above code we have provided a sample implementation named `SampleAuditLogCleanupActionHandler`. The `DeletedLogsHandler` method of this class is called with the list of logs that are being cleaned up, which saves the logs to a text file.
 
 #### AuditLogger TODOs
 1. Audit Log UI!
