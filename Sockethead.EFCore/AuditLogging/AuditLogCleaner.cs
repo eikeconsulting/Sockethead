@@ -2,41 +2,54 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Sockethead.EFCore.Dto;
+using Sockethead.EFCore.Entities;
 
 namespace Sockethead.EFCore.AuditLogging
 {
     /// <summary>
-    /// A background service that periodically cleans up old audit logs from the AuditLog database. It takes in optional parameters for
-    /// the cleanup interval, audit log age, and batch size, defaulting to 1 hour, 30 days, and 500 records, respectively,
-    /// if no values are provided. The service deletes logs based on UTC time whenever it is invoked. The batch size parameter
-    /// controls how many records are deleted in each batch to avoid overwhelming the database with a large number of deletions
-    /// at once.
+    /// A background service that periodically cleans up old audit logs from the AuditLog database based on specific
+    /// cleanup policies and settings.
+    /// AuditLogCleanupPolicy specifies the policy for removing audit logs. If no policy is defined, the default policy
+    /// is used to delete records older than 30 days.
+    /// AuditLogCleanupSettings specifies settings for the cleanup operation, such as batch size and cleanup interval.
+    /// If no settings are defined, the default settings of 500 records per batch and a cleanup interval of 1 hour are used.
+    /// IAuditLogCleanupActionHandler performs the action on the logs that are being cleaned up. If null, then no action
+    /// is performed.
     /// </summary>
     public class AuditLogCleaner : BackgroundService
     {
-        private readonly ILogger<AuditLogCleaner> Logger;
-        private readonly IServiceScopeFactory ScopeFactory;
-        private readonly TimeSpan CleanupInterval;
-        private readonly TimeSpan AuditLogAge;
-        private readonly int BatchSize;
+        private ILogger<AuditLogCleaner> Logger { get; }
+        private IServiceScopeFactory ScopeFactory { get; }
+        private AuditLogCleanupPolicy AuditLogCleanupPolicy { get; }
+        private AuditLogCleanupSettings AuditLogCleanupSettings { get; }
+        private IAuditLogCleanupActionHandler AuditLogCleanupActionHandler { get; }
 
         public AuditLogCleaner(ILogger<AuditLogCleaner> logger,
             IServiceScopeFactory scopeFactory,
-            TimeSpan cleanupInterval = default,
-            TimeSpan auditLogAge = default,
-            int batchSize = 500)
+            AuditLogCleanupPolicy auditLogCleanupPolicy,
+            AuditLogCleanupSettings auditLogCleanupSettings,
+            IAuditLogCleanupActionHandler auditLogCleanupActionHandler)
         {
             Logger = logger;
             ScopeFactory = scopeFactory;
-            CleanupInterval = cleanupInterval == default ? TimeSpan.FromHours(1) : cleanupInterval;
-            AuditLogAge = auditLogAge == default ? TimeSpan.FromDays(30) : auditLogAge;
-            BatchSize = batchSize;
-        }
 
-        public TimeSpan GetAuditLogAge() => AuditLogAge;
+            AuditLogCleanupPolicy = auditLogCleanupPolicy ?? new AuditLogCleanupPolicy();
+            if (AuditLogCleanupPolicy.TimeWindow == null && AuditLogCleanupPolicy.ThresholdValue == null)
+                AuditLogCleanupPolicy.TimeWindow = TimeSpan.FromDays(30);
+
+            AuditLogCleanupSettings = auditLogCleanupSettings ?? new AuditLogCleanupSettings();
+            if (AuditLogCleanupSettings.BatchSize == 0)
+                AuditLogCleanupSettings.BatchSize = 500;
+            if (AuditLogCleanupSettings.CleanupInterval == default)
+                AuditLogCleanupSettings.CleanupInterval = TimeSpan.FromHours(1);
+
+            AuditLogCleanupActionHandler = auditLogCleanupActionHandler;
+        }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
@@ -55,8 +68,65 @@ namespace Sockethead.EFCore.AuditLogging
                     Logger.LogError(ex, "An error occurred while cleaning up audit logs.");
                 }
 
-                await Task.Delay(CleanupInterval, stoppingToken);
+                await Task.Delay(AuditLogCleanupSettings.CleanupInterval, stoppingToken);
             }
+        }
+        
+        private async Task<IQueryable<AuditLog>> ApplyAuditLogCleanupPolicyAsync(IQueryable<AuditLog> auditLogsToDeleteQuery, 
+            AuditLogger auditLogger, CancellationToken stoppingToken)
+        {
+            if (AuditLogCleanupPolicy.TimeWindow != null && AuditLogCleanupPolicy.ThresholdValue == null)
+            {
+                auditLogsToDeleteQuery =
+                    ApplyTimeWindowCleanupPolicy(auditLogsToDeleteQuery, AuditLogCleanupPolicy.TimeWindow.Value);
+            }
+
+            else if (AuditLogCleanupPolicy.TimeWindow == null && AuditLogCleanupPolicy.ThresholdValue != null)
+            {
+                auditLogsToDeleteQuery = await ApplyThresholdValueCleanupPolicyAsync(auditLogsToDeleteQuery,
+                    AuditLogCleanupPolicy.ThresholdValue.Value, auditLogger);
+            }
+            
+            else if (AuditLogCleanupPolicy.TimeWindow != null && AuditLogCleanupPolicy.ThresholdValue != null)
+            {
+                DateTime oldestAllowedAuditLogTime = GetOldestAllowedTimestamp(AuditLogCleanupPolicy.TimeWindow.Value);
+                int totalRecords = await auditLogger.OnlyAuditLog.CountAsync(cancellationToken: stoppingToken);
+                if (totalRecords > AuditLogCleanupPolicy.ThresholdValue)
+                {
+                    AuditLog oldestRecordToKeep =
+                        await GetOldestRecordToKeepAsync(auditLogger, AuditLogCleanupPolicy.ThresholdValue.Value);
+                    
+                    auditLogsToDeleteQuery = oldestRecordToKeep != null
+                        ? auditLogsToDeleteQuery.Where(log => log.TimeStamp < oldestRecordToKeep.TimeStamp || log.TimeStamp < oldestAllowedAuditLogTime)
+                        : ApplyTimestampFilter(auditLogsToDeleteQuery, oldestAllowedAuditLogTime);
+                }
+                else
+                {
+                    auditLogsToDeleteQuery = ApplyTimestampFilter(auditLogsToDeleteQuery, oldestAllowedAuditLogTime);
+                }
+            }
+
+            if (AuditLogCleanupPolicy.ExcludeTables != null && AuditLogCleanupPolicy.ExcludeTables.Any())
+                auditLogsToDeleteQuery =
+                    auditLogsToDeleteQuery.Where(log => !AuditLogCleanupPolicy.ExcludeTables.Contains(log.TableName));
+
+            return auditLogsToDeleteQuery;
+        }
+
+        public static IQueryable<AuditLog> ApplyTimeWindowCleanupPolicy(IQueryable<AuditLog> auditLogsToDeleteQuery, 
+            TimeSpan timeWindow)
+        {
+            DateTime oldestAllowedAuditLogTime = GetOldestAllowedTimestamp(timeWindow);
+            return ApplyTimestampFilter(auditLogsToDeleteQuery, timestamp: oldestAllowedAuditLogTime);
+        }
+
+        public static async Task<IQueryable<AuditLog>> ApplyThresholdValueCleanupPolicyAsync(
+            IQueryable<AuditLog> auditLogsToDeleteQuery, int thresholdValue, AuditLogger auditLogger)
+        {
+            AuditLog oldestRecordToKeep =
+                await GetOldestRecordToKeepAsync(auditLogger, thresholdValue);
+
+            return ApplyTimestampFilter(auditLogsToDeleteQuery, oldestRecordToKeep?.TimeStamp ?? DateTime.MinValue);
         }
 
         public async Task<int> CleanupAuditLogsAsync(CancellationToken stoppingToken)
@@ -64,23 +134,46 @@ namespace Sockethead.EFCore.AuditLogging
             using IServiceScope scope = ScopeFactory.CreateScope();
             AuditLogger auditLogger = scope.ServiceProvider.GetRequiredService<AuditLogger>();
 
-            DateTime oldestAllowedAuditLogTime = DateTime.UtcNow.Subtract(AuditLogAge);
+            IQueryable<AuditLog> auditLogsToDeleteQuery = auditLogger.OnlyAuditLog;
 
-            int totalLogsDeleted = 0;
-            IQueryable<Entities.AuditLog> auditLogsToDeleteQuery =
-                auditLogger.OnlyAuditLog
-                    .OrderBy(o => o.TimeStamp)
-                    .Where(log => log.TimeStamp < oldestAllowedAuditLogTime)
-                    .Take(BatchSize);
+            if (AuditLogCleanupActionHandler != null)
+                auditLogsToDeleteQuery = auditLogsToDeleteQuery.Include(a => a.AuditLogChanges);
 
-            do
-            {
-                auditLogger.AuditLogDbContext.AuditLogs.RemoveRange(auditLogsToDeleteQuery);
-                totalLogsDeleted += await auditLogger.AuditLogDbContext.SaveChangesAsync(stoppingToken);
-            }
-            while (auditLogsToDeleteQuery.Any());
+            auditLogsToDeleteQuery = await ApplyAuditLogCleanupPolicyAsync(auditLogsToDeleteQuery, auditLogger, stoppingToken);
+            
+            // Apply OrderBy
+            auditLogsToDeleteQuery = auditLogsToDeleteQuery
+                .OrderBy(a => a.TimeStamp);
+
+            int totalLogsDeleted = await auditLogger.DeleteAuditLogsInBatchesAsync(auditLogsToDeleteQuery,
+                (int)AuditLogCleanupSettings.BatchSize, AuditLogCleanupActionHandler, stoppingToken);
 
             return totalLogsDeleted;
         }
+
+        public static async Task<AuditLog> GetOldestRecordToKeepAsync(AuditLogger auditLogger, int thresholdValue)
+        {
+            // Fetch the timestamp first of the threshold record
+            DateTime oldestRecordToKeepTimestamp = await auditLogger.OnlyAuditLog
+                .OrderByDescending(log => log.TimeStamp)
+                .Select(log => log.TimeStamp)
+                .Skip(thresholdValue - 1)
+                .FirstOrDefaultAsync();
+            
+            // Now retrieve the threshold record
+            return await auditLogger.OnlyAuditLog
+                .OrderByDescending(log => log.TimeStamp)
+                .FirstOrDefaultAsync(log => log.TimeStamp == oldestRecordToKeepTimestamp);
+        }
+
+
+        public static DateTime GetOldestAllowedTimestamp(TimeSpan timeWindow) =>
+            DateTime.UtcNow.Subtract(timeWindow);
+
+        public static IQueryable<AuditLog> ApplyTimestampFilter(IQueryable<AuditLog> query, DateTime timestamp) =>
+            query.Where(log => log.TimeStamp < timestamp);
+
+        public static IQueryable<AuditLog> ApplyExcludeTablesFilter(IQueryable<AuditLog> query, string[] excludeTables) =>
+            query.Where(log => !excludeTables.Contains(log.TableName));
     }
 }
