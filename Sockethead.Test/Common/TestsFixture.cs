@@ -32,7 +32,6 @@ namespace Sockethead.Test.Common
                         config.GetConnectionString("DefaultConnection")))
                 .AddScoped<AuditLogGenerator>()
                 .AddScoped<AuditLogger>()
-                .AddSingleton<AuditLogCleaner>()
                 .AddScoped<MyRepo>()
                 .AddLogging()
                 .BuildServiceProvider();
