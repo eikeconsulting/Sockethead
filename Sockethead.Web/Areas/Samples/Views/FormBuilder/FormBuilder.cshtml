@@ -27,6 +27,7 @@
             .EditorFor(model => model.RandomDecimal)
             .EditorFor(model => model.Float)
             .EditorFor(model => model.NullableDouble)
+            .EditorFor(model => model.Disabled, isDisabled: true)
             .AppendHtml(
                 @<div class="form-group">
                     <label>Append Html - First Name: @Model.First</label>
@@ -44,7 +45,11 @@
             .RenderAsync())
     </div>
     <div class="col-md-6">
-            
+        <pre>
+            <code>
+                ToDo: Add code here to show how to use the form builder.
+            </code>
+        </pre>
     </div>
 
 </div>

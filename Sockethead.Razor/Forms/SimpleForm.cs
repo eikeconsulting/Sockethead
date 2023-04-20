@@ -91,7 +91,7 @@ namespace Sockethead.Razor.Forms
         }
         
         private void AddTextBoxFor<TResult>(Expression<Func<T, TResult>> expression, string type = null,
-            string format = null, string cssClass = "form-control", bool isReadOnly = false)
+            string format = null, string cssClass = "form-control", bool isReadOnly = false, bool isDisabled = false)
         {
             Dictionary<string, object> htmlAttributes = new()
             {
@@ -103,6 +103,9 @@ namespace Sockethead.Razor.Forms
             
             if (isReadOnly)
                 htmlAttributes.Add("readonly", "readonly");
+            
+            if (isDisabled)
+                htmlAttributes.Add("disabled", "disabled");
 
             if (expression.GetDataTypeAttribute() == DataType.MultilineText)
             {
@@ -119,30 +122,40 @@ namespace Sockethead.Razor.Forms
         }
 
         private void AddDefaultEditorFor<TResult>(Expression<Func<T, TResult>> expression, string type = null,
-            bool isReadOnly = false, string format = null)
+            bool isReadOnly = false, string format = null, bool isDisabled = false)
         {
             using IDisposable group = FormGroup();
             AddLabelFor(expression: expression);
-            AddTextBoxFor(expression: expression, type: type, isReadOnly: isReadOnly, format: format);
+            AddTextBoxFor(expression: expression, type: type, isReadOnly: isReadOnly, format: format,
+                isDisabled: isDisabled);
             AddValidationMessageFor(expression: expression);
         }
         
-        private void AddBooleanEditorFor<TResult>(Expression<Func<T, TResult>> expression)
+        private void AddBooleanEditorFor<TResult>(Expression<Func<T, TResult>> expression, bool isDisabled = false)
         {
             using IDisposable group = FormGroup(additionalCssClass:"form-check");
-            AddTextBoxFor(expression: expression, type:"checkbox", cssClass: "form-check-input");
+            AddTextBoxFor(expression: expression, type: "checkbox", cssClass: "form-check-input",
+                isDisabled: isDisabled);
             AddLabelFor(expression: expression, cssClass: "form-check-label");
             AddValidationMessageFor(expression: expression);
         }
         
         private void AddRadioEditorFor<TResult>(Expression<Func<T, TResult>> expression,
-            IEnumerable<SelectListItem> items, bool inline = false)
+            IEnumerable<SelectListItem> items, bool inline = false, bool isDisabled = false)
         {
+            Dictionary<string, object> htmlAttributes = new()
+            {
+                { "class", "form-check-input" }
+            };
+            
+            if (isDisabled)
+                htmlAttributes.Add("disabled", "disabled");
+            
             foreach (SelectListItem item in items)
             {
                 using IDisposable group =
                     FormGroup(additionalCssClass: $"form-check {(inline ? "form-check-inline" : "")}");
-                Append(Html.RadioButtonFor(expression, item.Value, new { @class = "form-check-input" }));
+                Append(Html.RadioButtonFor(expression, item.Value, htmlAttributes: htmlAttributes));
                 Append(Html.LabelFor(expression, item.Text, htmlAttributes: new { @class = "form-check-label" }));
             }
             AddValidationMessageFor(expression: expression);
@@ -167,15 +180,18 @@ namespace Sockethead.Razor.Forms
             AddValidationMessageFor(expression: expression);
         }
         
-        private void AddDateEditorFor<TResult>(Expression<Func<T, TResult>> expression)
+        private void AddDateEditorFor<TResult>(Expression<Func<T, TResult>> expression, bool isReadOnly = false,
+            bool isDisabled = false)
         {
             if (expression.GetDataTypeAttribute() == DataType.Date)
             {
-                AddDefaultEditorFor(expression: expression, type: "date", format: "{0:yyyy-MM-dd}");
+                AddDefaultEditorFor(expression: expression, type: "date", format: "{0:yyyy-MM-dd}", isReadOnly: isReadOnly,
+                    isDisabled: isDisabled);
                 return;
             }
             
-            AddDefaultEditorFor(expression: expression, type: "datetime-local", format: "{0:yyyy-MM-ddTHH:mm}");
+            AddDefaultEditorFor(expression: expression, type: "datetime-local", format: "{0:yyyy-MM-ddTHH:mm}",
+                isReadOnly: isReadOnly, isDisabled: isDisabled);
         }
         
         private static string GetEditorType(DataType? dataType) => dataType switch
@@ -185,23 +201,25 @@ namespace Sockethead.Razor.Forms
             _ => "text"
         };
         
-        public SimpleForm<T> EditorFor<TResult>(Expression<Func<T, TResult>> expression, bool isReadOnly = false)
+        public SimpleForm<T> EditorFor<TResult>(Expression<Func<T, TResult>> expression, bool isReadOnly = false,
+            bool isDisabled = false)
         {
             switch (typeof(TResult).Name)
             {
                 case nameof(Boolean):
-                    AddBooleanEditorFor(expression: expression);
+                    AddBooleanEditorFor(expression: expression, isDisabled: isDisabled);
                     break;
                 case nameof(DateTime):
                     AddDateEditorFor(expression);
                     break;
                 case nameof(Double) or nameof(Decimal) or nameof(Single):
                     string format = expression.GetAttribute<DisplayFormatAttribute, T, TResult>()?.DataFormatString;
-                    AddDefaultEditorFor(expression: expression, type: "number", format: format);
+                    AddDefaultEditorFor(expression: expression, type: "number", format: format, isReadOnly: isReadOnly,
+                        isDisabled: isDisabled);
                     break;
                 default:
                     AddDefaultEditorFor(expression: expression, type: GetEditorType(expression.GetDataTypeAttribute()),
-                        isReadOnly: isReadOnly);
+                        isReadOnly: isReadOnly, isDisabled: isDisabled);
                     break;
             }
 
@@ -222,9 +240,9 @@ namespace Sockethead.Razor.Forms
         }
         
         public SimpleForm<T> RadioEditorFor<TResult>(Expression<Func<T, TResult>> expression,
-            IEnumerable<SelectListItem> selectList, bool inline = false)
+            IEnumerable<SelectListItem> selectList, bool inline = false, bool isDisabled = false)
         {
-            AddRadioEditorFor(expression: expression, selectList, inline);
+            AddRadioEditorFor(expression: expression, selectList, inline, isDisabled: isDisabled);
             return this;
         }
         

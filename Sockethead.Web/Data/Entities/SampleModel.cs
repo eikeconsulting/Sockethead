@@ -80,6 +80,8 @@ namespace Sockethead.Web.Data.Entities
         
         public string City { get; set; }
         public string OtherCity { get; set; }
+        
+        public string Disabled { get; set; } = "I'm disabled";
 
     }
 }
