@@ -285,7 +285,77 @@ For instance, in the above code we have provided a sample implementation named `
 1. Unit Tests
 1. Integration Tests
 
+## Sockethead.Common
+Sockethead.Common is a collection of common utilities and extension methods that can be utilized in any project. It provides various useful utilities and extensions for string, JSON, collection, date, and more.
 
+### Installation
+
+    install-package Sockethead.Common
+
+### Extensions
+
+#### Queryable Extensions
+* `If` - Transforms a queryable source based on a condition and returns the transformed source, otherwise returns the original source.
+* `WhereIf` - Include "predicate" if "condition" is true.
+* `Paginate` - Enables pagination of a queryable source by returning a specific number of elements based on a zero-indexed page number and a specified page size.
+* `IgnoreQueryFiltersIf` - Applies the IgnoreQueryFilters feature if the provided condition is true, otherwise returns the original source.
+* `ForEachInChunks` - This is equivalent to the standard ForEach extension, but divides the original collection into chunks rather than pulling it all in one query.
+* `ForEachInChunksAsync` -  This is an asynchronous equivalent of the `ForEachInChunks` method, which divides the original collection into chunks rather than pulling it all in one query.
+* `ChunkAsync` - Breaks the original collection into smaller "chunks" based on a specified chunk size, and return these chunks as a sequence of lists. This method allows for asynchronous processing of large collections, where pulling all the data into memory at once may not be feasible or efficient.
+* `ForEachInChunksForShrinkingListAsync` - This allows you to loop over a list of items that shrinks the original query as you process it. It will terminate in one of two cases:
+  - The query returns zero results .
+  - The query returns the same or more results than the previous time through the loop.
+* `ShrinkingListChunker` - Process a Queryable whose result set changes as you process each chunk.
+
+#### String Extensions
+* `ToInt32OrDefault` - Attempts to convert the string to an int. If the conversion is successful, the method returns the converted int value. If the conversion fails, the method returns a default value specified by the caller.
+* `Truncate` - Returns a truncated version of a given string up to a specified maximum length
+* `StripAccentsFromUnicodeCharacters` - Removes accents from Unicode characters in a given string.
+* `ToEnum` - Converts the string representation to specified Enum. Returns defaultValue if value was not converted successfully.
+
+#### Collection Extensions
+* `EmptyIfNull` - Returns empty collection if source is null
+
+#### Random Extensions
+* `NextForTimes` - Returns an IEnumerable of random integers up to a maximum value, with the number of integers determined by a specified count.
+* `UniqueNextForTimes` - Returns an IEnumerable of unique random integers up to a maximum value, with the number of integers determined by a specified count.
+
+#### Json Extensions
+* `ToJson` - Converts an input object to its JSON representation using the Newtonsoft.Json library, with indentation and camel-cased property names. If the input object is null, the method returns null.
+* `Deserialize` - Deserializes a JSON string input to an object of type T using the Newtonsoft.Json library. If the input string is null, the method returns the default value of type T.
+
+#### Object Extensions
+* `ToDictionary<T>` - Convert the object to a Dictionary. Use only public properties of type T.
+* `ToBase64` - Converts an object to its Base64-encoded string representation.
+* `FromBase64` - Converts a Base64-encoded string to an object of type T.
+
+#### Mail Address Collection Extensions
+* `Add` - It takes a list of MailAddress and adds each MailAddress to the collection.
+* `ParseAndAdd` - Parse a string (may contain one or multiple email addresses separated by comma or semicolon) and add to a MailAddressCollection.
+
+#### Form File Extensions
+* `ToBase64` - Converts the file content to its Base64-encoded string representation.
+
+#### Dictionary Extensions
+* `Accumulate` -  This method can be used to accumulate values for a key in a dictionary using a custom accumulator function. It adds the key and the new value to the dictionary if it doesn't exist, otherwise, it applies the accumulator function to the existing value and the new value.
+* `AccumulateSum` - This method is a specific overload of Accumulate that is used to accumulate the sum of decimal values into a key in a dictionary.
+* `ToObject` -  Converts a dictionary of string keys and object values to an instance of a class.
+
+#### Date Extensions
+* `GetDateRange` - Returns a range of DateTime that starts with the startDate and ends with the endDate, inclusive of both endpoints.
+* `GetMonthRange` - Returns a range of DateTime objects that starts with startDate and ends with endDate, inclusive of both endpoints, incrementing by one month at a time.
+* `GetYearRange` - Returns a range of DateTime objects that starts with startDate and ends with endDate, inclusive of both endpoints, incrementing by one year at a time.
+
+### Utilities
+
+#### Date Utils
+* `GetDateValue` - Converts the specified day, month, and year to its equivalent integer value. For example, day:2/month:10/year:2022 would return 20221002.
+* `GetDay` - Extracts the day information from the provided integer date value.
+* `GetMonth` - Extracts the month information from the provided integer date value.
+* `GetYear` - Extracts the year information from the provided integer date value.
+
+#### Random Utils
+* `GetRandomInstanceByDate` - Returns a new instance of the Random class, using the specified date as the seed value. The returned instance generates a same sequence of random numbers for a specified date.
 
 
 # License
