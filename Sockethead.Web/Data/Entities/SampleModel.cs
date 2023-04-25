@@ -61,7 +61,7 @@ namespace Sockethead.Web.Data.Entities
         public override string ToString() => $"Sample Data for {First} {Last}, {JobTitle}";
         
         [DataType(DataType.Date)]
-        public DateTime RandomOtherDate { get; set; } = GetRandomDate();
+        public DateTime RandomDateOnly { get; set; } = GetRandomDate();
         
         [RegularExpression(@"^\d+\.\d{0,2}$", ErrorMessage = "Only two decimal places allowed")]
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]

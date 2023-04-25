@@ -18,7 +18,7 @@ namespace Sockethead.Razor.Forms
     }
 
     public record FormOptions(string ActionName = null, string ControllerName = null,
-        FormMethod Method = FormMethod.Post);
+        FormMethod FormMethod = FormMethod.Post);
     
     public interface ISimpleForm
     {
