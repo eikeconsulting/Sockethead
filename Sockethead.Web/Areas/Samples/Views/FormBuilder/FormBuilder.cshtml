@@ -1,7 +1,4 @@
 ﻿@using Sockethead.Razor.Forms;
-@using System.Linq.Expressions;
-@using Microsoft.AspNetCore.Html;
-@using Microsoft.AspNetCore.Routing.Template
 @model SampleModel
 @{
     ViewData["Title"] = "Form Builder";
@@ -20,7 +17,7 @@
             .EditorFor(model => model.Password)
             .EditorFor(model => model.RandomDate)
             .EditorFor(model => model.RandomOtherDate)
-            .EditorFor(model => model.Flag)
+            .CheckBoxEditorFor(model => model.Flag)
             .EditorFor(model => model.FooBarBazBBBlah)
             .EnumEditorFor(model => model.SampleEnum)
             .EditorFor(model => model.RandomDouble)
@@ -40,7 +37,7 @@
             )
             .AppendHtml("<div>Encoded HTML</div>")
             .SelectListEditorFor(model => model.City, cityList)
-            .RadioEditorFor(model => model.OtherCity, cityList, inline: false)
+            .RadioButtonEditorFor(model => model.OtherCity, cityList, inline: false)
             .SubmitButton("Save Changes")
             .RenderAsync())
     </div>
