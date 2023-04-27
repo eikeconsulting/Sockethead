@@ -7,6 +7,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Sockethead.Razor.Helpers;
+// ReSharper disable MustUseReturnValue
 
 namespace Sockethead.Razor.Forms
 {
@@ -15,11 +16,24 @@ namespace Sockethead.Razor.Forms
         public static SimpleForm<T> SimpleForm<T>(this IHtmlHelper<T> html, T model, FormOptions options = default,
             string cssClass = "")
             where T : class => new(html: html, options: options, cssClass: cssClass);
+
+        public static SimpleForm<T> SimpleForm<T>(this IHtmlHelper<T> html, T model, Action<FormOptions> optionsAction,
+            string cssClass = "")
+            where T : class
+        {
+            FormOptions options = new();
+            optionsAction(options);
+            return new(html: html, options: options, cssClass: cssClass);
+        }
     }
 
-    public record FormOptions(string ActionName = null, string ControllerName = null,
-        FormMethod FormMethod = FormMethod.Post);
-    
+    public class FormOptions
+    {
+        public string ActionName { get; set; } = null;
+        public string ControllerName { get; set; } = null;
+        public FormMethod FormMethod { get; set; } = FormMethod.Post;
+    }
+
     public interface ISimpleForm
     {
         FormOptions FormOptions { get; }
@@ -29,7 +43,7 @@ namespace Sockethead.Razor.Forms
 
     public class SimpleForm<T> : ISimpleForm where T : class
     {
-        HtmlContentBuilder Builder = new();
+        private HtmlContentBuilder Builder = new();
         private IHtmlHelper<T> Html { get; }
         public FormOptions FormOptions { get; }
         public string CssClass { get; }
@@ -61,7 +75,7 @@ namespace Sockethead.Razor.Forms
 
         private class Scope : IDisposable
         {
-            Action OnDispose { get; }
+            private Action OnDispose { get; }
 
             public Scope(Action onBegin, Action onEnd)
             {
@@ -197,33 +211,35 @@ namespace Sockethead.Razor.Forms
             _ => "text"
         };
         
-        public SimpleForm<T> EditorFor<TResult>(Expression<Func<T, TResult>> expression, bool isReadOnly = false,
+        public SimpleForm<T> EditorFor<TResult>(
+            Expression<Func<T, TResult>> expression, 
+            bool isReadOnly = false,
             bool isDisabled = false)
         {
-            HtmlAttributeOptions options = new HtmlAttributeOptions(isDisabled: isDisabled, isReadOnly: isReadOnly);
+            HtmlAttributeOptions options = new(isDisabled: isDisabled, isReadOnly: isReadOnly);
 
             switch (typeof(TResult).Name)
             {
                 case nameof(DateTime):
                     AddDateEditorFor(expression, options);
-                    break;
+                    return this;
+
                 case nameof(Double) or nameof(Decimal) or nameof(Single):
                     string format = expression.GetAttribute<DisplayFormatAttribute, T, TResult>()?.DataFormatString;
                     options.Type = "number";
                     AddDefaultEditorFor(expression: expression, htmlAttributeOptions: options, format: format);
-                    break;
+                    return this;
+
                 default:
                     options.Type = GetEditorType(expression.GetDataTypeAttribute());
                     AddDefaultEditorFor(expression: expression, htmlAttributeOptions: options);
-                    break;
+                    return this;
             }
-
-            return this;
         }
 
         public SimpleForm<T> EnumEditorFor<TResult>(Expression<Func<T, TResult>> expression, bool isDisabled = false)
         {
-            HtmlAttributeOptions options = new HtmlAttributeOptions(isDisabled: isDisabled);
+            HtmlAttributeOptions options = new(isDisabled: isDisabled);
             AddEnumEditorFor(expression: expression, htmlAttributeOptions: options);
             return this;
         }
@@ -231,7 +247,7 @@ namespace Sockethead.Razor.Forms
         public SimpleForm<T> SelectListEditorFor<TResult>(Expression<Func<T, TResult>> expression,
             IEnumerable<SelectListItem> selectList, bool isDisabled = false)
         {
-            HtmlAttributeOptions options = new HtmlAttributeOptions(isDisabled: isDisabled);
+            HtmlAttributeOptions options = new(isDisabled: isDisabled);
             AddDropDownListEditorFor(expression: expression, selectList, htmlAttributeOptions: options);
             return this;
         }
@@ -239,14 +255,14 @@ namespace Sockethead.Razor.Forms
         public SimpleForm<T> RadioButtonEditorFor<TResult>(Expression<Func<T, TResult>> expression,
             IEnumerable<SelectListItem> selectList, bool inline = false, bool isDisabled = false)
         {
-            HtmlAttributeOptions options = new HtmlAttributeOptions(isDisabled: isDisabled);
+            HtmlAttributeOptions options = new(isDisabled: isDisabled);
             AddRadioEditorFor(expression: expression, selectList, htmlAttributeOptions: options, inline);
             return this;
         }
         
         public SimpleForm<T> CheckBoxEditorFor(Expression<Func<T, bool>> expression, bool isDisabled = false)
         {
-            HtmlAttributeOptions options = new HtmlAttributeOptions(isDisabled: isDisabled);
+            HtmlAttributeOptions options = new(isDisabled: isDisabled);
             AddBooleanEditorFor(expression: expression, htmlAttributeOptions: options);
             return this;
         }
