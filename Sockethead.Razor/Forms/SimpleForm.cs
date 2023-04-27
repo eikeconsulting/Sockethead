@@ -86,8 +86,11 @@ namespace Sockethead.Razor.Forms
             public void Dispose() => OnDispose();
         }
 
-        private IDisposable FormGroup(string additionalCssClass = "") => new Scope(
-            onBegin: () => Append($"<div class='form-group {additionalCssClass}'>"), 
+        private IDisposable FormGroup(string additionalCssClass = "") =>
+            Div($"form-group {additionalCssClass}");
+        
+        private IDisposable Div(string cssClass = "") => new Scope(
+            onBegin: () => Append($"<div class='{cssClass}'>"), 
             onEnd: () => Append("</div>"));
 
         private static Dictionary<string, object> GetHtmlAttributes(HtmlAttributeOptions options)
@@ -203,6 +206,26 @@ namespace Sockethead.Razor.Forms
             AddDefaultEditorFor(expression: expression, htmlAttributeOptions: htmlAttributeOptions,
                 format: isDateOnly ? "{0:yyyy-MM-dd}" : "{0:yyyy-MM-ddTHH:mm}");
         }
+
+        private void AddFileEditorFor<TResult>(Expression<Func<T, TResult>> expression,
+            HtmlAttributeOptions htmlAttributeOptions, bool multiple = false, string accept = "")
+        {
+            htmlAttributeOptions.CssClass = "custom-file-input";
+            htmlAttributeOptions.Type = "file";
+            Dictionary<string, object> htmlAttributes = GetHtmlAttributes(htmlAttributeOptions);
+            
+            if(multiple)
+                htmlAttributes.Add("multiple", "multiple");
+            
+            if(!string.IsNullOrEmpty(accept))
+                htmlAttributes.Add("accept", accept);
+            
+            using IDisposable group = FormGroup();
+            using IDisposable div = Div("custom-file");
+            Append(Html.TextBoxFor(expression, htmlAttributes: htmlAttributes));
+            AddLabelFor(expression: expression, cssClass: "custom-file-label");
+            AddValidationMessageFor(expression: expression);
+        }
         
         private static string GetEditorType(DataType? dataType) => dataType switch
         {
@@ -267,6 +290,15 @@ namespace Sockethead.Razor.Forms
             return this;
         }
         
+        public SimpleForm<T> FileEditorFor<TResult>(Expression<Func<T, TResult>> expression,
+            bool multiple = false, string accept = "", bool isDisabled = false)
+        {
+            HtmlAttributeOptions options = new(isDisabled: isDisabled);
+            AddFileEditorFor(expression: expression, htmlAttributeOptions: options, multiple: multiple, accept: accept);
+            return this;
+        }
+        
+
         public SimpleForm<T> SubmitButton(string label = "Submit", string css = "btn-primary")
         {
             Append(Html.Partial("_SHFormSubmitButton", model: new SubmitButton
