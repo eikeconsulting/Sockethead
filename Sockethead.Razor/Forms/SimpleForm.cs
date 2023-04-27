@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Threading.Tasks;
 using Sockethead.Razor.Attributes;
 using Sockethead.Razor.Helpers;
@@ -12,36 +13,6 @@ using Sockethead.Razor.Helpers;
 
 namespace Sockethead.Razor.Forms
 {
-    public static class SimpleFormExtensions
-    {
-        public static SimpleForm<T> SimpleForm<T>(this IHtmlHelper<T> html, T model, FormOptions options = default,
-            string cssClass = "")
-            where T : class => new(html: html, options: options, cssClass: cssClass);
-
-        public static SimpleForm<T> SimpleForm<T>(this IHtmlHelper<T> html, T model, Action<FormOptions> optionsAction,
-            string cssClass = "")
-            where T : class
-        {
-            FormOptions options = new();
-            optionsAction(options);
-            return new(html: html, options: options, cssClass: cssClass);
-        }
-    }
-
-    public class FormOptions
-    {
-        public string ActionName { get; set; } = null;
-        public string ControllerName { get; set; } = null;
-        public FormMethod FormMethod { get; set; } = FormMethod.Post;
-    }
-
-    public interface ISimpleForm
-    {
-        FormOptions FormOptions { get; }
-        string CssClass { get; }
-        IHtmlContent RenderFormRows();
-    }
-
     public class SimpleForm<T> : ISimpleForm where T : class
     {
         private HtmlContentBuilder Builder = new();
@@ -304,7 +275,7 @@ namespace Sockethead.Razor.Forms
         /// </summary>
         public SimpleForm<T> BuildFormForModel()
         {
-            foreach (var property in typeof(T).GetProperties())
+            foreach (PropertyInfo property in typeof(T).GetProperties())
             {
                 Expression<Func<T, object>> expression = ExpressionHelpers.BuildGetterLambda<T>(property);
                 FormBuilderIgnore ignore = expression.GetAttribute<FormBuilderIgnore, T, object>();
