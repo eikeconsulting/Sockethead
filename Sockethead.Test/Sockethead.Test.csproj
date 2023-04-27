@@ -27,6 +27,7 @@
     <ProjectReference Include="..\Sockethead.EFCore\Sockethead.EFCore.csproj" />
     <ProjectReference Include="..\Sockethead.Web\Sockethead.Web.csproj" />
     <ProjectReference Include="..\Sockethead.Common\Sockethead.Common.csproj" />
+    <ProjectReference Include="..\Sockethead.Razor\Sockethead.Razor.csproj" />
   </ItemGroup>
 
   <ItemGroup>
