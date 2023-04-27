@@ -8,16 +8,16 @@
     <h4>Basic Usage</h4>
     <div class="row">
         <div class="col-md-6">
-            @(Html
+            @(await Html
             .TwoColumnGrid()
             .AddRowsForModel(movie)
-            .Render())
+            .RenderAsync())
         </div>
         <div class="col-md-6">
-<pre><code>@@(Html
+<pre><code>@@(await Html
     .TwoColumnGrid()
     .AddRowsForModel(movie)
-    .Render())
+    .RenderAsync())
 </code></pre>
         </div>
     </div>
@@ -27,7 +27,7 @@
     <h4>Row Processor</h4>
     <div class="row">
         <div class="col-md-6">
-            @(Html
+            @(await Html
             .TwoColumnGrid()
             .AddRowsForModel(movie)
             .AddRowProcessor(kvp =>
@@ -39,22 +39,22 @@
                     kvp.Key, 
                     kvp.Value.ToUpper());
             })
-            .Render())
+            .RenderAsync())
         </div>
         <div class="col-md-6">
-<pre><code>@@(Html
+<pre><code>@@(await Html
     .TwoColumnGrid()
     .AddRowsForModel(movie)
     .AddRowProcessor(kvp =>
     {
         if (kvp.Key == "Name")
-            return new KeyValuePair<string, string>();
+            return new KeyValuePair&lt;string, string>();
 
-        return new KeyValuePair<string, string>(
+        return new KeyValuePair&lt;string, string>(
             kvp.Key, 
             kvp.Value.ToUpper());
     })
-    .Render()))
+    .RenderAsync()))
 </code></pre>
         </div>
     </div>
@@ -68,23 +68,23 @@
     <div class="row">
         <div class="col-md-6">
 
-@(Html
+@(await Html
     .TwoColumnGrid()
     .AddRowsForModel(movie, builder => builder
         .AddRowFor(model => model.Name)
         .AddRowFor(model => model.Genre)
         .AddRowFor(model => model.Director))
-    .Render())
+    .RenderAsync())
 
         </div>
         <div class="col-md-6">
-            <pre><code>@@(Html
+            <pre><code>@@(await Html
     .TwoColumnGrid()
     .AddRowsForModel(movie, builder => builder
         .AddRowFor(model => model.Name)
         .AddRowFor(model => model.Genre)
         .AddRowFor(model => model.Director))
-    .Render())</code></pre>
+    .RenderAsync())</code></pre>
         </div>
     </div>
 
@@ -114,7 +114,7 @@
     .AddRow("First Row", "I like this")
     .AddRowsForModel(movie)
     .AddRow("Another", "Row here")
-    .AddRows(new Dictionary<string, object>
+    .AddRows(new Dictionary&gt;string, object>
     {
         ["One"] = 1,
         ["Two"] = "Two",

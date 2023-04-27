@@ -1,132 +1,279 @@
 ﻿@using Sockethead.Razor.Forms;
-@using System.Linq.Expressions;
-@using Microsoft.AspNetCore.Html;
+@using Microsoft.AspNetCore.Html
 @model SampleModel
 @{
     ViewData["Title"] = "Form Builder";
-
-    IHtmlContent TextBoxRow(Expression<Func<SampleModel, string>> expression)
-    {
-        var builder = new HtmlContentBuilder();
-        builder.AppendHtml("<div class='form-group'>");
-        builder.AppendHtml(Html.LabelFor(expression, htmlAttributes: new { @class = "control-label" }));
-        builder.AppendHtml(Html.TextBoxFor(expression, htmlAttributes: new { @class = "form-control" }));
-        builder.AppendHtml(Html.ValidationMessageFor(expression, null, htmlAttributes: new { @class = "text-danger" }));
-        builder.AppendHtml("</div>");
-        return builder;
-    }
+    List<SelectListItem> cityList = new List<SelectListItem> 
+        { new("New York", "NY"), new("London", "LDN") };
 }
 
-<h4>Sample Model (work in progress)</h4>
-<hr />
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="FormBuilder">
-            @{
-                var form = Html.SimpleForm(Model);
-                //this.ViewContext.Writer.;
-                //Microsoft.AspNetCore.Mvc.ViewFeatures.ModelExpression
-                //Microsoft.AspNetCore.Mvc.TagHelpers.SelectTagHelper
-            }
-            @(form
-                .HiddenFor(model => model.Id)
-                .TextBoxFor(model => model.First)
-                .TextBoxFor(model => model.Last)
-                .TextBoxFor(model => model.JobTitle)
-                .TextBoxFor(model => model.RandomDate)
-                .Render())
-
-            <div class="form-group">
-                <label asp-for="RandomDate" class="control-label"></label>
-                <input asp-for="RandomDate" class="form-control" />
-                <span asp-validation-for="RandomDate" class="text-danger"></span>
-            </div>
-
-            @(form
-                .TextBoxFor(model => model.FooBarBazBBBlah)
-                .Render())
-
-        </form>
-
-        <hr />
-
-        @using (Html.BeginForm(actionName: "FormBuilder", controllerName: "Pager", method: FormMethod.Post))
-        {
-            @Html.ValidationSummary(excludePropertyErrors: true, message: null, htmlAttributes: new { @class = "text-danger" })
-            @Html.HiddenFor(model => model.Id)
-            @TextBoxRow(model => model.First)
-            @TextBoxRow(model => model.Last)
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        }
-
-        <hr />
-
+    <div class="col-md-5">
+        <h4>Basic Usage</h4>
+        @(await Html
+            .SimpleForm(Model, opt => opt.ActionName = "FormBuilder")
+            .HiddenFor(model => model.Id)
+            .EditorFor(model => model.First)
+            .EditorFor(model => model.Last)
+            .EditorFor(model => model.JobTitle)
+            .SubmitButton("Save Changes")
+            .RenderAsync())
     </div>
-
-    <div class="col-md-4">
-        <form asp-action="FormBuilder">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            @Html.HiddenFor(model => model.Id)
-            <div class="form-group">
-                @Html.LabelFor(model => model.First, htmlAttributes: new { @class = "control-label" })
-                @Html.TextBoxFor(model => model.First, htmlAttributes: new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.First, null, htmlAttributes: new { @class = "text-danger" })
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+    <div class="col-md-7">
+        <pre><code>@@(await Html
+    .SimpleForm(Model, opt => opt.ActionName = "FormBuilder")
+    .HiddenFor(model => model.Id)
+    .EditorFor(model => model.First)
+    .EditorFor(model => model.Last)
+    .EditorFor(model => model.JobTitle)
+    .SubmitButton("Save Changes")
+    .RenderAsync())
+        </code></pre>
+        <p>
+            The mentioned properties will be included in the Bootstrap form created by this code.
+            You can also use the ASP.NET Core attributes to control the property's behavior.  For example: <br/>
+            <code>[Required(ErrorMessage = "Some message here.")]</code><br/>
+            <code>[DisplayName("Some Name")]</code><br/>
+            <code>[MaxLength(20, ErrorMessage = "Too long...")]</code><br/>
+            <br/>
+            Moreover, by passing the ControllerName and FormMethod to the FormOptions along with the ActionName, you can
+            manage the behavior of the form.
+        </p>
     </div>
+</div>
+    
+<hr/>
+<div class="row">
+    <div class="col-md-5">
+        <h4>Email and Password</h4>
+        @(await Html
+            .SimpleForm(Model, opt => opt.ActionName = "FormBuilder")
+            .EditorFor(model => model.Email)
+            .EditorFor(model => model.Password)
+            .SubmitButton("Login")
+            .RenderAsync())
+    </div>
+    <div class="col-md-7">
+        <h4>Model</h4>
+        <pre><code>@@public class LoginModel
+{
+    [DataType(DataType.EmailAddress)] 
+    public string Email { get; set; } = "myemail@sockethead.com";
 
-    <div class="col-md-4">
-        <form asp-action="FormBuilder">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Id" class="control-label"></label>
-                <input asp-for="Id" class="form-control" />
-                <span asp-validation-for="Id" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="First" class="control-label"></label>
-                <input asp-for="First" class="form-control" />
-                <span asp-validation-for="First" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Last" class="control-label"></label>
-                <input asp-for="Last" class="form-control" />
-                <span asp-validation-for="Last" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="JobTitle" class="control-label"></label>
-                <input asp-for="JobTitle" class="form-control" />
-                <span asp-validation-for="JobTitle" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="RandomDate" class="control-label"></label>
-                <input asp-for="RandomDate" class="form-control" />
-                <span asp-validation-for="RandomDate" class="text-danger"></span>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="Flag" /> @Html.DisplayNameFor(model => model.Flag)
-                </label>
-            </div>
-            <div class="form-group">
-                <label asp-for="SampleEnum" class="control-label"></label>
-                <input asp-for="SampleEnum" class="form-control" />
-                <span asp-validation-for="SampleEnum" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="FooBarBazBBBlah" class="control-label"></label>
-                <input asp-for="FooBarBazBBBlah" class="form-control" />
-                <span asp-validation-for="FooBarBazBBBlah" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+    [DataType(DataType.Password)] 
+    public string Password { get; set; } = "password";
+}
+        </code></pre>
+        <h4>Form builder</h4>
+        <pre><code>@@(await Html
+    .SimpleForm(Model, opt => opt.ActionName = "FormBuilder")
+    .EditorFor(model => model.Email)
+    .EditorFor(model => model.Password)
+    .SubmitButton("Login")
+    .RenderAsync())
+        </code></pre>
+        <p>
+
+        </p>
+    </div>
+</div>
+    
+<hr/>
+
+<div class="row">
+    <div class="col-md-5">
+        <h4>DateTime and Date</h4>
+            @(await Html.SimpleForm(Model, new FormOptions { ActionName = "FormBuilder" })
+                .EditorFor(model => model.RandomDate)
+                .EditorFor(model => model.RandomDateOnly)
+                .SubmitButton("Save Changes")
+                .RenderAsync())
+    </div>
+    <div class="col-md-7">
+        <pre><code>@@(await Html.SimpleForm(Model, new FormOptions { ActionName = "FormBuilder" })
+    .EditorFor(model => model.RandomDate)
+    .EditorFor(model => model.RandomDateOnly)
+    .SubmitButton("Login")
+    .RenderAsync())
+</code></pre>
+        <p>
+            By default, a DateTime property will be rendered as a date and time picker. If you want to render it as a 
+            date picker only, you can use the <code>[DataType(DataType.Date)]</code> attribute.
+        </p>
+    </div>
+</div>
+
+<hr/>
+
+<div class="row">
+    <div class="col-md-5">
+        <h4>Number Inputs</h4>
+        @(await Html
+            .SimpleForm(Model, new FormOptions { ActionName = "FormBuilder" })
+            .EditorFor(model => model.RandomDouble)
+            .EditorFor(model => model.RandomDecimal)
+            .EditorFor(model => model.Float)
+            .EditorFor(model => model.NullableDouble)
+            .SubmitButton("Save Changes")
+            .RenderAsync())
+    </div>
+    <div class="col-md-7">
+        <pre><code>@@(await Html
+    .SimpleForm(Model, new FormOptions { ActionName = "FormBuilder" })
+    .EditorFor(model => model.RandomDouble)
+    .EditorFor(model => model.RandomDecimal)
+    .EditorFor(model => model.Float)
+    .EditorFor(model => model.NullableDouble)
+    .SubmitButton("Save Changes")
+    .RenderAsync())
+</code></pre>
+        <p>
+            As mentioned above, you can use the ASP.NET Core attributes to control the behavior of the property.
+            For example, you can use <code>[DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]</code> to control the number of decimal places.
+            You can also apply the <code>RegularExpression</code> attribute to control the format of the input.
+        </p>
+    </div>
+</div>
+
+<hr/>
+
+<div class="row">
+    <div class="col-md-5">
+        <h4>Text Area</h4>
+        @(await Html.SimpleForm(Model, new FormOptions { ActionName = "FormBuilder" })
+            .EditorFor(model => model.FooBarBazBBBlah)
+            .SubmitButton("Save Changes")
+            .RenderAsync())
+    </div>
+    <div class="col-md-7">
+        <pre><code>@@(await Html.SimpleForm(Model, new FormOptions { ActionName = "FormBuilder" })
+    .EditorFor(model => model.FooBarBazBBBlah)
+    .SubmitButton("Save Changes")
+    .RenderAsync())
+</code></pre>
+        <p>
+            You can use the <code>[DataType(DataType.MultilineText)]</code> attribute to render a text area.
+        </p>
+    </div>
+</div>
+
+<hr/>
+
+<div class="row">
+    <div class="col-md-5">
+        <h4>Checkboxes and Radios</h4>
+        @(await Html.SimpleForm(Model, new FormOptions { ActionName = "FormBuilder" })
+            .CheckBoxEditorFor(model => model.Flag)
+            .RadioButtonEditorFor(model => model.OtherCity, cityList, inline: true)
+            .SubmitButton("Save Changes")
+            .RenderAsync())
+    </div>
+    <div class="col-md-7">
+        <pre><code>@@List&lt;SelectListItem&gt; cityList = new List&lt;SelectListItem&gt;
+        { new("New York", "NY"), new("London", "LDN") };
+
+@@(await Html.SimpleForm(Model, new FormOptions { ActionName = "FormBuilder" })
+    .CheckBoxEditorFor(model => model.Flag)
+    .RadioButtonEditorFor(model => model.OtherCity, cityList, inline: false)
+    .SubmitButton("Save Changes")
+    .RenderAsync())
+</code></pre>
+        <p>
+            You can pass a list of values to the <code>RadioButtonEditorFor</code> method to render
+            a list of radio buttons. You can also pass <code>inline: false</code> to render the radio buttons in a vertical list.
+        </p>
+    </div>
+</div>
+
+<hr/>
+
+<div class="row">
+    <div class="col-md-5">
+        <h4>Drop Down List</h4>
+        @(await Html.SimpleForm(Model, new FormOptions { ActionName = "FormBuilder" })
+            .EnumEditorFor(model => model.SampleEnum)
+            .SelectListEditorFor(model => model.City, cityList)
+            .SubmitButton("Save Changes")
+            .RenderAsync())
+    </div>
+    <div class="col-md-7">
+        <pre><code>@@(await Html.SimpleForm(Model, new FormOptions { ActionName = "FormBuilder" })
+    .EnumEditorFor(model => model.SampleEnum)
+    .SelectListEditorFor(model => model.City, cityList)
+    .SubmitButton("Save Changes")
+    .RenderAsync())
+</code></pre>
+        <p>
+        </p>
+    </div>
+</div>
+
+<hr/>
+
+<div class="row">
+    <div class="col-md-5">
+        <h4>Readonly and Disabled Fields</h4>
+        @(await Html
+            .SimpleForm(Model, new FormOptions { ActionName = "FormBuilder" })
+            .EditorFor(model => model.First, isReadOnly: true)
+            .EditorFor(model => model.Last)
+            .EditorFor(model => model.Disabled, isDisabled: true)
+            .SubmitButton("Save Changes")
+            .RenderAsync())
+    </div>
+    <div class="col-md-7">
+        <pre><code>@@(await Html
+    .SimpleForm(Model, new FormOptions { ActionName = "FormBuilder" })
+    .EditorFor(model => model.First, isReadOnly: true)
+    .EditorFor(model => model.Last)
+    .EditorFor(model => model.Disabled, isDisabled: true)
+    .SubmitButton("Save Changes")
+    .RenderAsync())
+</code></pre>
+        <p>
+            You can optionally pass <code>isReadOnly: true</code> or <code>isDisabled: true</code> to render a readonly or disabled field.
+        </p>
+    </div>
+</div>
+
+<hr/>
+
+<div class="row">
+    <div class="col-md-5">
+        <h4>Append Custom HTML</h4>
+        @(await Html.SimpleForm(Model, new FormOptions { ActionName = "FormBuilder" })
+            .AppendHtml(
+                @<div class="form-group">
+                    <label>Append Html - First Name: @Model.First</label>
+                </div>
+            )
+            .AppendHtmlIf(true,
+                @<div class="form-group">
+                    <label>Append Html if condition is true.</label>
+                </div>
+            )
+            .AppendHtml("<div class='form-group'>Encoded HTML</div>")
+            .AppendHtml(new HtmlContentBuilder().AppendHtml("<div class='form-group'>Html Content Builder</div>"))
+            .RenderAsync())
+    </div>
+    <div class="col-md-7">
+        <pre><code>@@(await Html.SimpleForm(Model, new FormOptions { ActionName = "FormBuilder" })
+    .AppendHtml(
+        @@&lt;div class="form-group"&gt;
+            &lt;label>Append Html - First Name: @@Model.First&lt;/label&gt;
+        &lt;/div&gt;
+    )
+    .AppendHtmlIf(true,
+        @@&lt;div class="form-group"&gt;
+            &lt;label&gt;Append Html if condition is true.&lt;/label&gt;
+        &lt;/div&gt;
+    )
+    .AppendHtml("&lt;div class='form-group'>Encoded HTML&lt;/div&gt;")
+    .AppendHtml(new HtmlContentBuilder().AppendHtml("&lt;div class='form-group'&gt;Html Content Builder&lt;/div&gt;"))
+    .RenderAsync())
+</code></pre>
+        <p>
+        </p>
     </div>
 </div>
 
