@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Sockethead.Razor.Attributes;
 using Sockethead.Razor.Helpers;
 // ReSharper disable MustUseReturnValue
 
@@ -298,6 +299,24 @@ namespace Sockethead.Razor.Forms
             return this;
         }
         
+        /// <summary>
+        /// Build form from the model via Reflection
+        /// </summary>
+        public SimpleForm<T> BuildFormForModel()
+        {
+            foreach (var property in typeof(T).GetProperties())
+            {
+                Expression<Func<T, object>> expression = ExpressionHelpers.BuildGetterLambda<T>(property);
+                FormBuilderIgnore ignore = expression.GetAttribute<FormBuilderIgnore, T, object>();
+            
+                // Skip if the property has FormBuilderIgnore attribute
+                if (ignore != null)
+                    continue;
+                
+                EditorFor(expression);
+            }
+            return this;
+        }
 
         public SimpleForm<T> SubmitButton(string label = "Submit", string css = "btn-primary")
         {
