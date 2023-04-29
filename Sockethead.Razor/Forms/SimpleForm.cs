@@ -13,7 +13,7 @@ using Sockethead.Razor.Helpers;
 
 namespace Sockethead.Razor.Forms
 {
-    public class SimpleForm<T> : ISimpleForm where T : class
+    public partial class SimpleForm<T> : ISimpleForm where T : class
     {
         private HtmlContentBuilder Builder = new();
         private IHtmlHelper<T> Html { get; }
@@ -267,25 +267,6 @@ namespace Sockethead.Razor.Forms
         {
             HtmlAttributeOptions options = new(isDisabled: isDisabled);
             AddFileEditorFor(expression: expression, htmlAttributeOptions: options, multiple: multiple, accept: accept);
-            return this;
-        }
-        
-        /// <summary>
-        /// Build form from the model via Reflection
-        /// </summary>
-        public SimpleForm<T> BuildFormForModel()
-        {
-            foreach (PropertyInfo property in typeof(T).GetProperties())
-            {
-                Expression<Func<T, object>> expression = ExpressionHelpers.BuildGetterLambda<T>(property);
-                FormBuilderIgnore ignore = expression.GetAttribute<FormBuilderIgnore, T, object>();
-            
-                // Skip if the property has FormBuilderIgnore attribute
-                if (ignore != null)
-                    continue;
-                
-                EditorFor(expression);
-            }
             return this;
         }
 
