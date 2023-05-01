@@ -278,9 +278,9 @@ namespace Sockethead.Razor.Forms
             foreach (PropertyInfo property in typeof(T).GetProperties())
             {
                 Expression<Func<T, object>> expression = ExpressionHelpers.BuildGetterLambda<T>(property);
-                FormBuilderIgnore ignore = expression.GetAttribute<FormBuilderIgnore, T, object>();
+                SimpleFormIgnore ignore = expression.GetAttribute<SimpleFormIgnore, T, object>();
             
-                // Skip if the property has FormBuilderIgnore attribute
+                // Skip if the property has SimpleFormIgnore attribute
                 if (ignore != null)
                     continue;
                 
