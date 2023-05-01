@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
 
 namespace Sockethead.Web.Data.Entities
 {
@@ -82,6 +84,10 @@ namespace Sockethead.Web.Data.Entities
         public string OtherCity { get; set; }
         
         public string Disabled { get; set; } = "I'm disabled";
+        public string View { get; set; }
+        
+        public IFormFile File { get; set; }
+        public List<IFormFile> MultipleFiles { get; set; } 
 
     }
 }

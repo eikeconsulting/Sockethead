@@ -6,6 +6,7 @@ using Sockethead.Razor.Helpers;
 using Sockethead.Web.Areas.Samples.ViewModels;
 using System.Collections.Generic;
 using Sockethead.Razor.Alert.Extensions;
+using Sockethead.Web.Areas.Samples.Helpers;
 using Sockethead.Web.Areas.Samples.Utilities;
 
 namespace Sockethead.Web.Areas.Samples.Controllers
@@ -23,24 +24,11 @@ namespace Sockethead.Web.Areas.Samples.Controllers
 
         [HttpGet]
         public IActionResult Dashboard() => View(Features.AsQueryable()).SetTitle("SimpleGrid");
-
-        /// <summary>
-        /// KLUDGE!!!  Let's do this properly...
-        /// </summary>
+        
         private string SetSampleLinks(string name)
         {
-            string modelName = "Movies";
-            for (int i = 0; i < Features.Count; i++)
-            {
-                if (Features[i].Name == name)
-                {
-                    modelName = Features[i].Model;
-                    if (i > 0) ViewData["PrevFeature"] = Features[i - 1];
-                    if (i + 1 < Features.Count) ViewData["NextFeature"] = Features[i + 1];
-                    break;
-                }
-            }
-            return modelName;
+            Feature feature = FeatureHelper.SetSampleLinks(this, Features, name);
+            return feature == null ? "Movies" : feature.Model;
         }
 
         [HttpGet]

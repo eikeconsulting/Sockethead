@@ -105,9 +105,9 @@ namespace Sockethead.Test.IntegrationTests.EFCore
                 await AuditLogCleaner.GetOldestRecordToKeepAsync(AuditLogger, policy.ThresholdValue.Value);
             DateTime oldestAllowedAuditLogTime = AuditLogCleaner.GetOldestAllowedTimestamp(policy.TimeWindow.Value);
 
-            IQueryable<AuditLog> auditLogsQuery = AuditLogger.OnlyAuditLog
-                .Where(log =>
-                    log.TimeStamp < oldestRecordToKeep.TimeStamp || log.TimeStamp < oldestAllowedAuditLogTime);
+            IQueryable<AuditLog> auditLogsQuery = AuditLogCleaner.ApplyTimeWindowAndThresholdValueCleanupPolicy(
+                AuditLogger.OnlyAuditLog, oldestRecordToKeep, oldestAllowedAuditLogTime);
+            
             auditLogsQuery = AuditLogCleaner.ApplyExcludeTablesFilter(auditLogsQuery, policy.ExcludeTables);
 
             if(!await auditLogsQuery.AnyAsync())

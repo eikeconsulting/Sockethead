@@ -1,0 +1,29 @@
+﻿@using Sockethead.Razor.Forms
+@model SampleModel
+
+<div class="row">
+    <div class="col-md-5">
+        <h4>Submit Button</h4>
+        @(await Html
+            .SimpleForm(Model, opt => opt.ActionName = "Sample")
+            .HiddenFor(model => model.View)
+            .EditorFor(model => model.First)
+            .SubmitButton(label: "Update First Name", css: "btn btn-danger")
+            .RenderAsync())
+    </div>
+    <div class="col-md-7">
+        <pre><code>@@(await Html
+    .SimpleForm(Model, opt => opt.ActionName = "Sample")
+    .EditorFor(model => model.First)
+    .SubmitButton(label: "Update First Name", css: "btn btn-danger")
+    .RenderAsync())
+        </code></pre>
+        <p>
+            Change the label and css of the submit button by passing the label and css parameters to the SubmitButton method.
+        </p>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

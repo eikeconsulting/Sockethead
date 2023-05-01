@@ -1,0 +1,39 @@
+﻿@using Sockethead.Razor.Forms
+@model SampleModel
+
+@{
+    List<SelectListItem> cityList = new List<SelectListItem> { new("New York", "NY"), new("London", "LDN") };
+}
+
+<div class="row">
+    <div class="col-md-5">
+        <h4>Checkboxes and Radios</h4>
+        @(await Html
+            .SimpleForm(Model, new FormOptions { ActionName = "Sample" })
+            .HiddenFor(model => model.View)
+            .CheckBoxEditorFor(model => model.Flag)
+            .RadioButtonEditorFor(model => model.OtherCity, cityList, inline: true)
+            .SubmitButton("Save Changes")
+            .RenderAsync())
+    </div>
+    <div class="col-md-7">
+        <pre><code>@@List&lt;SelectListItem&gt; cityList = new List&lt;SelectListItem&gt;
+        { new("New York", "NY"), new("London", "LDN") };
+
+@@(await Html
+    .SimpleForm(Model, new FormOptions { ActionName = "Sample" })
+    .CheckBoxEditorFor(model => model.Flag)
+    .RadioButtonEditorFor(model => model.OtherCity, cityList, inline: false)
+    .SubmitButton("Save Changes")
+    .RenderAsync())
+</code></pre>
+        <p>
+            You can pass a list of values to the <code>RadioButtonEditorFor</code> method to render
+            a list of radio buttons. You can also pass <code>inline: false</code> to render the radio buttons in a vertical list.
+        </p>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

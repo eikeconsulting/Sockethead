@@ -96,9 +96,8 @@ namespace Sockethead.EFCore.AuditLogging
                     AuditLog oldestRecordToKeep =
                         await GetOldestRecordToKeepAsync(auditLogger, AuditLogCleanupPolicy.ThresholdValue.Value);
                     
-                    auditLogsToDeleteQuery = oldestRecordToKeep != null
-                        ? auditLogsToDeleteQuery.Where(log => log.TimeStamp < oldestRecordToKeep.TimeStamp || log.TimeStamp < oldestAllowedAuditLogTime)
-                        : ApplyTimestampFilter(auditLogsToDeleteQuery, oldestAllowedAuditLogTime);
+                    auditLogsToDeleteQuery = ApplyTimeWindowAndThresholdValueCleanupPolicy(auditLogsToDeleteQuery,
+                        oldestRecordToKeep, oldestAllowedAuditLogTime);
                 }
                 else
                 {
@@ -106,9 +105,8 @@ namespace Sockethead.EFCore.AuditLogging
                 }
             }
 
-            if (AuditLogCleanupPolicy.ExcludeTables != null && AuditLogCleanupPolicy.ExcludeTables.Any())
-                auditLogsToDeleteQuery =
-                    auditLogsToDeleteQuery.Where(log => !AuditLogCleanupPolicy.ExcludeTables.Contains(log.TableName));
+            auditLogsToDeleteQuery =
+                ApplyExcludeTablesFilter(auditLogsToDeleteQuery, AuditLogCleanupPolicy.ExcludeTables);
 
             return auditLogsToDeleteQuery;
         }
@@ -128,7 +126,15 @@ namespace Sockethead.EFCore.AuditLogging
 
             return ApplyTimestampFilter(auditLogsToDeleteQuery, oldestRecordToKeep?.TimeStamp ?? DateTime.MinValue);
         }
-
+        
+        public static IQueryable<AuditLog> ApplyTimeWindowAndThresholdValueCleanupPolicy(
+            IQueryable<AuditLog> auditLogsToDeleteQuery, AuditLog oldestRecordToKeep, DateTime oldestAllowedAuditLogTime)
+        {
+            return oldestRecordToKeep != null
+                ? auditLogsToDeleteQuery.Where(log => log.TimeStamp < oldestRecordToKeep.TimeStamp || log.TimeStamp < oldestAllowedAuditLogTime)
+                : ApplyTimestampFilter(auditLogsToDeleteQuery, oldestAllowedAuditLogTime);
+        }
+        
         public async Task<int> CleanupAuditLogsAsync(CancellationToken stoppingToken)
         {
             using IServiceScope scope = ScopeFactory.CreateScope();
@@ -174,6 +180,8 @@ namespace Sockethead.EFCore.AuditLogging
             query.Where(log => log.TimeStamp < timestamp);
 
         public static IQueryable<AuditLog> ApplyExcludeTablesFilter(IQueryable<AuditLog> query, string[] excludeTables) =>
-            query.Where(log => !excludeTables.Contains(log.TableName));
+            excludeTables != null && excludeTables.Any()
+                ? query.Where(log => !excludeTables.Contains(log.TableName))
+                : query;
     }
 }

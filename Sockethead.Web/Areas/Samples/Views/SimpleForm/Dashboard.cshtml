@@ -1,0 +1,22 @@
+﻿@model IQueryable<Feature>
+
+<div class="row">
+    <div class="col-md-12">
+
+        <p>
+        SimpleForm is an ASP.Net Core form builder to create the form effortlessly.  Here are some samples to demonstrate how to use it.
+        </p>
+
+        @(await Html
+                .SimpleGrid(Model)
+                .AddColumn(col => col
+                    .For(feature => feature.Name)
+                    .LinkTo(feature => feature.BuildUrl())
+                    .Css(css => css.Item.AddStyle("width: 150px;")))
+                .AddColumn(col => col.For(feature => feature.Description))
+                .AddCssClass("table-striped table-sm table-bordered")
+                .Sortable()
+                .RenderAsync())
+
+    </div>
+</div>
