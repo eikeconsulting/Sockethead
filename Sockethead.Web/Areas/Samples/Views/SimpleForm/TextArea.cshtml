@@ -6,8 +6,8 @@
         <h4>Text Area</h4>
         @(await Html
             .SimpleForm(Model, new FormOptions { ActionName = "Sample" })
-            .HiddenFor(model => model.View)
-            .EditorFor(model => model.FooBarBazBBBlah)
+            .AddHiddenRowFor(model => model.View)
+            .AddRowFor(model => model.FooBarBazBBBlah)
             .SubmitButton("Save Changes")
             .RenderAsync())
     </div>

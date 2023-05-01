@@ -6,9 +6,9 @@
         <h4>DateTime and Date</h4>
         @(await Html
             .SimpleForm(Model, new FormOptions { ActionName = "Sample" })
-            .HiddenFor(model => model.View)
-            .EditorFor(model => model.RandomDate)
-            .EditorFor(model => model.RandomDateOnly)
+            .AddHiddenRowFor(model => model.View)
+            .AddRowFor(model => model.RandomDate)
+            .AddRowFor(model => model.RandomDateOnly)
             .SubmitButton("Save Changes")
             .RenderAsync())
     </div>

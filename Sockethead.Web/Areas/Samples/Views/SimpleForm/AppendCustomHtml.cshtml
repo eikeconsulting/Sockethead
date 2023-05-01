@@ -7,7 +7,7 @@
         <h4>Append Custom HTML</h4>
         @(await Html
             .SimpleForm(Model, new FormOptions { ActionName = "Sample" })
-            .HiddenFor(model => model.View)
+            .AddHiddenRowFor(model => model.View)
             .AppendHtml(
                 @<div class="form-group">
                     <label>Append Html - First Name: @Model.First</label>

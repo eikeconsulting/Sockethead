@@ -5,7 +5,7 @@ using Sockethead.Web.Data;
 using Sockethead.Web.Data.Entities;
 using System.Linq;
 using Sockethead.Razor.Helpers;
-using Sockethead.Web.Areas.Samples.Helpers;
+using Sockethead.Web.Areas.Samples.Extensions;
 using Sockethead.Web.Areas.Samples.Utilities;
 using Sockethead.Web.Areas.Samples.ViewModels;
 
@@ -24,7 +24,7 @@ namespace Sockethead.Web.Areas.Samples.Controllers
         [HttpGet]
         public IActionResult Sample(string name)
         {
-            FeatureHelper.SetSampleLinks(this, Features, name);
+            this.SetSampleLinks(Features, name);
             SampleModel model = SampleDataQuery.First();
             model.View = name;
             
@@ -34,7 +34,7 @@ namespace Sockethead.Web.Areas.Samples.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public IActionResult Sample(SampleModel formData)
         {
-            FeatureHelper.SetSampleLinks(this, Features, formData.View);
+            this.SetSampleLinks(Features, formData.View);
             return View(viewName: formData.View.Replace(" ", ""), formData)
                 .Success($"Form submitted successfully.");
         }

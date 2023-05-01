@@ -12,15 +12,6 @@ namespace Sockethead.Web.Areas.Samples.Controllers
         private static IQueryable<SampleModel> SampleDataQuery => SampleData.SampleModels.AsQueryable();
 
         [HttpGet]
-        public IActionResult FormBuilder() => View(SampleDataQuery.First());
-
-        [HttpPost, ValidateAntiForgeryToken]
-        public IActionResult FormBuilder(SampleModel formData)
-        {
-            return View(formData).Success($"Submitted form with {formData}");
-        }
-
-        [HttpGet]
         public IActionResult FormForModel() => View(new UserProfile
             {
                 First = "John",

@@ -6,11 +6,11 @@
         <h4>Basic Usage</h4>
         @(await Html
             .SimpleForm(Model, opt => opt.ActionName = "Sample")
-            .HiddenFor(model => model.View)
-            .HiddenFor(model => model.Id)
-            .EditorFor(model => model.First)
-            .EditorFor(model => model.Last)
-            .EditorFor(model => model.JobTitle)
+            .AddHiddenRowFor(model => model.View)
+            .AddHiddenRowFor(model => model.Id)
+            .AddRowFor(model => model.First)
+            .AddRowFor(model => model.Last)
+            .AddRowFor(model => model.JobTitle)
             .SubmitButton("Save Changes")
             .RenderAsync())
     </div>

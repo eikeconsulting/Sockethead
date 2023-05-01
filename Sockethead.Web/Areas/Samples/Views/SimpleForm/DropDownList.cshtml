@@ -10,7 +10,7 @@
         <h4>Drop Down List</h4>
         @(await Html
             .SimpleForm(Model, new FormOptions { ActionName = "Sample" })
-            .HiddenFor(model => model.View)
+            .AddHiddenRowFor(model => model.View)
             .EnumEditorFor(model => model.SampleEnum)
             .SelectListEditorFor(model => model.City, cityList)
             .SubmitButton("Save Changes")

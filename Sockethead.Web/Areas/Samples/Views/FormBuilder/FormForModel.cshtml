@@ -6,9 +6,9 @@
         <h4>Basic Usage</h4>
         @(await Html
             .SimpleForm(Model, opt => opt.ActionName = "FormForModel")
-            .EditorFor(model => model.First)
-            .EditorFor(model => model.Last)
-            .EditorFor(model => model.JobTitle)
+            .AddRowFor(model => model.First)
+            .AddRowFor(model => model.Last)
+            .AddRowFor(model => model.JobTitle)
             .SubmitButton("Save Changes")
             .RenderAsync())
         
@@ -16,7 +16,7 @@
         
         @(await Html
             .SimpleForm(Model, opt => opt.ActionName = "FormForModel")
-            .BuildFormForModel()
+            .AddRowsForModel()
             .SubmitButton("Save Changes")
             .RenderAsync())
         

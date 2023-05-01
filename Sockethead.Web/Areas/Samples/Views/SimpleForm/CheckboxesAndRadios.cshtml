@@ -10,7 +10,7 @@
         <h4>Checkboxes and Radios</h4>
         @(await Html
             .SimpleForm(Model, new FormOptions { ActionName = "Sample" })
-            .HiddenFor(model => model.View)
+            .AddHiddenRowFor(model => model.View)
             .CheckBoxEditorFor(model => model.Flag)
             .RadioButtonEditorFor(model => model.OtherCity, cityList, inline: true)
             .SubmitButton("Save Changes")

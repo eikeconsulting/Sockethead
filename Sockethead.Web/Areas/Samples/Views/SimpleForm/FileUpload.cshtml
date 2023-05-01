@@ -6,7 +6,7 @@
         <h4>File Upload</h4>
         @(await Html
             .SimpleForm(Model, opt => opt.ActionName = "Sample")
-            .HiddenFor(model => model.View)
+            .AddHiddenRowFor(model => model.View)
             .FileUploadEditorFor(model => model.File)
             .FileUploadEditorFor(model => model.MultipleFiles, multiple: true, accept: "image/*")
             .SubmitButton("Upload")
