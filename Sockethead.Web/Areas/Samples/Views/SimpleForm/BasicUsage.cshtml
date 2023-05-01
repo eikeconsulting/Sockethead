@@ -1,0 +1,42 @@
+﻿@using Sockethead.Razor.Forms
+@model SampleModel
+
+<div class="row">
+    <div class="col-md-5">
+        <h4>Basic Usage</h4>
+        @(await Html
+            .SimpleForm(Model, opt => opt.ActionName = "Sample")
+            .HiddenFor(model => model.View)
+            .HiddenFor(model => model.Id)
+            .EditorFor(model => model.First)
+            .EditorFor(model => model.Last)
+            .EditorFor(model => model.JobTitle)
+            .SubmitButton("Save Changes")
+            .RenderAsync())
+    </div>
+    <div class="col-md-7">
+        <pre><code>@@(await Html
+    .SimpleForm(Model, opt => opt.ActionName = "Sample")
+    .HiddenFor(model => model.Id)
+    .EditorFor(model => model.First)
+    .EditorFor(model => model.Last)
+    .EditorFor(model => model.JobTitle)
+    .SubmitButton("Save Changes")
+    .RenderAsync())
+        </code></pre>
+        <p>
+            The mentioned properties will be included in the Bootstrap form created by this code.
+            You can also use the ASP.NET Core attributes to control the property's behavior.  For example: <br/>
+            <code>[Required(ErrorMessage = "Some message here.")]</code><br/>
+            <code>[DisplayName("Some Name")]</code><br/>
+            <code>[MaxLength(20, ErrorMessage = "Too long...")]</code><br/>
+            <br/>
+            Moreover, by passing the ControllerName and FormMethod to the FormOptions along with the ActionName, you can
+            manage the behavior of the form.
+        </p>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

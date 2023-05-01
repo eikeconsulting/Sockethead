@@ -1,0 +1,29 @@
+﻿@using Sockethead.Razor.Forms
+@model SampleModel
+
+<div class="row">
+    <div class="col-md-5">
+        <h4>Text Area</h4>
+        @(await Html
+            .SimpleForm(Model, new FormOptions { ActionName = "Sample" })
+            .HiddenFor(model => model.View)
+            .EditorFor(model => model.FooBarBazBBBlah)
+            .SubmitButton("Save Changes")
+            .RenderAsync())
+    </div>
+    <div class="col-md-7">
+        <pre><code>@@(await Html
+    .SimpleForm(Model, new FormOptions { ActionName = "Sample" })
+    .EditorFor(model => model.FooBarBazBBBlah)
+    .SubmitButton("Save Changes")
+    .RenderAsync())
+</code></pre>
+        <p>
+            You can use the <code>[DataType(DataType.MultilineText)]</code> attribute to render a text area.
+        </p>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

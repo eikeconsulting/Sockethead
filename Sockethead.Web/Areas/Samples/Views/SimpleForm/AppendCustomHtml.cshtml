@@ -1,0 +1,48 @@
+﻿@using Sockethead.Razor.Forms
+@using Microsoft.AspNetCore.Html
+@model SampleModel
+
+<div class="row">
+    <div class="col-md-5">
+        <h4>Append Custom HTML</h4>
+        @(await Html
+            .SimpleForm(Model, new FormOptions { ActionName = "Sample" })
+            .HiddenFor(model => model.View)
+            .AppendHtml(
+                @<div class="form-group">
+                    <label>Append Html - First Name: @Model.First</label>
+                </div>
+            )
+            .AppendHtmlIf(true,
+                @<div class="form-group">
+                    <label>Append Html if condition is true.</label>
+                </div>
+            )
+            .AppendHtml("<div class='form-group'>Encoded HTML</div>")
+            .AppendHtml(new HtmlContentBuilder().AppendHtml("<div class='form-group'>Html Content Builder</div>"))
+            .RenderAsync())
+    </div>
+    <div class="col-md-7">
+        <pre><code>@@(await Html.SimpleForm(Model, new FormOptions { ActionName = "Sample" })
+    .AppendHtml(
+        @@&lt;div class="form-group"&gt;
+            &lt;label>Append Html - First Name: @@Model.First&lt;/label&gt;
+        &lt;/div&gt;
+    )
+    .AppendHtmlIf(true,
+        @@&lt;div class="form-group"&gt;
+            &lt;label&gt;Append Html if condition is true.&lt;/label&gt;
+        &lt;/div&gt;
+    )
+    .AppendHtml("&lt;div class='form-group'>Encoded HTML&lt;/div&gt;")
+    .AppendHtml(new HtmlContentBuilder().AppendHtml("&lt;div class='form-group'&gt;Html Content Builder&lt;/div&gt;"))
+    .RenderAsync())
+</code></pre>
+        <p>
+        </p>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

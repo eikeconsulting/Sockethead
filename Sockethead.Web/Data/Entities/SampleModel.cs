@@ -82,6 +82,7 @@ namespace Sockethead.Web.Data.Entities
         public string OtherCity { get; set; }
         
         public string Disabled { get; set; } = "I'm disabled";
+        public string View { get; set; }
 
     }
 }

@@ -1,0 +1,34 @@
+﻿@using Sockethead.Razor.Forms
+@model SampleModel
+
+@{
+    List<SelectListItem> cityList = new List<SelectListItem> { new("New York", "NY"), new("London", "LDN") };
+}
+
+<div class="row">
+    <div class="col-md-5">
+        <h4>Drop Down List</h4>
+        @(await Html
+            .SimpleForm(Model, new FormOptions { ActionName = "Sample" })
+            .HiddenFor(model => model.View)
+            .EnumEditorFor(model => model.SampleEnum)
+            .SelectListEditorFor(model => model.City, cityList)
+            .SubmitButton("Save Changes")
+            .RenderAsync())
+    </div>
+    <div class="col-md-7">
+        <pre><code>@@(await Html
+    .SimpleForm(Model, new FormOptions { ActionName = "Sample" })
+    .EnumEditorFor(model => model.SampleEnum)
+    .SelectListEditorFor(model => model.City, cityList)
+    .SubmitButton("Save Changes")
+    .RenderAsync())
+</code></pre>
+        <p>
+        </p>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
