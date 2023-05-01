@@ -10,7 +10,7 @@ namespace Sockethead.Razor.Grid
 
         /// <summary>
         /// Maximum number of rows to render at one time
-        /// This is a saftey feature if you are querying a huge table
+        /// This is a safety feature if you are querying a huge table
         /// </summary>
         public int MaxRows { get; set; } = 5000;
 
@@ -24,8 +24,8 @@ namespace Sockethead.Razor.Grid
     public class GridCssOptions
     {
         public CssBuilder Table { get; } = new CssBuilder().AddClass("table");
-        public CssBuilder Header { get; } = new CssBuilder();
-        public CssBuilder Row { get; } = new CssBuilder();
+        public CssBuilder Header { get; } = new();
+        public CssBuilder Row { get; } = new();
 
         public void ClearAll()
         {

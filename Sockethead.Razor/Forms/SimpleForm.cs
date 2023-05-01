@@ -8,9 +8,9 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
 using Sockethead.Razor.Attributes;
-using Sockethead.Razor.Helpers;
+using Sockethead.Razor.Helpers; 
 // ReSharper disable MustUseReturnValue
-
+ 
 namespace Sockethead.Razor.Forms
 {
     public class SimpleForm<T> : ISimpleForm where T : class
@@ -45,63 +45,32 @@ namespace Sockethead.Razor.Forms
             Builder.AppendHtml("\n");
         }
 
-        private class Scope : IDisposable
-        {
-            private Action OnDispose { get; }
-
-            public Scope(Action onBegin, Action onEnd)
-            {
-                onBegin();
-                OnDispose = onEnd;
-            }
-
-            public void Dispose() => OnDispose();
-        }
-
-        private IDisposable FormGroup(string additionalCssClass = "") =>
+        private IDisposable CreateFormGroup(string additionalCssClass = "") =>
             Div($"form-group {additionalCssClass}");
         
         private IDisposable Div(string cssClass = "") => new Scope(
             onBegin: () => Append($"<div class='{cssClass}'>"), 
             onEnd: () => Append("</div>"));
 
-        private static Dictionary<string, object> GetHtmlAttributes(HtmlAttributeOptions options)
-        {
-            Dictionary<string, object> htmlAttributes = new();
-            
-            if (!string.IsNullOrEmpty(options.CssClass))
-                htmlAttributes.Add("class", options.CssClass);
-            
-            if (options.IsReadOnly)
-                htmlAttributes.Add("readonly", "readonly");
-            
-            if (options.IsDisabled)
-                htmlAttributes.Add("disabled", "disabled");
-            
-            if (!string.IsNullOrEmpty(options.Type))
-                htmlAttributes.Add("type", options.Type);
-
-            return htmlAttributes;
-        }
-
         private void AddLabelFor<TResult>(Expression<Func<T, TResult>> expression, string cssClass = "control-label")
         {
-            Append(Html.LabelFor(expression, Html.DisplayNameFor(expression),
-                htmlAttributes: new { @class = cssClass }));
+            Append(Html.LabelFor(expression, Html.DisplayNameFor(expression), htmlAttributes: new { @class = cssClass }));
         }
         
         private void AddTextBoxFor<TResult>(Expression<Func<T, TResult>> expression,
             HtmlAttributeOptions htmlAttributeOptions, string format = null)
         {
-            Dictionary<string, object> htmlAttributes = GetHtmlAttributes(options: htmlAttributeOptions);
-            
-            if (expression.GetDataTypeAttribute() == DataType.MultilineText)
-            {
-                Append(Html.TextAreaFor(expression, htmlAttributes: htmlAttributes));
-                return;
-            }
+            Dictionary<string, object> htmlAttributes = htmlAttributeOptions.ToDictionary();
 
-            Append(Html.TextBoxFor(expression, format, htmlAttributes: htmlAttributes));
+            switch (expression.GetDataTypeAttribute())
+            {
+                case DataType.MultilineText: 
+                    Append(Html.TextAreaFor(expression, htmlAttributes: htmlAttributes));
+                    return;
+                default:
+                    Append(Html.TextBoxFor(expression, format, htmlAttributes: htmlAttributes));
+                    return;
+            }
         }
         
         private void AddValidationMessageFor<TResult>(Expression<Func<T, TResult>> expression)
@@ -112,7 +81,7 @@ namespace Sockethead.Razor.Forms
         private void AddDefaultEditorFor<TResult>(Expression<Func<T, TResult>> expression, 
             HtmlAttributeOptions htmlAttributeOptions, string format = null)
         {
-            using IDisposable group = FormGroup();
+            using IDisposable group = CreateFormGroup();
             AddLabelFor(expression: expression);
             AddTextBoxFor(expression: expression, htmlAttributeOptions: htmlAttributeOptions, format: format);
             AddValidationMessageFor(expression: expression);
@@ -122,9 +91,9 @@ namespace Sockethead.Razor.Forms
         {
             htmlAttributeOptions.CssClass = "form-check-input";
 
-            Dictionary<string, object> htmlAttributes = GetHtmlAttributes(htmlAttributeOptions);
+            Dictionary<string, object> htmlAttributes = htmlAttributeOptions.ToDictionary();
 
-            using IDisposable group = FormGroup(additionalCssClass:"form-check");
+            using IDisposable group = CreateFormGroup(additionalCssClass:"form-check");
             Append(Html.CheckBoxFor(expression, htmlAttributes: htmlAttributes));
             AddLabelFor(expression: expression, cssClass: "form-check-label");
             AddValidationMessageFor(expression: expression);
@@ -135,26 +104,24 @@ namespace Sockethead.Razor.Forms
         {
             htmlAttributeOptions.CssClass = "form-check-input";
 
-            Dictionary<string, object> htmlAttributes = GetHtmlAttributes(htmlAttributeOptions);
+            Dictionary<string, object> htmlAttributes = htmlAttributeOptions.ToDictionary();
             
             foreach (SelectListItem item in items)
             {
-                using IDisposable group =
-                    FormGroup(additionalCssClass: $"form-check {(inline ? "form-check-inline" : "")}");
+                using IDisposable group = CreateFormGroup(additionalCssClass: $"form-check {(inline ? "form-check-inline" : "")}");
                 Append(Html.RadioButtonFor(expression, item.Value, htmlAttributes: htmlAttributes));
                 Append(Html.LabelFor(expression, item.Text, htmlAttributes: new { @class = "form-check-label" }));
             }
             AddValidationMessageFor(expression: expression);
             
-            if(inline)
+            if (inline)
                 Append("<br/>");
         }
         
-        private void AddEnumEditorFor<TResult>(Expression<Func<T, TResult>> expression, 
-            HtmlAttributeOptions htmlAttributeOptions)
+        private void AddEnumEditorFor<TResult>(Expression<Func<T, TResult>> expression, HtmlAttributeOptions htmlAttributeOptions)
         {
             List<TResult> values = Enum.GetValues(typeof(TResult)).Cast<TResult>().ToList();
-            SelectList selectList = new SelectList(values);
+            SelectList selectList = new(values);
             AddDropDownListEditorFor(expression: expression, selectList: selectList, htmlAttributeOptions);
         }
 
@@ -162,20 +129,19 @@ namespace Sockethead.Razor.Forms
             IEnumerable<SelectListItem> selectList, HtmlAttributeOptions htmlAttributeOptions)
         {
             htmlAttributeOptions.CssClass = "custom-select";
-            Dictionary<string, object> htmlAttributes = GetHtmlAttributes(htmlAttributeOptions);
-            
-            using IDisposable group = FormGroup();
+            using IDisposable group = CreateFormGroup();
             AddLabelFor(expression: expression);
-            Append(Html.DropDownListFor(expression, selectList, htmlAttributes: htmlAttributes));
+            Append(Html.DropDownListFor(expression, selectList, htmlAttributes: htmlAttributeOptions.ToDictionary()));
             AddValidationMessageFor(expression: expression);
         }
         
-        private void AddDateEditorFor<TResult>(Expression<Func<T, TResult>> expression,
-            HtmlAttributeOptions htmlAttributeOptions)
+        private void AddDateEditorFor<TResult>(Expression<Func<T, TResult>> expression, HtmlAttributeOptions htmlAttributeOptions)
         {
             bool isDateOnly = expression.GetDataTypeAttribute() == DataType.Date;
             htmlAttributeOptions.Type = isDateOnly ? "date" : "datetime-local";
-            AddDefaultEditorFor(expression: expression, htmlAttributeOptions: htmlAttributeOptions,
+            AddDefaultEditorFor(
+                expression: expression, 
+                htmlAttributeOptions: htmlAttributeOptions,
                 format: isDateOnly ? "{0:yyyy-MM-dd}" : "{0:yyyy-MM-ddTHH:mm}");
         }
 
@@ -184,15 +150,15 @@ namespace Sockethead.Razor.Forms
         {
             htmlAttributeOptions.CssClass = "custom-file-input";
             htmlAttributeOptions.Type = "file";
-            Dictionary<string, object> htmlAttributes = GetHtmlAttributes(htmlAttributeOptions);
+            Dictionary<string, object> htmlAttributes = htmlAttributeOptions.ToDictionary();
             
-            if(multiple)
-                htmlAttributes.Add("multiple", "multiple");
+            if (multiple)
+                htmlAttributes["multiple"] = "multiple";
             
-            if(!string.IsNullOrEmpty(accept))
-                htmlAttributes.Add("accept", accept);
+            if (!string.IsNullOrEmpty(accept))
+                htmlAttributes["accept"] = accept;
             
-            using IDisposable group = FormGroup();
+            using IDisposable group = CreateFormGroup();
             using IDisposable div = Div("custom-file");
             Append(Html.TextBoxFor(expression, htmlAttributes: htmlAttributes));
             AddLabelFor(expression: expression, cssClass: "custom-file-label");
@@ -277,15 +243,40 @@ namespace Sockethead.Razor.Forms
         {
             foreach (PropertyInfo property in typeof(T).GetProperties())
             {
-                Expression<Func<T, object>> expression = ExpressionHelpers.BuildGetterLambda<T>(property);
-                FormBuilderIgnore ignore = expression.GetAttribute<FormBuilderIgnore, T, object>();
+                LambdaExpression expression = ExpressionHelpers.GenerateLambdaExpressionForProperty<T>(property); 
+                
+                switch (expression)
+                {
+                    case Expression<Func<T, string>> ex1: Handle(ex1); break;
+                    case Expression<Func<T, int>> ex2: Handle(ex2); break;
+                    case Expression<Func<T, float>> ex3: Handle(ex3); break;
+                    case Expression<Func<T, double>> ex4: Handle(ex4); break;
+                    case Expression<Func<T, bool>> ex5: Handle(ex5); break;
+                    
+                    // TODO handle more types
+                }
+            }
+            
+            void Handle<TProperty>(Expression<Func<T, TProperty>> expression)
+            {
+                FormBuilderIgnore ignore = expression.GetAttribute<FormBuilderIgnore, T, TProperty>();
             
                 // Skip if the property has FormBuilderIgnore attribute
                 if (ignore != null)
-                    continue;
-                
-                EditorFor(expression);
-            }
+                    return;
+
+                switch (typeof(TProperty))
+                {
+                    case var type when type == typeof(bool):
+                        CheckBoxEditorFor(expression as Expression<Func<T, bool>>);
+                        break;
+                    
+                    default:
+                        EditorFor(expression);
+                        break;
+                }
+            } 
+            
             return this;
         }
 

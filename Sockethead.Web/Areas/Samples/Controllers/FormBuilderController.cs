@@ -10,18 +10,30 @@ namespace Sockethead.Web.Areas.Samples.Controllers
     public class FormBuilderController : Controller
     {
         private static IQueryable<SampleModel> SampleDataQuery => SampleData.SampleModels.AsQueryable();
-        //private static IQueryable<Movie> MovieQuery => SampleData.Movies.AsQueryable();
 
         [HttpGet]
-        public IActionResult FormBuilder()
-        {
-            return View(SampleDataQuery.First());
-        }
+        public IActionResult FormBuilder() => View(SampleDataQuery.First());
 
         [HttpPost, ValidateAntiForgeryToken]
         public IActionResult FormBuilder(SampleModel formData)
         {
             return View(formData).Success($"Submitted form with {formData}");
         }
+
+        [HttpGet]
+        public IActionResult FormForModel() => View(new UserProfile
+            {
+                First = "John",
+                Last = "Doe",
+                JobTitle = "Software Engineer",
+            });
+                
+        
+        [HttpPost, ValidateAntiForgeryToken]
+        public IActionResult FormForModel(UserProfile formData)
+        {
+            return View(formData).Success($"Submitted form with {formData}");
+        }
+
     }
 }

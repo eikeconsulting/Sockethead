@@ -1,4 +1,6 @@
-﻿namespace Sockethead.Razor.Forms
+﻿using System.Collections.Generic;
+
+namespace Sockethead.Razor.Forms
 {
     public class HtmlAttributeOptions
     {
@@ -16,6 +18,25 @@
             IsDisabled = isDisabled;
             CssClass = cssClass;
             Type = type;
+        }
+
+        public Dictionary<string, object> ToDictionary()
+        {
+            Dictionary<string, object> map = new();
+            
+            if (!string.IsNullOrEmpty(CssClass))
+                map["class"] = CssClass;
+            
+            if (IsReadOnly)
+                map["readonly"] = "readonly";
+            
+            if (IsDisabled)
+                map["disabled"] = "disabled";
+            
+            if (!string.IsNullOrEmpty(Type))
+                map["type"] = Type;
+
+            return map;
         }
     }
 }

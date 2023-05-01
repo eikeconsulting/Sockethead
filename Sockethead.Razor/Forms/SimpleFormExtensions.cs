@@ -9,7 +9,7 @@ namespace Sockethead.Razor.Forms
         public string ControllerName { get; set; } = null;
         public FormMethod FormMethod { get; set; } = FormMethod.Post;
     }
-    
+     
     public static class SimpleFormExtensions
     {
         public static SimpleForm<T> SimpleForm<T>(this IHtmlHelper<T> html, T model, FormOptions options = default,

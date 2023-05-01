@@ -1,0 +1,28 @@
+﻿@using Sockethead.Razor.Forms
+@model UserProfile
+
+<div class="row">
+    <div class="col-md-5">
+        <h4>Basic Usage</h4>
+        @(await Html
+            .SimpleForm(Model, opt => opt.ActionName = "FormForModel")
+            .EditorFor(model => model.First)
+            .EditorFor(model => model.Last)
+            .EditorFor(model => model.JobTitle)
+            .SubmitButton("Save Changes")
+            .RenderAsync())
+        
+        <hr/>
+        
+        @(await Html
+            .SimpleForm(Model, opt => opt.ActionName = "FormForModel")
+            .BuildFormForModel()
+            .SubmitButton("Save Changes")
+            .RenderAsync())
+        
+        
+    </div>
+    <div class="col-md-7">
+        TBD...
+    </div>
+</div>

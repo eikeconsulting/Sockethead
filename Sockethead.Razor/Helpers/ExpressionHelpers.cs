@@ -110,6 +110,39 @@ namespace Sockethead.Razor.Helpers
             return Expression.Lambda<Func<TModel, object>>(propertyObjExpr, objParameterExpr);
         }
 
+        public static LambdaExpression GenerateLambdaExpressionForProperty<TModel>(PropertyInfo propertyInfo)
+        {
+            ParameterExpression instance = Expression.Parameter(
+                type: typeof(TModel), 
+                name: "model");
+           
+            MemberExpression property = Expression.Property(
+                expression: instance, 
+                property: propertyInfo);
+
+            return Expression.Lambda(
+                body: property,
+                parameters: instance);
+        }
+
+        public static Dictionary<string, LambdaExpression> GenerateLambdaExpressionsForProperties(Type classType)
+        {
+            var lambdaExpressions = new Dictionary<string, LambdaExpression>();
+
+            PropertyInfo[] properties = classType.GetProperties();
+
+            foreach (PropertyInfo property in properties)
+            {
+                var parameter = Expression.Parameter(classType, "x");
+                var propertyExpression = Expression.Property(parameter, property);
+
+                LambdaExpression lambda = Expression.Lambda(propertyExpression, parameter);
+                lambdaExpressions.Add(property.Name, lambda);
+            }
+
+            return lambdaExpressions;
+        }
+
         /// <summary>
         /// Extract all Properties of the object (model) and 
         /// create a Dictionary of Name/Value
@@ -119,7 +152,7 @@ namespace Sockethead.Razor.Helpers
         public static Dictionary<string, object> ModelToDictionary<T>(T model)
             => ModelToLambdas<T>()
                 .ToDictionary(
-                    lambda => FriendlyName(lambda), 
+                    FriendlyName, 
                     lambda => lambda.Compile().Invoke(model));
 
         public static IEnumerable<Expression<Func<TModel, object>>> ModelToLambdas<TModel>()
