@@ -19,6 +19,11 @@ namespace Sockethead.Web.Areas.Samples.Utilities
             },
             new Feature
             {
+                Name = "Submit Button",
+                Description = "How to specify what text to render for the submit button and change the css class.",
+            },
+            new Feature
+            {
                 Name = "Email And Password",
                 Description = "A sample SimpleForm using the Email and Password input types.",
             },

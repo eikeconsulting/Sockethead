@@ -179,7 +179,7 @@ namespace Sockethead.Razor.Forms
                 format: isDateOnly ? "{0:yyyy-MM-dd}" : "{0:yyyy-MM-ddTHH:mm}");
         }
 
-        private void AddFileEditorFor<TResult>(Expression<Func<T, TResult>> expression,
+        private void AddFileUploadEditorFor<TResult>(Expression<Func<T, TResult>> expression,
             HtmlAttributeOptions htmlAttributeOptions, bool multiple = false, string accept = "")
         {
             htmlAttributeOptions.CssClass = "custom-file-input";
@@ -262,11 +262,11 @@ namespace Sockethead.Razor.Forms
             return this;
         }
         
-        public SimpleForm<T> FileEditorFor<TResult>(Expression<Func<T, TResult>> expression,
+        public SimpleForm<T> FileUploadEditorFor<TResult>(Expression<Func<T, TResult>> expression,
             bool multiple = false, string accept = "", bool isDisabled = false)
         {
             HtmlAttributeOptions options = new(isDisabled: isDisabled);
-            AddFileEditorFor(expression: expression, htmlAttributeOptions: options, multiple: multiple, accept: accept);
+            AddFileUploadEditorFor(expression: expression, htmlAttributeOptions: options, multiple: multiple, accept: accept);
             return this;
         }
         

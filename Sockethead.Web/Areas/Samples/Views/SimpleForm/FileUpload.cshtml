@@ -1,0 +1,33 @@
+﻿@using Sockethead.Razor.Forms
+@model SampleModel
+
+<div class="row">
+    <div class="col-md-5">
+        <h4>File Upload</h4>
+        @(await Html
+            .SimpleForm(Model, opt => opt.ActionName = "Sample")
+            .HiddenFor(model => model.View)
+            .FileUploadEditorFor(model => model.File)
+            .FileUploadEditorFor(model => model.MultipleFiles, multiple: true, accept: "image/*")
+            .SubmitButton("Upload")
+            .RenderAsync())
+    </div>
+    <div class="col-md-7">
+        <pre><code>@@(await Html
+    .SimpleForm(Model, opt => opt.ActionName = "Sample")
+    .FileUploadEditorFor(model => model.File)
+    .FileUploadEditorFor(model => model.MultipleFiles, multiple: true,
+        accept: "image/*")
+    .SubmitButton("Upload")
+    .RenderAsync())
+        </code></pre>
+        <p>
+            The FileUploadEditorFor method will create a file upload input for the specified property.
+            You can also optionally pass the accept, multiple and isDisabled parameters to the method to control the behavior of the input.
+        </p>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
