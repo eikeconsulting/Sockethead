@@ -10,7 +10,7 @@
             .AddRowFor(model => model.First, opt => opt.IsReadOnly = true)
             .AddRowFor(model => model.Last)
             .AddRowFor(model => model.Disabled, opt=> opt.IsReadOnly = true)
-            .SubmitButton("Save Changes")
+            .AddSubmitButtonRow("Save Changes")
             .RenderAsync())
     </div>
     <div class="col-md-7">

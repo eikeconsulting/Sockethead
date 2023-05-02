@@ -9,7 +9,7 @@
             .AddRowFor(model => model.First)
             .AddRowFor(model => model.Last)
             .AddRowFor(model => model.JobTitle)
-            .SubmitButton("Save Changes")
+            .AddSubmitButtonRow("Save Changes")
             .RenderAsync())
         
         <hr/>
@@ -17,7 +17,7 @@
         @(await Html
             .SimpleForm(Model, opt => opt.ActionName = "FormForModel")
             .AddRowsForModel()
-            .SubmitButton("Save Changes")
+            .AddSubmitButtonRow("Save Changes")
             .RenderAsync())
         
         

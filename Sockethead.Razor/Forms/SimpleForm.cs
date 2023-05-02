@@ -7,7 +7,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Sockethead.Razor.Helpers; 
-// ReSharper disable MustUseReturnValue
  
 namespace Sockethead.Razor.Forms
 {
@@ -24,30 +23,52 @@ namespace Sockethead.Razor.Forms
             optionsAction?.Invoke(FormOptions);
         }
 
-        public SimpleForm<T> AddRowFor<TResult>(
-            Expression<Func<T, TResult>> expression, 
-            Action<HtmlAttributeOptions> optionsSetter = null)
+        public SimpleForm<T> AddRowFor<TResult>(Expression<Func<T, TResult>> expression, Action<HtmlAttributeOptions> optionsSetter = null)
         {
-            HtmlAttributeOptions options = new();
-            optionsSetter?.Invoke(options);
+            HtmlAttributeOptions options = ResolveOptions(optionsSetter);
+            string format = null;
             
             switch (typeof(TResult).Name)
             {
                 case nameof(DateTime):
-                    AddDateEditorFor(expression, options);
-                    return this;
+                    if (expression.GetDataTypeAttribute() == DataType.Date)
+                    {
+                        options.Type = "date";
+                        format = "{0:yyyy-MM-dd}";
+                    }
+                    else
+                    {
+                        options.Type = "datetime-local";
+                        format = "{0:yyyy-MM-ddTHH:mm}";
+                    }
+                    break;
 
                 case nameof(Double) or nameof(Decimal) or nameof(Single):
-                    string format = expression.GetAttribute<DisplayFormatAttribute, T, TResult>()?.DataFormatString;
+                    format = expression.GetAttribute<DisplayFormatAttribute, T, TResult>()?.DataFormatString;
                     options.Type = "number";
-                    AddDefaultEditorFor(expression: expression, htmlAttributeOptions: options, format: format);
-                    return this;
+                    break;
 
                 default:
                     options.Type = GetEditorType(expression.GetDataTypeAttribute());
-                    AddDefaultEditorFor(expression: expression, htmlAttributeOptions: options);
-                    return this;
+                    break;
             }
+
+            Dictionary<string, object> htmlAttributes = options.ToDictionary();
+
+            using IDisposable group = CreateFormGroup();
+            AddLabelFor(expression: expression);
+            
+            switch (expression.GetDataTypeAttribute())
+            {
+                case DataType.MultilineText: 
+                    AppendHtml(Html.TextAreaFor(expression, htmlAttributes: htmlAttributes));
+                    break;
+                default:
+                    AppendHtml(Html.TextBoxFor(expression, format, htmlAttributes: htmlAttributes));
+                    break;
+            }
+            
+            return AddValidationMessageFor(expression: expression);
         }
 
         public SimpleForm<T> AddHiddenRowFor<TResult>(Expression<Func<T, TResult>> expression)
@@ -59,22 +80,36 @@ namespace Sockethead.Razor.Forms
             Expression<Func<T, TResult>> expression, 
             Action<HtmlAttributeOptions> optionsSetter = null)
         {
-            HtmlAttributeOptions options = new();
-            optionsSetter?.Invoke(options);
-            AddEnumEditorFor(expression: expression, htmlAttributeOptions: options);
-            return this;
+            List<TResult> values = Enum
+                .GetValues(typeof(TResult))
+                .Cast<TResult>()
+                .ToList();
+            
+            return AddSelectListRowFor(
+                expression: expression, 
+                selectList: new SelectList(values), 
+                optionsSetter: optionsSetter);
         }
-        
-        public SimpleForm<T> AddSelectListRowFor<TResult>(Expression<Func<T, TResult>> expression,
-            IEnumerable<SelectListItem> selectList, bool isDisabled = false)
+
+        public SimpleForm<T> AddSelectListRowFor<TResult>(
+            Expression<Func<T, TResult>> expression,
+            IEnumerable<SelectListItem> selectList, 
+            Action<HtmlAttributeOptions> optionsSetter = null)
         {
-            HtmlAttributeOptions options = new(isDisabled: isDisabled);
-            AddDropDownListEditorFor(expression: expression, selectList, htmlAttributeOptions: options);
+            HtmlAttributeOptions options = ResolveOptions(optionsSetter);
+            options.CssClass = "custom-select";
+            using IDisposable group = CreateFormGroup();
+            AddLabelFor(expression: expression);
+            AppendHtml(Html.DropDownListFor(expression, selectList, htmlAttributes: options.ToDictionary()));
+            AddValidationMessageFor(expression: expression);
             return this;
         }
         
-        public SimpleForm<T> AddRadioButtonRowFor<TResult>(Expression<Func<T, TResult>> expression,
-            IEnumerable<SelectListItem> selectList, bool inline = false, bool isDisabled = false)
+        public SimpleForm<T> AddRadioButtonRowFor<TResult>(
+            Expression<Func<T, TResult>> expression,
+            IEnumerable<SelectListItem> selectList, 
+            bool inline = false, 
+            bool isDisabled = false)
         {
             HtmlAttributeOptions options = new(isDisabled: isDisabled);
             AddRadioEditorFor(expression: expression, selectList, htmlAttributeOptions: options, inline);
@@ -84,7 +119,14 @@ namespace Sockethead.Razor.Forms
         public SimpleForm<T> AddCheckBoxRowFor(Expression<Func<T, bool>> expression, bool isDisabled = false)
         {
             HtmlAttributeOptions options = new(isDisabled: isDisabled);
-            AddBooleanEditorFor(expression: expression, htmlAttributeOptions: options);
+            options.CssClass = $"form-check-input {options.CssClass}";
+
+            Dictionary<string, object> htmlAttributes = options.ToDictionary();
+
+            using IDisposable group = CreateFormGroup(additionalCssClass:"form-check");
+            AppendHtml(Html.CheckBoxFor(expression, htmlAttributes: htmlAttributes));
+            AddLabelFor(expression: expression, cssClass: "form-check-label");
+            AddValidationMessageFor(expression: expression);
             return this;
         }
         
@@ -96,7 +138,7 @@ namespace Sockethead.Razor.Forms
             return this;
         }
         
-        public SimpleForm<T> SubmitButton(string label = "Submit", string css = "btn-primary")
+        public SimpleForm<T> AddSubmitButtonRow(string label = "Submit", string css = "btn-primary")
         {
             return AppendHtml(Html.Partial("_SHFormSubmitButton", model: new SubmitButton
             {
@@ -129,7 +171,7 @@ namespace Sockethead.Razor.Forms
         
         public SimpleForm<T> AppendHtml(IHtmlContent content)
         {
-            Builder
+            _ = Builder
                 .AppendHtml(content)
                 .AppendHtml("\n");
             return this;
@@ -137,7 +179,7 @@ namespace Sockethead.Razor.Forms
         
         public SimpleForm<T> AppendHtml(string encoded)
         {
-            Builder
+            _ = Builder
                 .AppendHtml(encoded)
                 .AppendHtml("\n");
             return this;
@@ -148,49 +190,11 @@ namespace Sockethead.Razor.Forms
             AppendHtml(Html.LabelFor(expression, Html.DisplayNameFor(expression), htmlAttributes: new { @class = cssClass }));
         }
         
-        private SimpleForm<T> AddTextBoxFor<TResult>(
-            Expression<Func<T, TResult>> expression,
-            HtmlAttributeOptions htmlAttributeOptions, 
-            string format = null)
-        {
-            Dictionary<string, object> htmlAttributes = htmlAttributeOptions.ToDictionary();
-
-            switch (expression.GetDataTypeAttribute())
-            {
-                case DataType.MultilineText: 
-                    return AppendHtml(Html.TextAreaFor(expression, htmlAttributes: htmlAttributes));
-                default:
-                    return AppendHtml(Html.TextBoxFor(expression, format, htmlAttributes: htmlAttributes));
-            }
-        }
-        
         private SimpleForm<T> AddValidationMessageFor<TResult>(Expression<Func<T, TResult>> expression)
         {
             return AppendHtml(Html.ValidationMessageFor(expression, null, htmlAttributes: new { @class = "text-danger" }));
         }
 
-        private void AddDefaultEditorFor<TResult>(Expression<Func<T, TResult>> expression, 
-            HtmlAttributeOptions htmlAttributeOptions, string format = null)
-        {
-            using IDisposable group = CreateFormGroup();
-            AddLabelFor(expression: expression);
-            AddTextBoxFor(expression: expression, htmlAttributeOptions: htmlAttributeOptions, format: format);
-            AddValidationMessageFor(expression: expression);
-        }
-        
-        private SimpleForm<T> AddBooleanEditorFor(Expression<Func<T, bool>> expression, HtmlAttributeOptions htmlAttributeOptions)
-        {
-            htmlAttributeOptions.CssClass = "form-check-input";
-
-            Dictionary<string, object> htmlAttributes = htmlAttributeOptions.ToDictionary();
-
-            using IDisposable group = CreateFormGroup(additionalCssClass:"form-check");
-            AppendHtml(Html.CheckBoxFor(expression, htmlAttributes: htmlAttributes));
-            AddLabelFor(expression: expression, cssClass: "form-check-label");
-            AddValidationMessageFor(expression: expression);
-            return this;
-        }
-        
         private void AddRadioEditorFor<TResult>(
             Expression<Func<T, TResult>> expression,
             IEnumerable<SelectListItem> items, 
@@ -213,35 +217,6 @@ namespace Sockethead.Razor.Forms
                 AppendHtml("<br/>");
         }
         
-        private void AddEnumEditorFor<TResult>(Expression<Func<T, TResult>> expression, HtmlAttributeOptions htmlAttributeOptions)
-        {
-            List<TResult> values = Enum.GetValues(typeof(TResult)).Cast<TResult>().ToList();
-            SelectList selectList = new(values);
-            AddDropDownListEditorFor(expression: expression, selectList: selectList, htmlAttributeOptions);
-        }
-
-        private void AddDropDownListEditorFor<TResult>(
-            Expression<Func<T, TResult>> expression,
-            IEnumerable<SelectListItem> selectList, 
-            HtmlAttributeOptions htmlAttributeOptions)
-        {
-            htmlAttributeOptions.CssClass = "custom-select";
-            using IDisposable group = CreateFormGroup();
-            AddLabelFor(expression: expression);
-            AppendHtml(Html.DropDownListFor(expression, selectList, htmlAttributes: htmlAttributeOptions.ToDictionary()));
-            AddValidationMessageFor(expression: expression);
-        }
-        
-        private void AddDateEditorFor<TResult>(Expression<Func<T, TResult>> expression, HtmlAttributeOptions htmlAttributeOptions)
-        {
-            bool isDateOnly = expression.GetDataTypeAttribute() == DataType.Date;
-            htmlAttributeOptions.Type = isDateOnly ? "date" : "datetime-local";
-            AddDefaultEditorFor(
-                expression: expression, 
-                htmlAttributeOptions: htmlAttributeOptions,
-                format: isDateOnly ? "{0:yyyy-MM-dd}" : "{0:yyyy-MM-ddTHH:mm}");
-        }
-
         private void AddFileUploadEditorFor<TResult>(
             Expression<Func<T, TResult>> expression,
             HtmlAttributeOptions htmlAttributeOptions, 
@@ -278,6 +253,13 @@ namespace Sockethead.Razor.Forms
         private IDisposable Div(string cssClass) => new Scope(
             onBegin: () => AppendHtml($"<div class='{cssClass}'>"), 
             onEnd: () => AppendHtml("</div>"));
+
+        private static HtmlAttributeOptions ResolveOptions(Action<HtmlAttributeOptions> optionsSetter)
+        {
+            HtmlAttributeOptions options = new();
+            optionsSetter?.Invoke(options);
+            return options;
+        }
         
         public async Task<IHtmlContent> RenderAsync()
         {

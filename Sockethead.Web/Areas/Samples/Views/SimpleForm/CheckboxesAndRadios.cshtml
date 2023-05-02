@@ -13,7 +13,7 @@
             .AddHiddenRowFor(model => model.View)
             .AddCheckBoxRowFor(model => model.Flag)
             .AddRadioButtonRowFor(model => model.OtherCity, cityList, inline: true)
-            .SubmitButton("Save Changes")
+            .AddSubmitButtonRow("Save Changes")
             .RenderAsync())
     </div>
     <div class="col-md-7">

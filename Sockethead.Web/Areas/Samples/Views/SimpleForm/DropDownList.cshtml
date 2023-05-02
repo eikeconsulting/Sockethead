@@ -13,7 +13,7 @@
             .AddHiddenRowFor(model => model.View)
             .AddEnumRowFor(model => model.SampleEnum)
             .AddSelectListRowFor(model => model.City, cityList)
-            .SubmitButton("Save Changes")
+            .AddSubmitButtonRow("Save Changes")
             .RenderAsync())
     </div>
     <div class="col-md-7">

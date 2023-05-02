@@ -9,7 +9,7 @@
             .AddHiddenRowFor(model => model.View)
             .AddFileUploadRowFor(model => model.File)
             .AddFileUploadRowFor(model => model.MultipleFiles, multiple: true, accept: "image/*")
-            .SubmitButton("Upload")
+            .AddSubmitButtonRow("Upload")
             .RenderAsync())
     </div>
     <div class="col-md-7">
