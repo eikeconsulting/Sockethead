@@ -38,5 +38,33 @@ namespace Sockethead.Web.Areas.Samples.Controllers
             return View(viewName: formData.View.Replace(" ", ""), formData)
                 .Success($"Form submitted successfully.");
         }
+
+        [HttpGet]
+        public IActionResult BasicUsage()
+        {
+            this.SetSampleLinks(Features, "Basic Usage");
+            return View(SampleDataQuery.First()).SetTitle("Basic Usage");
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public IActionResult BasicUsage(SampleModel formData)
+        {
+            this.SetSampleLinks(Features, "Basic Usage");
+            return View(formData).Success($"Successfully submitted form data {formData}.");
+        }
+
+        [HttpGet]
+        public IActionResult BuildForm()
+        {
+            this.SetSampleLinks(Features, "BuildForm");
+            return View(SampleDataQuery.First()).SetTitle("Basic Usage");
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public IActionResult BuildForm(SampleModel formData)
+        {
+            this.SetSampleLinks(Features, "Build Form");
+            return View(formData).Success($"Successfully submitted form data {formData}.");
+        }
     }
 }

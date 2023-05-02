@@ -60,8 +60,6 @@ namespace Sockethead.Web.Data.Entities
 
         private static SampleEnum GetRandomEnum() => (SampleEnum)Random.Next((int)SampleEnum.Zero, (int)SampleEnum.Two + 2);
 
-        public override string ToString() => $"Sample Data for {First} {Last}, {JobTitle}";
-        
         [DataType(DataType.Date)]
         public DateTime RandomDateOnly { get; set; } = GetRandomDate();
         
@@ -89,5 +87,7 @@ namespace Sockethead.Web.Data.Entities
         public IFormFile File { get; set; }
         public List<IFormFile> MultipleFiles { get; set; } 
 
+        public override string ToString() => $"Sample Data for  User Id {Id} - {First} {Last}, {JobTitle}";
+        
     }
 }

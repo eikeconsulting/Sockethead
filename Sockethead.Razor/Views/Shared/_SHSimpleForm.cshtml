@@ -2,11 +2,11 @@
 @model Sockethead.Razor.Forms.ISimpleForm
 
 @{
-    string controller = Model.FormOptions.ControllerName ?? ViewContext.RouteData.Values["controller"].ToString();
+    string actionName = Model.FormOptions.ActionName ?? ViewContext.RouteData.Values["action"].ToString();
+    string controllerName = Model.FormOptions.ControllerName ?? ViewContext.RouteData.Values["controller"].ToString();
 }
 
-<form asp-action="@Model.FormOptions.ActionName" asp-controller="@controller" enctype="multipart/form-data"
-      method="@Model.FormOptions.FormMethod">
+<form asp-action="@actionName" asp-controller="@controllerName" enctype="multipart/form-data" method="@Model.FormOptions.FormMethod">
     <div class=@($"{Model.FormOptions.CssClass}")>
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         @(Model.RenderFormRows())

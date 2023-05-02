@@ -14,11 +14,19 @@ namespace Sockethead.Web.Areas.Samples.Utilities
             },
             new Feature
             {
+                Url = "BasicUsage",
                 Name = "Basic Usage",
-                Description = "A minimal SimpleForm.",
+                Description = "A  SimpleForm, built automatically from a Model.",
             },
             new Feature
             {
+                Url = "BuildForm",
+                Name = "Build Form Manually",
+                Description = "A minimal SimpleForm built manually.",
+            },
+            new Feature
+            {
+                //Url = "SubmitButton",
                 Name = "Submit Button",
                 Description = "How to specify what text to render for the submit button and change the css class.",
             },

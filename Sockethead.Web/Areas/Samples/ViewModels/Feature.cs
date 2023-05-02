@@ -7,8 +7,6 @@
         public string Url { get; set; }
         public string Description { get; set; }
 
-        public string ActionName { get; set; } 
-
         public string BuildUrl() => Url ?? $"Sample?name={System.Net.WebUtility.UrlEncode(Name)}";
     }
 }

@@ -13,7 +13,7 @@ namespace Sockethead.Web.Areas.Samples.Extensions
         {
             for (int i = 0; i < features.Count; i++)
             {
-                if (features[i].Name != name) 
+                if (features[i].Name != name && features[i].Url != name) 
                     continue;
                 
                 controller.ViewData["PrevFeature"] = i > 0 ? features[i - 1] : null;

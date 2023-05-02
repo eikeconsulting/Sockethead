@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Sockethead.Razor.Alert.Extensions;
-using Sockethead.Web.Data;
 using Sockethead.Web.Data.Entities;
-using System.Linq;
 
 namespace Sockethead.Web.Areas.Samples.Controllers
 {

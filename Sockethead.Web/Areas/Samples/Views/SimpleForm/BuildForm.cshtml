@@ -3,19 +3,35 @@
 
 <div class="row">
     <div class="col-md-5">
-        <h4>Basic Usage</h4>
+        <h4>Build Form Manually</h4>
         @(await Html
-            .SimpleForm(Model)
+            .SimpleForm(Model, opt =>
+            {
+                opt.ActionName = "BuildForm";
+                opt.ControllerName = "SimpleForm";
+                opt.FormMethod = FormMethod.Post;
+                opt.CssClass = "form-horizontal";
+            })
             .AddHiddenRowFor(model => model.Id)
-            .AddRowsForModel()
+            .AddRowFor(model => model.First)
+            .AddRowFor(model => model.Last)
+            .AddRowFor(model => model.JobTitle)
             .AddSubmitButtonRow("Save Changes")
             .RenderAsync())
     </div>
     <div class="col-md-7">
         <pre><code>@@(await Html
-    .SimpleForm(Model)
+    .SimpleForm(Model, opt =>
+    {
+        opt.ActionName = "BuildForm";
+        opt.ControllerName = "SimpleForm";
+        opt.FormMethod = FormMethod.Post;
+        opt.CssClass = "form-horizontal";
+    })
     .AddHiddenRowFor(model => model.Id)
-    .AddRowsForModel()
+    .AddRowFor(model => model.First)
+    .AddRowFor(model => model.Last)
+    .AddRowFor(model => model.JobTitle)
     .AddSubmitButtonRow("Save Changes")
     .RenderAsync())</code></pre>
         <p>
