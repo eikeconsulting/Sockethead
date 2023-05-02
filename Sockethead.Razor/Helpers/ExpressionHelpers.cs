@@ -14,12 +14,7 @@ namespace Sockethead.Razor.Helpers
         {
             if (expression.Body is MemberExpression me)
                 return me;
-
-            if (expression.Body is UnaryExpression ue && 
-                ue.Operand is MemberExpression me2)
-                return me2;
-
-            return null;
+            return expression.Body is UnaryExpression {Operand: MemberExpression me2} ? me2 : null;
         }
 
         public static TAttribute GetAttribute<TAttribute>(this ICustomAttributeProvider provider) where TAttribute : Attribute
@@ -53,7 +48,7 @@ namespace Sockethead.Razor.Helpers
             if (dna != null && !string.IsNullOrEmpty(dna.DisplayName))
                 return dna.DisplayName;
 
-            return body.Member.Name?.PascalCaseAddSpaces();
+            return body.Member.Name.PascalCaseAddSpaces();
         }
 
         /// <summary>

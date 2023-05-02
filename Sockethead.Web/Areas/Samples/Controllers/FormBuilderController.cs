@@ -9,8 +9,6 @@ namespace Sockethead.Web.Areas.Samples.Controllers
     [Area("Samples")]
     public class FormBuilderController : Controller
     {
-        private static IQueryable<SampleModel> SampleDataQuery => SampleData.SampleModels.AsQueryable();
-
         [HttpGet]
         public IActionResult FormForModel() => View(new UserProfile
             {
@@ -25,6 +23,5 @@ namespace Sockethead.Web.Areas.Samples.Controllers
         {
             return View(formData).Success($"Submitted form with {formData}");
         }
-
     }
 }

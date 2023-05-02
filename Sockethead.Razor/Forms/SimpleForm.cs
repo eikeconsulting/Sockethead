@@ -12,7 +12,7 @@ namespace Sockethead.Razor.Forms
 {
     public class SimpleForm<T> : ISimpleForm where T : class
     {
-        private HtmlContentBuilder Builder = new();
+        private readonly HtmlContentBuilder Builder = new();
         private IHtmlHelper<T> Html { get; }
         public FormOptions FormOptions { get; }
         
@@ -134,9 +134,11 @@ namespace Sockethead.Razor.Forms
             options.CssClass = $"form-check-input {options.CssClass}";
 
             using IDisposable group = CreateFormGroup(additionalCssClass: "form-check");
+            
             AppendHtml(Html.CheckBoxFor(expression, htmlAttributes: options.GetHtmlAttributes()));
             AddLabelFor(expression, cssClass: "form-check-label");
             AddValidationMessageFor(expression);
+            
             return this;
         }
         
@@ -251,16 +253,6 @@ namespace Sockethead.Razor.Forms
             return await Html.PartialAsync("_SHSimpleForm", this);
         }
 
-        public IHtmlContent RenderFormRows()
-        {
-            try
-            {
-                return Builder;
-            }
-            finally
-            {
-                Builder = new HtmlContentBuilder();
-            }
-        }
+        public IHtmlContent RenderFormRows() => Builder;
     }
 }
