@@ -5,7 +5,7 @@
     <div class="col-md-5">
         <h4>Readonly and Disabled</h4>
         @(await Html
-            .SimpleForm(Model, new FormOptions { ActionName = "Sample" })
+            .SimpleForm(Model, opt => opt.ActionName = "Sample")
             .AddHiddenRowFor(model => model.View)
             .AddRowFor(model => model.First, opt => opt.IsReadOnly = true)
             .AddRowFor(model => model.Last)

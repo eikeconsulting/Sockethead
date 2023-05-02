@@ -9,7 +9,7 @@
     <div class="col-md-5">
         <h4>Checkboxes and Radios</h4>
         @(await Html
-            .SimpleForm(Model, new FormOptions { ActionName = "Sample" })
+            .SimpleForm(Model, opt => opt.ActionName = "Sample")
             .AddHiddenRowFor(model => model.View)
             .CheckBoxEditorFor(model => model.Flag)
             .RadioButtonEditorFor(model => model.OtherCity, cityList, inline: true)

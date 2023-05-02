@@ -12,7 +12,7 @@
                 .AddColumn(col => col
                     .For(feature => feature.Name)
                     .LinkTo(feature => feature.BuildUrl())
-                    .Css(css => css.Item.AddStyle("width: 150px;")))
+                    .Css(css => css.Item.AddStyle("width: 250px;")))
                 .AddColumn(col => col.For(feature => feature.Description))
                 .AddCssClass("table-striped table-sm table-bordered")
                 .Sortable()

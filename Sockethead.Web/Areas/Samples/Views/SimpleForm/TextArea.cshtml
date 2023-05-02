@@ -5,7 +5,7 @@
     <div class="col-md-5">
         <h4>Text Area</h4>
         @(await Html
-            .SimpleForm(Model, new FormOptions { ActionName = "Sample" })
+            .SimpleForm(Model, opt => opt.ActionName = "Sample")
             .AddHiddenRowFor(model => model.View)
             .AddRowFor(model => model.FooBarBazBBBlah)
             .SubmitButton("Save Changes")

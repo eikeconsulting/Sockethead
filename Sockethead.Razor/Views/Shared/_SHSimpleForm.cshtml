@@ -7,7 +7,7 @@
 
 <form asp-action="@Model.FormOptions.ActionName" asp-controller="@controller" enctype="multipart/form-data"
       method="@Model.FormOptions.FormMethod">
-    <div class=@($"{Model.CssClass}")>
+    <div class=@($"{Model.FormOptions.CssClass}")>
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         @(Model.RenderFormRows())
     </div>

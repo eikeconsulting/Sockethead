@@ -6,7 +6,7 @@
     <div class="col-md-5">
         <h4>Append Custom HTML</h4>
         @(await Html
-            .SimpleForm(Model, new FormOptions { ActionName = "Sample" })
+            .SimpleForm(Model, opt => opt.ActionName = "Sample")
             .AddHiddenRowFor(model => model.View)
             .AppendHtml(
                 @<div class="form-group">

@@ -16,21 +16,131 @@ namespace Sockethead.Razor.Forms
         private HtmlContentBuilder Builder = new();
         private IHtmlHelper<T> Html { get; }
         public FormOptions FormOptions { get; }
-        public string CssClass { get; }
-
-        public SimpleForm(
-            IHtmlHelper<T> html, 
-            FormOptions options, 
-            string cssClass)
+        
+        public SimpleForm(IHtmlHelper<T> html, Action<FormOptions> optionsAction = null)
         {
             Html = html;
-            FormOptions = options ?? new FormOptions();
-            CssClass = cssClass;
+            FormOptions = new FormOptions();
+            optionsAction?.Invoke(FormOptions);
         }
 
         public SimpleForm<T> AddHiddenRowFor<TResult>(Expression<Func<T, TResult>> expression)
         {
             return AppendHtml(Html.HiddenFor(expression));
+        }
+      
+        public SimpleForm<T> AddRowFor<TResult>(
+            Expression<Func<T, TResult>> expression, 
+            Action<HtmlAttributeOptions> optionsSetter = null)
+        {
+            HtmlAttributeOptions options = new();
+            optionsSetter?.Invoke(options);
+            
+            switch (typeof(TResult).Name)
+            {
+                case nameof(DateTime):
+                    AddDateEditorFor(expression, options);
+                    return this;
+
+                case nameof(Double) or nameof(Decimal) or nameof(Single):
+                    string format = expression.GetAttribute<DisplayFormatAttribute, T, TResult>()?.DataFormatString;
+                    options.Type = "number";
+                    AddDefaultEditorFor(expression: expression, htmlAttributeOptions: options, format: format);
+                    return this;
+
+                default:
+                    options.Type = GetEditorType(expression.GetDataTypeAttribute());
+                    AddDefaultEditorFor(expression: expression, htmlAttributeOptions: options);
+                    return this;
+            }
+        }
+
+        public SimpleForm<T> EnumEditorFor<TResult>(
+            Expression<Func<T, TResult>> expression, 
+            Action<HtmlAttributeOptions> optionsSetter = null)
+        {
+            HtmlAttributeOptions options = new();
+            optionsSetter?.Invoke(options);
+            AddEnumEditorFor(expression: expression, htmlAttributeOptions: options);
+            return this;
+        }
+        
+        public SimpleForm<T> SelectListEditorFor<TResult>(Expression<Func<T, TResult>> expression,
+            IEnumerable<SelectListItem> selectList, bool isDisabled = false)
+        {
+            HtmlAttributeOptions options = new(isDisabled: isDisabled);
+            AddDropDownListEditorFor(expression: expression, selectList, htmlAttributeOptions: options);
+            return this;
+        }
+        
+        public SimpleForm<T> RadioButtonEditorFor<TResult>(Expression<Func<T, TResult>> expression,
+            IEnumerable<SelectListItem> selectList, bool inline = false, bool isDisabled = false)
+        {
+            HtmlAttributeOptions options = new(isDisabled: isDisabled);
+            AddRadioEditorFor(expression: expression, selectList, htmlAttributeOptions: options, inline);
+            return this;
+        }
+        
+        public SimpleForm<T> CheckBoxEditorFor(Expression<Func<T, bool>> expression, bool isDisabled = false)
+        {
+            HtmlAttributeOptions options = new(isDisabled: isDisabled);
+            AddBooleanEditorFor(expression: expression, htmlAttributeOptions: options);
+            return this;
+        }
+        
+        public SimpleForm<T> FileUploadEditorFor<TResult>(Expression<Func<T, TResult>> expression,
+            bool multiple = false, string accept = "", bool isDisabled = false)
+        {
+            HtmlAttributeOptions options = new(isDisabled: isDisabled);
+            AddFileUploadEditorFor(expression: expression, htmlAttributeOptions: options, multiple: multiple, accept: accept);
+            return this;
+        }
+        
+        /// <summary>
+        /// Build form from the model via Reflection
+        /// </summary>
+        public SimpleForm<T> AddRowsForModel()
+        {
+            SimpleFormMagic<T> magic = new(this);
+            magic.AddRowsForModel();
+            return this;
+        }
+
+        public SimpleForm<T> SubmitButton(string label = "Submit", string css = "btn-primary")
+        {
+            return AppendHtml(Html.Partial("_SHFormSubmitButton", model: new SubmitButton
+            {
+                Label = label,
+                Action = FormOptions.ActionName,
+                Controller = FormOptions.ControllerName,
+                Css = css,
+            }));
+        }
+        
+        public SimpleForm<T> AppendHtml(Func<object, IHtmlContent> contentFunc)
+        {
+            return AppendHtml(contentFunc(null));
+        }
+
+        public SimpleForm<T> AppendHtmlIf(bool condition, Func<object, IHtmlContent> contentFunc)
+        {
+            return condition ? AppendHtml(contentFunc(null)) : this;
+        }
+        
+        public SimpleForm<T> AppendHtml(IHtmlContent content)
+        {
+            Builder
+                .AppendHtml(content)
+                .AppendHtml("\n");
+            return this;
+        }
+        
+        public SimpleForm<T> AppendHtml(string encoded)
+        {
+            Builder
+                .AppendHtml(encoded)
+                .AppendHtml("\n");
+            return this;
         }
 
         private void AddLabelFor<TResult>(Expression<Func<T, TResult>> expression, string cssClass = "control-label")
@@ -163,118 +273,6 @@ namespace Sockethead.Razor.Forms
                 _ => "text"
             };
         
-        public SimpleForm<T> AddRowFor<TResult>(
-            Expression<Func<T, TResult>> expression, 
-            Action<HtmlAttributeOptions> optionsSetter = null)
-        {
-            HtmlAttributeOptions options = new();
-            optionsSetter?.Invoke(options);
-            
-            switch (typeof(TResult).Name)
-            {
-                case nameof(DateTime):
-                    AddDateEditorFor(expression, options);
-                    return this;
-
-                case nameof(Double) or nameof(Decimal) or nameof(Single):
-                    string format = expression.GetAttribute<DisplayFormatAttribute, T, TResult>()?.DataFormatString;
-                    options.Type = "number";
-                    AddDefaultEditorFor(expression: expression, htmlAttributeOptions: options, format: format);
-                    return this;
-
-                default:
-                    options.Type = GetEditorType(expression.GetDataTypeAttribute());
-                    AddDefaultEditorFor(expression: expression, htmlAttributeOptions: options);
-                    return this;
-            }
-        }
-
-        public SimpleForm<T> EnumEditorFor<TResult>(
-            Expression<Func<T, TResult>> expression, 
-            Action<HtmlAttributeOptions> optionsSetter = null)
-        {
-            HtmlAttributeOptions options = new();
-            optionsSetter?.Invoke(options);
-            AddEnumEditorFor(expression: expression, htmlAttributeOptions: options);
-            return this;
-        }
-        
-        public SimpleForm<T> SelectListEditorFor<TResult>(Expression<Func<T, TResult>> expression,
-            IEnumerable<SelectListItem> selectList, bool isDisabled = false)
-        {
-            HtmlAttributeOptions options = new(isDisabled: isDisabled);
-            AddDropDownListEditorFor(expression: expression, selectList, htmlAttributeOptions: options);
-            return this;
-        }
-        
-        public SimpleForm<T> RadioButtonEditorFor<TResult>(Expression<Func<T, TResult>> expression,
-            IEnumerable<SelectListItem> selectList, bool inline = false, bool isDisabled = false)
-        {
-            HtmlAttributeOptions options = new(isDisabled: isDisabled);
-            AddRadioEditorFor(expression: expression, selectList, htmlAttributeOptions: options, inline);
-            return this;
-        }
-        
-        public SimpleForm<T> CheckBoxEditorFor(Expression<Func<T, bool>> expression, bool isDisabled = false)
-        {
-            HtmlAttributeOptions options = new(isDisabled: isDisabled);
-            AddBooleanEditorFor(expression: expression, htmlAttributeOptions: options);
-            return this;
-        }
-        
-        public SimpleForm<T> FileUploadEditorFor<TResult>(Expression<Func<T, TResult>> expression,
-            bool multiple = false, string accept = "", bool isDisabled = false)
-        {
-            HtmlAttributeOptions options = new(isDisabled: isDisabled);
-            AddFileUploadEditorFor(expression: expression, htmlAttributeOptions: options, multiple: multiple, accept: accept);
-            return this;
-        }
-        
-        /// <summary>
-        /// Build form from the model via Reflection
-        /// </summary>
-        public SimpleForm<T> AddRowsForModel()
-        {
-            SimpleFormMagic<T> magic = new(this);
-            magic.AddRowsForModel();
-            return this;
-        }
-
-        public SimpleForm<T> SubmitButton(string label = "Submit", string css = "btn-primary")
-        {
-            return AppendHtml(Html.Partial("_SHFormSubmitButton", model: new SubmitButton
-            {
-                Label = label,
-                Action = FormOptions.ActionName,
-                Controller = FormOptions.ControllerName,
-                Css = css,
-            }));
-        }
-        
-        public SimpleForm<T> AppendHtml(Func<object, IHtmlContent> contentFunc)
-        {
-            return AppendHtml(contentFunc(null));
-        }
-
-        public SimpleForm<T> AppendHtmlIf(bool condition, Func<object, IHtmlContent> contentFunc)
-        {
-            return condition ? AppendHtml(contentFunc(null)) : this;
-        }
-        
-        public SimpleForm<T> AppendHtml(IHtmlContent content)
-        {
-            Builder.AppendHtml(content);
-            Builder.AppendHtml("\n");
-            return this;
-        }
-        
-        public SimpleForm<T> AppendHtml(string encoded)
-        {
-            Builder.AppendHtml(encoded);
-            Builder.AppendHtml("\n");
-            return this;
-        }
-
         private IDisposable CreateFormGroup(string additionalCssClass = "") => Div($"form-group {additionalCssClass}");
         
         private IDisposable Div(string cssClass) => new Scope(
