@@ -11,8 +11,8 @@
         @(await Html
             .SimpleForm(Model, opt => opt.ActionName = "Sample")
             .AddHiddenRowFor(model => model.View)
-            .EnumEditorFor(model => model.SampleEnum)
-            .SelectListEditorFor(model => model.City, cityList)
+            .AddEnumRowFor(model => model.SampleEnum)
+            .AddSelectListRowFor(model => model.City, cityList)
             .SubmitButton("Save Changes")
             .RenderAsync())
     </div>

@@ -24,11 +24,6 @@ namespace Sockethead.Razor.Forms
             optionsAction?.Invoke(FormOptions);
         }
 
-        public SimpleForm<T> AddHiddenRowFor<TResult>(Expression<Func<T, TResult>> expression)
-        {
-            return AppendHtml(Html.HiddenFor(expression));
-        }
-      
         public SimpleForm<T> AddRowFor<TResult>(
             Expression<Func<T, TResult>> expression, 
             Action<HtmlAttributeOptions> optionsSetter = null)
@@ -55,7 +50,12 @@ namespace Sockethead.Razor.Forms
             }
         }
 
-        public SimpleForm<T> EnumEditorFor<TResult>(
+        public SimpleForm<T> AddHiddenRowFor<TResult>(Expression<Func<T, TResult>> expression)
+        {
+            return AppendHtml(Html.HiddenFor(expression));
+        }
+        
+        public SimpleForm<T> AddEnumRowFor<TResult>(
             Expression<Func<T, TResult>> expression, 
             Action<HtmlAttributeOptions> optionsSetter = null)
         {
@@ -65,7 +65,7 @@ namespace Sockethead.Razor.Forms
             return this;
         }
         
-        public SimpleForm<T> SelectListEditorFor<TResult>(Expression<Func<T, TResult>> expression,
+        public SimpleForm<T> AddSelectListRowFor<TResult>(Expression<Func<T, TResult>> expression,
             IEnumerable<SelectListItem> selectList, bool isDisabled = false)
         {
             HtmlAttributeOptions options = new(isDisabled: isDisabled);
@@ -73,7 +73,7 @@ namespace Sockethead.Razor.Forms
             return this;
         }
         
-        public SimpleForm<T> RadioButtonEditorFor<TResult>(Expression<Func<T, TResult>> expression,
+        public SimpleForm<T> AddRadioButtonRowFor<TResult>(Expression<Func<T, TResult>> expression,
             IEnumerable<SelectListItem> selectList, bool inline = false, bool isDisabled = false)
         {
             HtmlAttributeOptions options = new(isDisabled: isDisabled);
@@ -81,14 +81,14 @@ namespace Sockethead.Razor.Forms
             return this;
         }
         
-        public SimpleForm<T> CheckBoxEditorFor(Expression<Func<T, bool>> expression, bool isDisabled = false)
+        public SimpleForm<T> AddCheckBoxRowFor(Expression<Func<T, bool>> expression, bool isDisabled = false)
         {
             HtmlAttributeOptions options = new(isDisabled: isDisabled);
             AddBooleanEditorFor(expression: expression, htmlAttributeOptions: options);
             return this;
         }
         
-        public SimpleForm<T> FileUploadEditorFor<TResult>(Expression<Func<T, TResult>> expression,
+        public SimpleForm<T> AddFileUploadRowFor<TResult>(Expression<Func<T, TResult>> expression,
             bool multiple = false, string accept = "", bool isDisabled = false)
         {
             HtmlAttributeOptions options = new(isDisabled: isDisabled);
@@ -96,16 +96,6 @@ namespace Sockethead.Razor.Forms
             return this;
         }
         
-        /// <summary>
-        /// Build form from the model via Reflection
-        /// </summary>
-        public SimpleForm<T> AddRowsForModel()
-        {
-            SimpleFormMagic<T> magic = new(this);
-            magic.AddRowsForModel();
-            return this;
-        }
-
         public SimpleForm<T> SubmitButton(string label = "Submit", string css = "btn-primary")
         {
             return AppendHtml(Html.Partial("_SHFormSubmitButton", model: new SubmitButton
@@ -115,6 +105,16 @@ namespace Sockethead.Razor.Forms
                 Controller = FormOptions.ControllerName,
                 Css = css,
             }));
+        }
+
+        /// <summary>
+        /// Build form from the model via Reflection
+        /// </summary>
+        public SimpleForm<T> AddRowsForModel()
+        {
+            SimpleFormMagic<T> magic = new(this);
+            magic.AddRowsForModel();
+            return this;
         }
         
         public SimpleForm<T> AppendHtml(Func<object, IHtmlContent> contentFunc)

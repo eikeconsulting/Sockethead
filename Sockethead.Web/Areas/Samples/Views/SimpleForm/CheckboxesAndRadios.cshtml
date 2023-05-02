@@ -11,8 +11,8 @@
         @(await Html
             .SimpleForm(Model, opt => opt.ActionName = "Sample")
             .AddHiddenRowFor(model => model.View)
-            .CheckBoxEditorFor(model => model.Flag)
-            .RadioButtonEditorFor(model => model.OtherCity, cityList, inline: true)
+            .AddCheckBoxRowFor(model => model.Flag)
+            .AddRadioButtonRowFor(model => model.OtherCity, cityList, inline: true)
             .SubmitButton("Save Changes")
             .RenderAsync())
     </div>

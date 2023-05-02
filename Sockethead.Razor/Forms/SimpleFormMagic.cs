@@ -44,7 +44,7 @@ namespace Sockethead.Razor.Forms
                 switch (typeof(TProperty))
                 {
                     case var type when type == typeof(bool):
-                        Form.CheckBoxEditorFor(expression as Expression<Func<T, bool>>);
+                        Form.AddCheckBoxRowFor(expression as Expression<Func<T, bool>>);
                         break;
                     
                     default:

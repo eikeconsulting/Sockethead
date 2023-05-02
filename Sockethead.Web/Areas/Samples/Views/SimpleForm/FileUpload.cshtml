@@ -7,8 +7,8 @@
         @(await Html
             .SimpleForm(Model, opt => opt.ActionName = "Sample")
             .AddHiddenRowFor(model => model.View)
-            .FileUploadEditorFor(model => model.File)
-            .FileUploadEditorFor(model => model.MultipleFiles, multiple: true, accept: "image/*")
+            .AddFileUploadRowFor(model => model.File)
+            .AddFileUploadRowFor(model => model.MultipleFiles, multiple: true, accept: "image/*")
             .SubmitButton("Upload")
             .RenderAsync())
     </div>
