@@ -12,7 +12,7 @@
             .SimpleForm(Model, opt => opt.ActionName = "Sample")
             .AddHiddenRowFor(model => model.View)
             .AddCheckBoxRowFor(model => model.Flag)
-            .AddRadioButtonRowFor(model => model.OtherCity, cityList, inline: true)
+            .AddRadioButtonRowFor(model => model.OtherCity, cityList, opt => opt.Inline = true)
             .AddSubmitButtonRow("Save Changes")
             .RenderAsync())
     </div>

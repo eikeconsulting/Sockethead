@@ -2,14 +2,15 @@
 
 namespace Sockethead.Razor.Forms
 {
-    public class HtmlAttributeOptions
+    public class FormRowOptions
     {
         public bool IsReadOnly { get; set; }
         public bool IsDisabled { get; set; }
         public string CssClass { get; set; }
         public string Type { get; set; }
-        
-        public HtmlAttributeOptions(
+        public bool Inline { get; set; }
+
+        public FormRowOptions(
             bool isReadOnly = false, 
             bool isDisabled = false,
             string cssClass = "form-control", 
@@ -19,9 +20,10 @@ namespace Sockethead.Razor.Forms
             IsDisabled = isDisabled;
             CssClass = cssClass;
             Type = type;
+            Inline = false;
         }
 
-        public Dictionary<string, object> ToDictionary()
+        public Dictionary<string, object> GetHtmlAttributes()
         {
             Dictionary<string, object> map = new();
             

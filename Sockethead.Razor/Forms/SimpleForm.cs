@@ -23,9 +23,9 @@ namespace Sockethead.Razor.Forms
             optionsAction?.Invoke(FormOptions);
         }
 
-        public SimpleForm<T> AddRowFor<TResult>(Expression<Func<T, TResult>> expression, Action<HtmlAttributeOptions> optionsSetter = null)
+        public SimpleForm<T> AddRowFor<TResult>(Expression<Func<T, TResult>> expression, Action<FormRowOptions> optionsSetter = null)
         {
-            HtmlAttributeOptions options = ResolveOptions(optionsSetter);
+            FormRowOptions options = ResolveRowOptions(optionsSetter);
             string format = null;
             
             switch (typeof(TResult).Name)
@@ -53,18 +53,17 @@ namespace Sockethead.Razor.Forms
                     break;
             }
 
-            Dictionary<string, object> htmlAttributes = options.ToDictionary();
-
             using IDisposable group = CreateFormGroup();
-            AddLabelFor(expression: expression);
+            
+            AddLabelFor(expression: expression, cssClass: "control-label");
             
             switch (expression.GetDataTypeAttribute())
             {
                 case DataType.MultilineText: 
-                    AppendHtml(Html.TextAreaFor(expression, htmlAttributes: htmlAttributes));
+                    AppendHtml(Html.TextAreaFor(expression, htmlAttributes: options.GetHtmlAttributes()));
                     break;
                 default:
-                    AppendHtml(Html.TextBoxFor(expression, format, htmlAttributes: htmlAttributes));
+                    AppendHtml(Html.TextBoxFor(expression, format, htmlAttributes: options.GetHtmlAttributes()));
                     break;
             }
             
@@ -78,7 +77,7 @@ namespace Sockethead.Razor.Forms
         
         public SimpleForm<T> AddEnumRowFor<TResult>(
             Expression<Func<T, TResult>> expression, 
-            Action<HtmlAttributeOptions> optionsSetter = null)
+            Action<FormRowOptions> optionsSetter = null)
         {
             List<TResult> values = Enum
                 .GetValues(typeof(TResult))
@@ -94,47 +93,78 @@ namespace Sockethead.Razor.Forms
         public SimpleForm<T> AddSelectListRowFor<TResult>(
             Expression<Func<T, TResult>> expression,
             IEnumerable<SelectListItem> selectList, 
-            Action<HtmlAttributeOptions> optionsSetter = null)
+            Action<FormRowOptions> optionsSetter = null)
         {
-            HtmlAttributeOptions options = ResolveOptions(optionsSetter);
-            options.CssClass = "custom-select";
+            FormRowOptions options = ResolveRowOptions(optionsSetter);
+            options.CssClass = $"custom-select {options.CssClass}";
             using IDisposable group = CreateFormGroup();
-            AddLabelFor(expression: expression);
-            AppendHtml(Html.DropDownListFor(expression, selectList, htmlAttributes: options.ToDictionary()));
-            AddValidationMessageFor(expression: expression);
+            AddLabelFor(expression, cssClass: "control-label");
+            AppendHtml(Html.DropDownListFor(expression, selectList, htmlAttributes: options.GetHtmlAttributes()));
+            AddValidationMessageFor(expression);
             return this;
         }
         
         public SimpleForm<T> AddRadioButtonRowFor<TResult>(
             Expression<Func<T, TResult>> expression,
             IEnumerable<SelectListItem> selectList, 
-            bool inline = false, 
-            bool isDisabled = false)
+            Action<FormRowOptions> optionsSetter = null)
         {
-            HtmlAttributeOptions options = new(isDisabled: isDisabled);
-            AddRadioEditorFor(expression: expression, selectList, htmlAttributeOptions: options, inline);
-            return this;
-        }
-        
-        public SimpleForm<T> AddCheckBoxRowFor(Expression<Func<T, bool>> expression, bool isDisabled = false)
-        {
-            HtmlAttributeOptions options = new(isDisabled: isDisabled);
+            FormRowOptions options = ResolveRowOptions(optionsSetter); 
             options.CssClass = $"form-check-input {options.CssClass}";
 
-            Dictionary<string, object> htmlAttributes = options.ToDictionary();
-
-            using IDisposable group = CreateFormGroup(additionalCssClass:"form-check");
-            AppendHtml(Html.CheckBoxFor(expression, htmlAttributes: htmlAttributes));
-            AddLabelFor(expression: expression, cssClass: "form-check-label");
-            AddValidationMessageFor(expression: expression);
+            Dictionary<string, object> htmlAttributes = options.GetHtmlAttributes();
+            
+            foreach (SelectListItem item in selectList)
+            {
+                using IDisposable group = CreateFormGroup(additionalCssClass: $"form-check {(options.Inline ? "form-check-inline" : "")}");
+                AppendHtml(Html.RadioButtonFor(expression, item.Value, htmlAttributes: htmlAttributes));
+                AppendHtml(Html.LabelFor(expression, item.Text, htmlAttributes: new { @class = "form-check-label" }));
+            }
+            AddValidationMessageFor(expression);
+            
+            if (options.Inline)
+                AppendHtml("<br/>");
+            
             return this;
         }
         
-        public SimpleForm<T> AddFileUploadRowFor<TResult>(Expression<Func<T, TResult>> expression,
-            bool multiple = false, string accept = "", bool isDisabled = false)
+        public SimpleForm<T> AddCheckBoxRowFor(Expression<Func<T, bool>> expression, Action<FormRowOptions> optionsSetter = null)
         {
-            HtmlAttributeOptions options = new(isDisabled: isDisabled);
-            AddFileUploadEditorFor(expression: expression, htmlAttributeOptions: options, multiple: multiple, accept: accept);
+            FormRowOptions options = ResolveRowOptions(optionsSetter);
+            options.CssClass = $"form-check-input {options.CssClass}";
+
+            using IDisposable group = CreateFormGroup(additionalCssClass: "form-check");
+            AppendHtml(Html.CheckBoxFor(expression, htmlAttributes: options.GetHtmlAttributes()));
+            AddLabelFor(expression, cssClass: "form-check-label");
+            AddValidationMessageFor(expression);
+            return this;
+        }
+        
+        public SimpleForm<T> AddFileUploadRowFor<TResult>(
+            Expression<Func<T, TResult>> expression,
+            bool multiple = false, 
+            string accept = "", 
+            Action<FormRowOptions> optionsSetter = null)
+        {
+            FormRowOptions options = ResolveRowOptions(optionsSetter);
+            
+            options.CssClass = "custom-file-input";
+            options.Type = "file";
+            
+            Dictionary<string, object> htmlAttributes = options.GetHtmlAttributes();
+           
+            if (multiple)
+                htmlAttributes["multiple"] = "multiple";
+            
+            if (!string.IsNullOrEmpty(accept))
+                htmlAttributes["accept"] = accept;
+            
+            using IDisposable group = CreateFormGroup();
+            using IDisposable div = Div("custom-file");
+            AppendHtml(Html.TextBoxFor(expression, htmlAttributes: htmlAttributes));
+            AddLabelFor(expression: expression, cssClass: "custom-file-label");
+            AddValidationMessageFor(expression: expression);
+            
             return this;
         }
         
@@ -185,7 +215,7 @@ namespace Sockethead.Razor.Forms
             return this;
         }
 
-        private void AddLabelFor<TResult>(Expression<Func<T, TResult>> expression, string cssClass = "control-label")
+        private void AddLabelFor<TResult>(Expression<Func<T, TResult>> expression, string cssClass)
         {
             AppendHtml(Html.LabelFor(expression, Html.DisplayNameFor(expression), htmlAttributes: new { @class = cssClass }));
         }
@@ -195,51 +225,6 @@ namespace Sockethead.Razor.Forms
             return AppendHtml(Html.ValidationMessageFor(expression, null, htmlAttributes: new { @class = "text-danger" }));
         }
 
-        private void AddRadioEditorFor<TResult>(
-            Expression<Func<T, TResult>> expression,
-            IEnumerable<SelectListItem> items, 
-            HtmlAttributeOptions htmlAttributeOptions, 
-            bool inline = false)
-        {
-            htmlAttributeOptions.CssClass = "form-check-input";
-
-            Dictionary<string, object> htmlAttributes = htmlAttributeOptions.ToDictionary();
-            
-            foreach (SelectListItem item in items)
-            {
-                using IDisposable group = CreateFormGroup(additionalCssClass: $"form-check {(inline ? "form-check-inline" : "")}");
-                AppendHtml(Html.RadioButtonFor(expression, item.Value, htmlAttributes: htmlAttributes));
-                AppendHtml(Html.LabelFor(expression, item.Text, htmlAttributes: new { @class = "form-check-label" }));
-            }
-            AddValidationMessageFor(expression: expression);
-            
-            if (inline)
-                AppendHtml("<br/>");
-        }
-        
-        private void AddFileUploadEditorFor<TResult>(
-            Expression<Func<T, TResult>> expression,
-            HtmlAttributeOptions htmlAttributeOptions, 
-            bool multiple = false, 
-            string accept = "")
-        {
-            htmlAttributeOptions.CssClass = "custom-file-input";
-            htmlAttributeOptions.Type = "file";
-            Dictionary<string, object> htmlAttributes = htmlAttributeOptions.ToDictionary();
-            
-            if (multiple)
-                htmlAttributes["multiple"] = "multiple";
-            
-            if (!string.IsNullOrEmpty(accept))
-                htmlAttributes["accept"] = accept;
-            
-            using IDisposable group = CreateFormGroup();
-            using IDisposable div = Div("custom-file");
-            AppendHtml(Html.TextBoxFor(expression, htmlAttributes: htmlAttributes));
-            AddLabelFor(expression: expression, cssClass: "custom-file-label");
-            AddValidationMessageFor(expression: expression);
-        }
-        
         private static string GetEditorType(DataType? dataType) => 
             dataType switch
             {
@@ -254,9 +239,9 @@ namespace Sockethead.Razor.Forms
             onBegin: () => AppendHtml($"<div class='{cssClass}'>"), 
             onEnd: () => AppendHtml("</div>"));
 
-        private static HtmlAttributeOptions ResolveOptions(Action<HtmlAttributeOptions> optionsSetter)
+        private static FormRowOptions ResolveRowOptions(Action<FormRowOptions> optionsSetter)
         {
-            HtmlAttributeOptions options = new();
+            FormRowOptions options = new();
             optionsSetter?.Invoke(options);
             return options;
         }
