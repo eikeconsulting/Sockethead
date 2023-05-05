@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace Sockethead.Web.Data.Entities
@@ -10,10 +11,12 @@ namespace Sockethead.Web.Data.Entities
 
     public class UserProfile
     {
+        public Guid UserId { get; set; }
+        
         [Display(Order = 3)]
         [DisplayName("First Name")]
-        [Required(ErrorMessage = "Yo, we need a first name here")]
-        [MaxLength(20, ErrorMessage = "First name is tooooo long...")]
+        [Required(ErrorMessage = "We need a first name here")]
+        [MaxLength(20, ErrorMessage = "First name is too long...")]
         public string First { get; set; }
 
         [Display(Name = "Last Name", Order = 2)]
@@ -28,7 +31,6 @@ namespace Sockethead.Web.Data.Entities
 
         public Gender Gender { get; set; }
 
-        public override string ToString() => $"{First} {Last}, {JobTitle}, Is Admin: {IsAdmin}, Gender: {Gender}";
-        
+        public override string ToString() => $"{UserId}: {First} {Last}, {JobTitle}, Is Admin: {IsAdmin}, Gender: {Gender}";
     }
 }

@@ -9,18 +9,27 @@ namespace Sockethead.Razor.Forms
     public class SimpleFormMagic<T> where T : class
     {
         private SimpleForm<T> Form { get; }
+        private EnumRegistry<T> EnumRegistry { get; }
 
-        public SimpleFormMagic(SimpleForm<T> form)
+        public SimpleFormMagic(SimpleForm<T> form, EnumRegistry<T> enumRegistry)
         {
             Form = form;
+            EnumRegistry = enumRegistry;
         }
 
         public void AddRowsForModel()
         {
-            foreach (PropertyInfo property in typeof(T).GetProperties())
+            foreach (PropertyInfo propertyInfo in typeof(T).GetProperties())
             {
-                LambdaExpression expression = ExpressionHelpers.GenerateLambdaExpressionForProperty<T>(property); 
-                
+                LambdaExpression expression = ExpressionHelpers.GenerateLambdaExpressionForProperty<T>(propertyInfo); 
+                AddRow(expression);
+            }
+
+            void AddRow(LambdaExpression expression)
+            {
+                if (EnumRegistry != null && EnumRegistry.ResolveEnum(Form, expression))
+                    return;
+
                 switch (expression)
                 {
                     case Expression<Func<T, string>> ex1: Handle(ex1); break;
@@ -31,6 +40,7 @@ namespace Sockethead.Razor.Forms
                     
                     // TODO handle more types
                 }
+                
             }
             
             void Handle<TProperty>(Expression<Func<T, TProperty>> expression)

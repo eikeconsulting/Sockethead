@@ -96,7 +96,7 @@ namespace Sockethead.Razor.Forms
             Action<FormRowOptions> optionsSetter = null)
         {
             FormRowOptions options = ResolveRowOptions(optionsSetter);
-            options.CssClass = $"custom-select {options.CssClass}";
+            options.CssClass = $"custom-select";
             using IDisposable group = CreateFormGroup();
             AddLabelFor(expression, cssClass: "control-label");
             AppendHtml(Html.DropDownListFor(expression, selectList, htmlAttributes: options.GetHtmlAttributes()));
@@ -110,7 +110,7 @@ namespace Sockethead.Razor.Forms
             Action<FormRowOptions> optionsSetter = null)
         {
             FormRowOptions options = ResolveRowOptions(optionsSetter); 
-            options.CssClass = $"form-check-input {options.CssClass}";
+            options.CssClass = $"form-check-input";
 
             Dictionary<string, object> htmlAttributes = options.GetHtmlAttributes();
             
@@ -131,7 +131,7 @@ namespace Sockethead.Razor.Forms
         public SimpleForm<T> AddCheckBoxRowFor(Expression<Func<T, bool>> expression, Action<FormRowOptions> optionsSetter = null)
         {
             FormRowOptions options = ResolveRowOptions(optionsSetter);
-            options.CssClass = $"form-check-input {options.CssClass}";
+            options.CssClass = $"form-check-input";
 
             using IDisposable group = CreateFormGroup(additionalCssClass: "form-check");
             
@@ -181,12 +181,30 @@ namespace Sockethead.Razor.Forms
             }));
         }
 
+        private EnumRegistry<T> EnumRegistry { get; set; }
+
+        public SimpleForm<T> RegisterEnums<TEnum1>()
+        {
+            EnumRegistry = new EnumRegistry<T, TEnum1>();
+            return this;
+        }
+        public SimpleForm<T> RegisterEnums<TEnum1, TEnum2>()
+        {
+            EnumRegistry = new EnumRegistry<T, TEnum1, TEnum2>();
+            return this;
+        }
+        public SimpleForm<T> RegisterEnums<TEnum1, TEnum2, TEnum3>()
+        {
+            EnumRegistry = new EnumRegistry<T, TEnum1, TEnum2, TEnum3>();
+            return this;
+        }
+
         /// <summary>
         /// Build form from the model via Reflection
         /// </summary>
         public SimpleForm<T> AddRowsForModel()
         {
-            SimpleFormMagic<T> magic = new(this);
+            SimpleFormMagic<T> magic = new(this, EnumRegistry);
             magic.AddRowsForModel();
             return this;
         }

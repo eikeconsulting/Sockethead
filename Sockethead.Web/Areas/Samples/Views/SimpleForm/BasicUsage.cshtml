@@ -1,33 +1,102 @@
 ﻿@using Sockethead.Razor.Forms
-@model SampleModel
+@model UserProfile
 
 <div class="row">
-    <div class="col-md-5">
-        <h4>Basic Usage</h4>
+    <div class="col-md-6">
         @(await Html
-            .SimpleForm(Model)
-            .AddHiddenRowFor(model => model.Id)
-            .AddRowsForModel()
+            .SimpleForm(Model, opt =>
+            {
+                opt.ActionName = "BasicUsage";
+                opt.ControllerName = "SimpleForm";
+                opt.FormMethod = FormMethod.Post;
+                opt.CssClass = "form-horizontal";
+            })
+            .AddHiddenRowFor(model => model.UserId)
+            .AddRowFor(model => model.First)
+            .AddRowFor(model => model.Last)
+            .AddRowFor(model => model.JobTitle)
+            .AddCheckBoxRowFor(model => model.IsAdmin)
+            .AddEnumRowFor(model => model.Gender)
             .AddSubmitButtonRow("Save Changes")
             .RenderAsync())
     </div>
-    <div class="col-md-7">
+    <div class="col-md-6">
+        <h4>Razor</h4>
         <pre><code>@@(await Html
-    .SimpleForm(Model)
-    .AddHiddenRowFor(model => model.Id)
-    .AddRowsForModel()
+    .SimpleForm(Model, opt =>
+    {
+        opt.ActionName = "BasicUsage";
+        opt.ControllerName = "SimpleForm";
+        opt.FormMethod = FormMethod.Post;
+        opt.CssClass = "form-horizontal";
+    })
+    .AddHiddenRowFor(model => model.UserId)
+    .AddRowFor(model => model.First)
+    .AddRowFor(model => model.Last)
+    .AddRowFor(model => model.JobTitle)
+    .AddCheckBoxRowFor(model => model.IsAdmin)
+    .AddEnumRowFor(model => model.Gender)
     .AddSubmitButtonRow("Save Changes")
     .RenderAsync())</code></pre>
         <p>
-            The mentioned properties will be included in the Bootstrap form created by this code.
-            You can also use the ASP.NET Core attributes to control the property's behavior.  For example: <br/>
-            <code>[Required(ErrorMessage = "Some message here.")]</code><br/>
-            <code>[DisplayName("Some Name")]</code><br/>
-            <code>[MaxLength(20, ErrorMessage = "Too long...")]</code><br/>
-            <br/>
-            Moreover, by passing the ControllerName and FormMethod to the FormOptions along with the ActionName, you can
-            manage the behavior of the form.
         </p>
+        
+        <br>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <h4>Model</h4>
+        <pre><code>public class UserProfile
+{
+    public Guid UserId { get; set; }
+
+    [DisplayName("First Name")]
+    [Required(ErrorMessage = "We need a first name here")]
+    [MaxLength(20, ErrorMessage = "First name is too long...")]
+    public string First { get; set; }
+
+    [Display(Name = "Last Name")]
+    [MaxLength(20)]
+    public string Last { get; set; }
+
+    [Display(Name = "Job Title")]
+    public string JobTitle { get; set; }
+
+    [DisplayName("Administrator")]
+    public bool IsAdmin { get; set; }
+
+    public Gender Gender { get; set; }
+
+    public override string ToString() => 
+        $"{UserId}: {First} {Last}, {JobTitle}, Is Admin: {IsAdmin}, Gender: {Gender}";
+}</code></pre>
+    </div>
+    <div class="col-md-6">
+        <h4>Controller</h4>
+        <pre><code>[HttpGet]
+public IActionResult BuildForm()
+{
+   return View(
+       new UserProfile
+       {
+            UserId = Guid.NewGuid(),
+            First = "John",
+            Last = "Doe",
+            JobTitle = "Software Developer",
+            IsAdmin = true,
+            Gender = Gender.Male,
+       })
+       .SetTitle("Basic Usage");
+}
+
+[HttpPost, ValidateAntiForgeryToken]
+public IActionResult BuildForm(UserProfile formData)
+{
+   return View(formData)
+        .SetTitle("Basic Usage")
+        .Success($"Successfully submitted form data {formData}.");
+}</code></pre>
     </div>
 </div>
 

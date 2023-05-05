@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Sockethead.Razor.Alert.Extensions;
 using Sockethead.Web.Data;
@@ -8,10 +9,12 @@ using Sockethead.Razor.Helpers;
 using Sockethead.Web.Areas.Samples.Extensions;
 using Sockethead.Web.Areas.Samples.Utilities;
 using Sockethead.Web.Areas.Samples.ViewModels;
+using Sockethead.Web.Filters;
 
 namespace Sockethead.Web.Areas.Samples.Controllers
 {
     [Area("Samples")]
+    [SampleLinksActionFilter]
     public class SimpleFormController : Controller
     {
         private static List<Feature> Features => SimpleFormFeatures.Features;
@@ -24,7 +27,6 @@ namespace Sockethead.Web.Areas.Samples.Controllers
         [HttpGet]
         public IActionResult Sample(string name)
         {
-            this.SetSampleLinks(Features, name);
             SampleModel model = SampleDataQuery.First();
             model.View = name;
             
@@ -34,7 +36,6 @@ namespace Sockethead.Web.Areas.Samples.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public IActionResult Sample(SampleModel formData)
         {
-            this.SetSampleLinks(Features, formData.View);
             return View(viewName: formData.View.Replace(" ", ""), formData)
                 .Success($"Form submitted successfully.");
         }
@@ -42,29 +43,71 @@ namespace Sockethead.Web.Areas.Samples.Controllers
         [HttpGet]
         public IActionResult BasicUsage()
         {
-            this.SetSampleLinks(Features, "Basic Usage");
-            return View(SampleDataQuery.First()).SetTitle("Basic Usage");
+            return View(
+                new UserProfile
+                {
+                    UserId = Guid.NewGuid(),
+                    First = "John",
+                    Last = "Doe",
+                    JobTitle = "Software Developer",
+                    IsAdmin = true,
+                    Gender = Gender.Male,
+                })
+                .SetTitle("Basic Usage");
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public IActionResult BasicUsage(SampleModel formData)
+        public IActionResult BasicUsage(UserProfile formData)
         {
-            this.SetSampleLinks(Features, "Basic Usage");
-            return View(formData).Success($"Successfully submitted form data {formData}.");
+            return View(formData)
+                .SetTitle("Basic Usage")
+                .Success($"Successfully submitted form data {formData}.");
         }
 
         [HttpGet]
-        public IActionResult BuildForm()
+        public IActionResult AutoGenerateForm()
         {
-            this.SetSampleLinks(Features, "BuildForm");
-            return View(SampleDataQuery.First()).SetTitle("Basic Usage");
+            return View(
+                    new UserProfile
+                    {
+                        UserId = Guid.NewGuid(),
+                        First = "John",
+                        Last = "Doe",
+                        JobTitle = "Software Developer",
+                        IsAdmin = true,
+                        Gender = Gender.Male,
+                    })
+                .SetTitle("Auto Generate Form");
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public IActionResult BuildForm(SampleModel formData)
+        public IActionResult AutoGenerateForm(UserProfile formData)
         {
-            this.SetSampleLinks(Features, "Build Form");
-            return View(formData).Success($"Successfully submitted form data {formData}.");
+            if (formData.Last == "Doe")
+            {
+                ModelState.AddModelError("Last", "Sorry, we don't accept Doe as a last name.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(formData).SetTitle("Auto Generate Form");
+            }
+
+            return View(formData)
+                .SetTitle("Auto Generate Form")
+                .Success($"Successfully submitted form data {formData}.");
+        }
+        
+        [HttpGet]
+        public IActionResult KitchenSink()
+        {
+            return View(SampleDataQuery.First()).SetTitle("Kitchen Sink");
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public IActionResult KitchenSink(SampleModel formData)
+        {
+            return View(formData).SetTitle("Kitchen Sink").Success($"Successfully submitted form data {formData}.");
         }
     }
 }

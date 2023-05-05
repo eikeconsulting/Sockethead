@@ -16,13 +16,19 @@ namespace Sockethead.Web.Areas.Samples.Utilities
             {
                 Url = "BasicUsage",
                 Name = "Basic Usage",
-                Description = "A  SimpleForm, built automatically from a Model.",
+                Description = "A minimal SimpleForm built manually.",
             },
             new Feature
             {
-                Url = "BuildForm",
-                Name = "Build Form Manually",
-                Description = "A minimal SimpleForm built manually.",
+                Url = "AutoGenerateForm",
+                Name = "Auto Generate Form",
+                Description = "Have SimpleForm automatically generate the form from the decorated Model.",
+            },
+            new Feature
+            {
+                Url = "KitchenSink",
+                Name = "KitchenSink",
+                Description = "A  SimpleForm, built automatically from a Model.",
             },
             new Feature
             {
