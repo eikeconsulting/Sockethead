@@ -1,0 +1,41 @@
+﻿@using Sockethead.Razor.Forms
+@model UserProfile
+
+<div class="row">
+    <div class="col-md-6">
+        @(await Html
+            .SimpleForm(Model)
+            .AddHiddenRowFor(model => model.UserId)
+            .AddRowDiv(form => form
+                .AddColDiv(width: 6, form2 => form2.AddRowFor(model => model.First))
+                .AddColDiv(width: 6, form2 => form2.AddRowFor(model => model.Last)))
+            .AddRowFor(model => model.JobTitle)
+            .AddCheckBoxRowFor(model => model.IsAdmin)
+            .AddEnumRowFor(model => model.Gender)
+            .AddSubmitButtonRow("Save Changes")
+            .RenderAsync())
+    </div>
+    <div class="col-md-6">
+        <pre><code>@@(await Html
+    .SimpleForm(Model)
+    .AddHiddenRowFor(model => model.UserId)
+    .AddRowDiv(form => form
+        .AddColDiv(width: 6, form2 => form2
+            .AddRowFor(model => model.First))
+        .AddColDiv(width: 6, form2 => form2
+            .AddRowFor(model => model.Last)))
+    .AddRowFor(model => model.JobTitle)
+    .AddCheckBoxRowFor(model => model.IsAdmin)
+    .AddEnumRowFor(model => model.Gender)
+    .AddSubmitButtonRow("Save Changes")
+    .RenderAsync())</code></pre>
+        <p>
+        </p>
+        
+        <br>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

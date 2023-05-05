@@ -208,6 +208,20 @@ namespace Sockethead.Razor.Forms
             magic.AddRowsForModel();
             return this;
         }
+
+        public SimpleForm<T> AddRowDiv(Action<SimpleForm<T>> formAction)
+        {
+            using IDisposable div = Div("row");
+            formAction(this);
+            return this;
+        }
+
+        public SimpleForm<T> AddColDiv(int width, Action<SimpleForm<T>> formAction)
+        {
+            using IDisposable div = Div($"col-md-{width}");
+            formAction(this);
+            return this;
+        }
         
         public SimpleForm<T> AppendHtml(Func<object, IHtmlContent> contentFunc)
         {
@@ -252,7 +266,7 @@ namespace Sockethead.Razor.Forms
                 DataType.EmailAddress => "email",
                 _ => "text"
             };
-        
+
         private IDisposable CreateFormGroup(string additionalCssClass = "") => Div($"form-group {additionalCssClass}");
         
         private IDisposable Div(string cssClass) => new Scope(

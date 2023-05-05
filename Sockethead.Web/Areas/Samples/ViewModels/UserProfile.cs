@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace Sockethead.Web.Data.Entities
+namespace Sockethead.Web.Areas.Samples.ViewModels
 {
     public enum Gender
     {

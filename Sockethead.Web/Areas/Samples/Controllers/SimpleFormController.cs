@@ -109,5 +109,18 @@ namespace Sockethead.Web.Areas.Samples.Controllers
         {
             return View(formData).SetTitle("Kitchen Sink").Success($"Successfully submitted form data {formData}.");
         }
+        
+        [HttpGet]
+        public IActionResult CustomizeLayout()
+        {
+            return View(new UserProfile()).SetTitle("Customize Layout");
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public IActionResult CustomizeLayout(UserProfile formData)
+        {
+            return View(formData).SetTitle("Customize Layout").Success($"Successfully submitted form data {formData}.");
+        }
+        
     }
 }

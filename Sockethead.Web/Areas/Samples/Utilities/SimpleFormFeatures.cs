@@ -26,6 +26,14 @@ namespace Sockethead.Web.Areas.Samples.Utilities
             },
             new Feature
             {
+                Url = "CustomizeLayout",
+                Name = "Customize Layout",
+                Description = "Customized the layout with rows and columns in your form.",
+            },
+
+            
+            new Feature
+            {
                 Url = "KitchenSink",
                 Name = "KitchenSink",
                 Description = "A  SimpleForm, built automatically from a Model.",
