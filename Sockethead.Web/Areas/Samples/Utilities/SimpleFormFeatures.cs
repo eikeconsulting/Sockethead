@@ -30,6 +30,18 @@ namespace Sockethead.Web.Areas.Samples.Utilities
                 Name = "Customize Layout",
                 Description = "Customized the layout with rows and columns in your form.",
             },
+            new Feature
+            {
+                Url = "PostRedirectGet",
+                Name = "Post Redirect Get (PRG)",
+                Description = "Implement the Post Redirect Get (PRG) pattern to avoid duplicate form submissions."
+            },
+            new Feature
+            {
+                Url = "CustomizeErrors",
+                Name = "Customize Error Messages",
+                Description = "Control how to display form validation errors."
+            },
 
             
             new Feature

@@ -6,7 +6,7 @@ namespace Sockethead.Razor.Forms
     {
         public bool IsReadOnly { get; set; }
         public bool IsDisabled { get; set; }
-        public string CssClass { get; set; }
+        internal string CssClass { get; set; }
         public string Type { get; set; }
         public bool Inline { get; set; }
 

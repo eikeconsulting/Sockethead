@@ -6,7 +6,7 @@ using Sockethead.Web.Data;
 using Sockethead.Web.Data.Entities;
 using System.Linq;
 using Sockethead.Razor.Helpers;
-using Sockethead.Web.Areas.Samples.Extensions;
+using Sockethead.Razor.PRG;
 using Sockethead.Web.Areas.Samples.Utilities;
 using Sockethead.Web.Areas.Samples.ViewModels;
 using Sockethead.Web.Filters;
@@ -121,6 +121,65 @@ namespace Sockethead.Web.Areas.Samples.Controllers
         {
             return View(formData).SetTitle("Customize Layout").Success($"Successfully submitted form data {formData}.");
         }
-        
+
+        [HttpGet, RestoreModelState]
+        public IActionResult PostRedirectGet()
+        {
+            return View(new UserProfile { First = "BogusName", Last = "Smith" }).SetTitle("Post Redirect Get (PRG)");
+        }
+
+        [HttpPost, ValidateAntiForgeryToken, SaveModelState]
+        public IActionResult PostRedirectGet(UserProfile formData)
+        {
+            RedirectToActionResult result = RedirectToAction(actionName: nameof(PostRedirectGet));
+
+            if (formData.First == "BogusName")
+                ModelState.AddModelError("First", "Sorry, we don't accept BogusName as a first name.");
+
+            if (!ModelState.IsValid)
+                return result;
+
+            // handle form
+
+            return result.Success($"Successfully submitted form data {formData}.");        
+        }
+
+        [HttpGet, RestoreModelState]
+        public IActionResult CustomizeErrors()
+        {
+            return View(new UserProfile { First = "BogusName", Last = "Smith" }).SetTitle("Customize Error Messages");
+        }
+
+        [HttpPost, ValidateAntiForgeryToken, SaveModelState]
+        public IActionResult CustomizeErrors(UserProfile formData)
+        {
+            RedirectToActionResult result = RedirectToAction(actionName: nameof(CustomizeErrors));
+
+            if (formData.First == "BogusName")
+                ModelState.AddModelError("First", "Sorry, we don't accept BogusName as a first name.");
+
+            if (!ModelState.IsValid)
+                return result;
+
+            // handle form
+
+            return result.Success($"Successfully submitted form data {formData}.");        
+        }
+
+        [HttpPost, ValidateAntiForgeryToken, SaveModelState]
+        public IActionResult CustomizeErrors2(UserProfile formData)
+        {
+            RedirectToActionResult result = RedirectToAction(actionName: nameof(CustomizeErrors));
+
+            if (formData.First == "BogusName")
+                ModelState.AddModelError("First", "Sorry, we don't accept BogusName as a first name.");
+
+            if (!ModelState.IsValid)
+                return result.Error("My custom error message.");
+
+            // handle form
+
+            return result.Success($"Successfully submitted form data {formData}.");        
+        }
     }
 }

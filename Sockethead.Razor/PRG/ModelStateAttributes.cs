@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Sockethead.Razor.Alert.Extensions;
 
 namespace Sockethead.Razor.PRG
 {
@@ -33,9 +34,11 @@ namespace Sockethead.Razor.PRG
             if (modelState.IsValid)
                 return;
 
-            if (filterContext.Result is RedirectResult ||
-                filterContext.Result is RedirectToRouteResult ||
-                filterContext.Result is RedirectToActionResult)
+            IActionResult result = filterContext.Result;
+            if (result is Alerts.AlertDecoratedResult alertResult)
+                result = alertResult.Result;
+            
+            if (result is RedirectResult or RedirectToRouteResult or RedirectToActionResult)
                 controller.TempData[Key] = ModelStateHelpers.SerializeModelState(modelState);
         }
     }
@@ -53,15 +56,22 @@ namespace Sockethead.Razor.PRG
             if (filterContext.Controller is not Controller controller || !controller.TempData.ContainsKey(Key))
                 return;
 
-            if (filterContext.Result is not ViewResult)
+            /*
+            IActionResult result = filterContext.Result;
+            if (result is Alerts.AlertDecoratedResult alertResult)
+                result = alertResult.Result;
+            
+            if (result is not ViewResult)
             {
                 controller.TempData.Remove(Key);
                 return;
             }
-
+            */
+             
             string s = controller.TempData[Key].ToString();
             ModelStateDictionary modelState = ModelStateHelpers.DeserializeModelState(s);
             controller.ViewData.ModelState.Merge(modelState);
+            controller.TempData.Remove(Key);
         }
     }
 }

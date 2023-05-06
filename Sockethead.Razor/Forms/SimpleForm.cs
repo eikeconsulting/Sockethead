@@ -26,12 +26,13 @@ namespace Sockethead.Razor.Forms
         public SimpleForm<T> AddRowFor<TResult>(Expression<Func<T, TResult>> expression, Action<FormRowOptions> optionsSetter = null)
         {
             FormRowOptions options = ResolveRowOptions(optionsSetter);
+            DataType? dataType = expression.GetDataTypeAttribute();
             string format = null;
             
             switch (typeof(TResult).Name)
             {
                 case nameof(DateTime):
-                    if (expression.GetDataTypeAttribute() == DataType.Date)
+                    if (dataType == DataType.Date)
                     {
                         options.Type = "date";
                         format = "{0:yyyy-MM-dd}";
@@ -49,15 +50,23 @@ namespace Sockethead.Razor.Forms
                     break;
 
                 default:
-                    options.Type = GetEditorType(expression.GetDataTypeAttribute());
+                    options.Type = GetEditorType(dataType);
                     break;
             }
 
+            string GetEditorType(DataType? dt) => 
+                dt switch
+                {
+                    DataType.Password => "password",
+                    DataType.EmailAddress => "email",
+                    _ => "text"
+                };
+            
             using IDisposable group = CreateFormGroup();
             
-            AddLabelFor(expression: expression, cssClass: "control-label");
+            AddLabelFor(expression: expression);
             
-            switch (expression.GetDataTypeAttribute())
+            switch (dataType)
             {
                 case DataType.MultilineText: 
                     AppendHtml(Html.TextAreaFor(expression, htmlAttributes: options.GetHtmlAttributes()));
@@ -98,7 +107,7 @@ namespace Sockethead.Razor.Forms
             FormRowOptions options = ResolveRowOptions(optionsSetter);
             options.CssClass = $"custom-select";
             using IDisposable group = CreateFormGroup();
-            AddLabelFor(expression, cssClass: "control-label");
+            AddLabelFor(expression);
             AppendHtml(Html.DropDownListFor(expression, selectList, htmlAttributes: options.GetHtmlAttributes()));
             AddValidationMessageFor(expression);
             return this;
@@ -209,19 +218,16 @@ namespace Sockethead.Razor.Forms
             return this;
         }
 
-        public SimpleForm<T> AddRowDiv(Action<SimpleForm<T>> formAction)
+        public SimpleForm<T> AddDiv(string cssClass, Action<SimpleForm<T>> formAction)
         {
-            using IDisposable div = Div("row");
+            using IDisposable div = Div(cssClass);
             formAction(this);
             return this;
         }
+        
+        public SimpleForm<T> AddRowDiv(Action<SimpleForm<T>> formAction) => AddDiv("row", formAction);
 
-        public SimpleForm<T> AddColDiv(int width, Action<SimpleForm<T>> formAction)
-        {
-            using IDisposable div = Div($"col-md-{width}");
-            formAction(this);
-            return this;
-        }
+        public SimpleForm<T> AddColDiv(int width, Action<SimpleForm<T>> formAction) => AddDiv($"col-md-{width}", formAction);
         
         public SimpleForm<T> AppendHtml(Func<object, IHtmlContent> contentFunc)
         {
@@ -249,7 +255,7 @@ namespace Sockethead.Razor.Forms
             return this;
         }
 
-        private void AddLabelFor<TResult>(Expression<Func<T, TResult>> expression, string cssClass)
+        private void AddLabelFor<TResult>(Expression<Func<T, TResult>> expression, string cssClass = "control-label")
         {
             AppendHtml(Html.LabelFor(expression, Html.DisplayNameFor(expression), htmlAttributes: new { @class = cssClass }));
         }
@@ -258,14 +264,6 @@ namespace Sockethead.Razor.Forms
         {
             return AppendHtml(Html.ValidationMessageFor(expression, null, htmlAttributes: new { @class = "text-danger" }));
         }
-
-        private static string GetEditorType(DataType? dataType) => 
-            dataType switch
-            {
-                DataType.Password => "password",
-                DataType.EmailAddress => "email",
-                _ => "text"
-            };
 
         private IDisposable CreateFormGroup(string additionalCssClass = "") => Div($"form-group {additionalCssClass}");
         

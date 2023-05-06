@@ -31,7 +31,7 @@ namespace Sockethead.Razor.Alert.Extensions
         public static IActionResult Information(this IActionResult ar, string message) => new AlertDecoratedResult(ar, INFORMATION, message);
         public static IActionResult Error(this IActionResult ar, string message) => new AlertDecoratedResult(ar, ERROR, message);
 
-        class AlertDecoratedResult : IActionResult
+        public class AlertDecoratedResult : IActionResult
         {
             public IActionResult Result { get; }
             public string Type { get; }

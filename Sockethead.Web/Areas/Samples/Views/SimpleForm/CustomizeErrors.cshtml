@@ -1,0 +1,140 @@
+﻿@using Sockethead.Razor.Forms
+@model UserProfile
+
+<div class="row">
+    <div class="col-md-6">
+        @(await Html
+            .SimpleForm(Model)
+            .AddRowFor(profile => profile.First)
+            .AddRowFor(profile => profile.Last)
+            .AddSubmitButtonRow("Save Changes")
+            .RenderAsync())
+    </div>
+    <div class="col-md-6">
+        <h4>Razor</h4>
+        <pre><code>@@(await Html
+    .SimpleForm(Model)
+    .AddRowFor(profile => profile.First)
+    .AddRowFor(profile => profile.Last)
+    .AddSubmitButtonRow("Save Changes")
+    .RenderAsync())</code></pre>
+        <p>
+        </p>
+    </div>
+</div>
+
+<hr/>
+
+<div class="row">
+    <div class="col-md-6">
+        @(await Html
+            .SimpleForm(Model, opt => 
+            { 
+                opt.ShowError = true;
+                opt.ErrorMessage = "Please correct the errors in the form below."; 
+                opt.ShowValidationSummary = false; 
+            })
+            .AddRowFor(profile => profile.First)
+            .AddRowFor(profile => profile.Last)
+            .AddSubmitButtonRow("Save Changes")
+            .RenderAsync())
+    </div>
+    <div class="col-md-6">
+        <h4>Razor</h4>
+        <pre><code>@@(await Html
+    .SimpleForm(Model, opt => 
+    { 
+        opt.ShowError = true;
+        opt.ErrorMessage = 
+            "Please correct the errors in the form below."; 
+        opt.ShowValidationSummary = false; 
+    })
+    .AddRowFor(profile => profile.First)
+    .AddRowFor(profile => profile.Last)
+    .AddSubmitButtonRow("Save Changes")
+    .RenderAsync())</code></pre>
+        <p>
+        </p>
+    </div>
+</div>
+
+<hr/>
+
+<div class="row">
+    <div class="col-md-6">
+        @(await Html
+            .SimpleForm(Model, opt =>
+            {
+                opt.ActionName = "CustomizeErrors2";
+                opt.ShowError = false;
+            })
+            .AddRowFor(profile => profile.First)
+            .AddRowFor(profile => profile.Last)
+            .AddSubmitButtonRow("Save Changes")
+            .RenderAsync())
+    </div>
+    <div class="col-md-6">
+        <h4>Razor</h4>
+        <pre><code>@@(await Html
+    .SimpleForm(Model, opt =>
+    {
+        opt.ActionName = "CustomizeErrors2";
+        opt.ShowError = false;
+    })
+    .AddRowFor(profile => profile.First)
+    .AddRowFor(profile => profile.Last)
+    .AddSubmitButtonRow("Save Changes")
+    .RenderAsync())</code></pre>
+        <p>
+        </p>
+    </div>
+</div>
+
+<hr/>
+
+<div class="row">
+    <div class="col-md-12">
+        <h4>Controller</h4>
+        <pre><code>[HttpGet, RestoreModelState]
+public IActionResult CustomizeErrors()
+{
+   return View(new UserProfile { First = "BogusName", Last = "Smith" }).SetTitle("Customize Error Messages");
+}
+
+[HttpPost, ValidateAntiForgeryToken, SaveModelState]
+public IActionResult CustomizeErrors(UserProfile formData)
+{
+   RedirectToActionResult result = RedirectToAction(actionName: nameof(CustomizeErrors));
+
+   if (formData.First == "BogusName")
+       ModelState.AddModelError("First", "Sorry, we don't accept BogusName as a first name.");
+
+   if (!ModelState.IsValid)
+       return result;
+
+   // handle form
+
+   return result.Success($"Successfully submitted form data {formData}.");        
+}
+
+[HttpPost, ValidateAntiForgeryToken, SaveModelState]
+public IActionResult CustomizeErrors2(UserProfile formData)
+{
+   RedirectToActionResult result = RedirectToAction(actionName: nameof(CustomizeErrors));
+
+   if (formData.First == "BogusName")
+       ModelState.AddModelError("First", "Sorry, we don't accept BogusName as a first name.");
+
+   if (!ModelState.IsValid)
+       return result.Error("My custom error message.");
+
+   // handle form
+
+   return result.Success($"Successfully submitted form data {formData}.");        
+}</code></pre>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

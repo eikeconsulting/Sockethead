@@ -1,0 +1,56 @@
+﻿@using Sockethead.Razor.Forms
+@model UserProfile
+
+<div class="row">
+    <div class="col-md-6">
+        @(await Html
+            .SimpleForm(Model)
+            .AddRowsForModel()
+            .AddSubmitButtonRow("Save Changes")
+            .RenderAsync())
+    </div>
+    <div class="col-md-6">
+        <h4>Razor</h4>
+        <pre><code>@@(await Html
+    .AddRowsForModel()
+    .AddSubmitButtonRow("Save Changes")
+    .RenderAsync())</code></pre>
+        <p>
+        </p>
+        
+        <br>
+    </div>
+</div>
+
+<hr/>
+
+<div class="row">
+    <div class="col-md-12">
+        <h4>Controller</h4>
+        <pre><code>[HttpGet, RestoreModelState]
+public IActionResult PostRedirectGet()
+{
+   return View(new UserProfile { First = "BogusName", Last = "Smith" }).SetTitle("Post Redirect Get (PRG)");
+}
+
+[HttpPost, ValidateAntiForgeryToken, SaveModelState]
+public IActionResult PostRedirectGet(UserProfile formData)
+{
+   RedirectToActionResult result = RedirectToAction(actionName: nameof(PostRedirectGet));
+
+   if (formData.First == "BogusName")
+       ModelState.AddModelError("First", "Sorry, we don't accept BogusName as a first name.");
+
+   if (!ModelState.IsValid)
+       return result;
+
+   // handle form
+
+   return result.Success($"Successfully submitted form data {formData}.");        
+}</code></pre>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

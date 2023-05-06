@@ -1,13 +1,25 @@
 ﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using FormOptions = Sockethead.Razor.Forms.FormOptions
 @model Sockethead.Razor.Forms.ISimpleForm
 
 @{
     string actionName = Model.FormOptions.ActionName ?? ViewContext.RouteData.Values["action"].ToString();
     string controllerName = Model.FormOptions.ControllerName ?? ViewContext.RouteData.Values["controller"].ToString();
+    FormOptions options = Model.FormOptions;
+}
+@if (options.ShowError && ViewData.ModelState.Any(x => x.Value.Errors.Any()))
+{
+    <div class="alert alert-danger">
+        <button class="close" data-dismiss="alert">x</button>
+        <h5>@options.ErrorMessage</h5>
+        @if (options.ShowValidationSummary)
+        {
+            @Html.ValidationSummary(false)
+        }
+    </div>
 }
 <form asp-action="@actionName" asp-controller="@controllerName" enctype="multipart/form-data" method="@Model.FormOptions.FormMethod">
     <div class=@($"{Model.FormOptions.CssClass}")>
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         @(Model.RenderFormRows())
     </div>
 </form>

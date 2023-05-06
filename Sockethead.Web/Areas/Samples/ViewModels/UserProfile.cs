@@ -13,7 +13,6 @@ namespace Sockethead.Web.Areas.Samples.ViewModels
     {
         public Guid UserId { get; set; }
         
-        [Display(Order = 3)]
         [DisplayName("First Name")]
         [Required(ErrorMessage = "We need a first name here")]
         [MaxLength(20, ErrorMessage = "First name is too long...")]
