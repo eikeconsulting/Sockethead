@@ -19,7 +19,5 @@
     </div>
 }
 <form asp-action="@actionName" asp-controller="@controllerName" enctype="multipart/form-data" method="@Model.FormOptions.FormMethod">
-    <div class=@($"{Model.FormOptions.CssClass}")>
-        @(Model.RenderFormRows())
-    </div>
+    @(Model.RenderForm())
 </form>

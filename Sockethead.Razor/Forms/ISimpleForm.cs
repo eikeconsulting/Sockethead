@@ -5,6 +5,6 @@ namespace Sockethead.Razor.Forms
     public interface ISimpleForm
     {
         FormOptions FormOptions { get; }
-        IHtmlContent RenderFormRows();
+        IHtmlContent RenderForm();
     }
 }

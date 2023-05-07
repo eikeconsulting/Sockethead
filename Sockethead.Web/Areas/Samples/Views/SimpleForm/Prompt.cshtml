@@ -1,0 +1,65 @@
+﻿@using Sockethead.Razor.Forms
+@model PromptExample
+
+<div class="row">
+    <div class="col-md-6">
+        @(await Html
+            .SimpleForm(Model)
+            .AddRowsForModel()
+            .RenderAsync())
+    </div>
+    <div class="col-md-6">
+        <h4>Razor</h4>
+        <pre><code>@@(await Html
+    .SimpleForm(Model)
+    .AddRowsForModel()
+    .RenderAsync())</code></pre>
+        <p>
+        </p>
+        
+        <br>
+    </div>
+</div>
+
+<hr/>
+
+<div class="row">
+    <div class="col-md-6">
+        @(await Html
+            .SimpleForm(Model, opt => opt.HideLabels = true)
+            .AddRowsForModel()
+            .RenderAsync())
+    </div>
+    <div class="col-md-6">
+        <h4>Razor</h4>
+        <pre><code>@@(await Html
+    .SimpleForm(Model, opt => opt.HideLabels = true)
+    .AddRowsForModel()
+    .RenderAsync())</code></pre>
+        <p>
+        </p>
+        
+        <br>
+    </div>
+</div>
+
+<hr/>
+
+<div class="row">
+    <div class="col-md-6">
+        <h4>Model</h4>
+        <pre><code>public class PromptExample
+{
+   [Display(Prompt = "Enter your name")]
+   public string Name { get; set; }
+   
+   [Display(Prompt = "Enter a description")]
+   public string Description { get; set; }
+}</code></pre>
+    </div>
+
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

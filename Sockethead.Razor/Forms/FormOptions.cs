@@ -20,11 +20,6 @@ namespace Sockethead.Razor.Forms
         public FormMethod FormMethod { get; set; } = FormMethod.Post;
         
         /// <summary>
-        /// CSS class to apply to the form
-        /// </summary>
-        public string CssClass { get; set; } = "";
-        
-        /// <summary>
         /// Show errors when the form is submitted
         /// </summary>
         public bool ShowError { get; set; } = true;
@@ -39,5 +34,7 @@ namespace Sockethead.Razor.Forms
         /// (they will still always appear below each field in the form)
         /// </summary>
         public bool ShowValidationSummary { get; set; } = true;
+        
+        public bool HideLabels { get; set; } = false;
     }
 }

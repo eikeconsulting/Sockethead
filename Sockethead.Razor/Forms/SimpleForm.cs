@@ -64,7 +64,8 @@ namespace Sockethead.Razor.Forms
             
             using IDisposable group = CreateFormGroup();
             
-            AddLabelFor(expression: expression);
+            if (!FormOptions.HideLabels)
+                AddLabelFor(expression: expression);
             
             switch (dataType)
             {
@@ -107,7 +108,8 @@ namespace Sockethead.Razor.Forms
             FormRowOptions options = ResolveRowOptions(optionsSetter);
             options.CssClass = $"custom-select";
             using IDisposable group = CreateFormGroup();
-            AddLabelFor(expression);
+            if (!FormOptions.HideLabels)
+                AddLabelFor(expression);
             AppendHtml(Html.DropDownListFor(expression, selectList, htmlAttributes: options.GetHtmlAttributes()));
             AddValidationMessageFor(expression);
             return this;
@@ -173,7 +175,8 @@ namespace Sockethead.Razor.Forms
             using IDisposable group = CreateFormGroup();
             using IDisposable div = Div("custom-file");
             AppendHtml(Html.TextBoxFor(expression, htmlAttributes: htmlAttributes));
-            AddLabelFor(expression: expression, cssClass: "custom-file-label");
+            if (!FormOptions.HideLabels)
+                AddLabelFor(expression: expression, cssClass: "custom-file-label");
             AddValidationMessageFor(expression: expression);
             
             return this;
@@ -225,9 +228,11 @@ namespace Sockethead.Razor.Forms
             return this;
         }
         
-        public SimpleForm<T> AddRowDiv(Action<SimpleForm<T>> formAction) => AddDiv("row", formAction);
+        public SimpleForm<T> AddRowDiv(Action<SimpleForm<T>> formAction) => AddDiv("form-row", formAction);
 
         public SimpleForm<T> AddColDiv(int width, Action<SimpleForm<T>> formAction) => AddDiv($"col-md-{width}", formAction);
+
+        public SimpleForm<T> AddColDiv(Action<SimpleForm<T>> formAction) => AddDiv($"col", formAction);
         
         public SimpleForm<T> AppendHtml(Func<object, IHtmlContent> contentFunc)
         {
@@ -283,6 +288,6 @@ namespace Sockethead.Razor.Forms
             return await Html.PartialAsync("_SHSimpleForm", this);
         }
 
-        public IHtmlContent RenderFormRows() => Builder;
+        public IHtmlContent RenderForm() => Builder;
     }
 }

@@ -181,5 +181,11 @@ namespace Sockethead.Web.Areas.Samples.Controllers
 
             return result.Success($"Successfully submitted form data {formData}.");        
         }
+        
+        [HttpGet]
+        public IActionResult Prompt()
+        {
+            return View(new PromptExample());
+        }
     }
 }
