@@ -5,160 +5,145 @@ namespace Sockethead.Web.Areas.Samples.Utilities
 {
     public class SimpleGridFeatures
     {
-        public static List<Feature> Features { get; } = new List<Feature>
+        public static List<Feature> Features { get; } = new()
         {
-            new Feature
+            new()
             {
                 Name = "Installation",
                 Description = "Just install the NuGet package and go!",
             },
-            new Feature
+            new()
             {
                 Name = "Basic Usage",
-                Description = "A minimial SimpleGrid.  This includes the Movie model for reference which is used in many of the other Samples as well.",
+                Description = "A minimal SimpleGrid.  This includes the Movie model for reference which is used in many of the other Samples as well.",
             },
-            new Feature
+            new()
             {
                 Name = "Kitchen Sink",
                 Description = "A sample SimpleGrid using many of the options available.",
             },
-            new Feature
+            new()
             {
                 Name = "Column Selection",
                 Description = "There are several ways to control which columns to include in your grid.",
             },
-            new Feature
+            new()
             {
                 Name = "Order Columns",
                 Description = "Order the columns based on the Display.Order Attribute",
             },
-            new Feature
+            new()
             {
                 Name = "Column Headers",
                 Description = "How to specify what text to render for column headers.",
             },
-            new Feature
+            new()
             {
                 Name = "No Headers",
-                Description = "Surpress column headers altogether.",
+                Description = "Suppress column headers altogether.",
             },
-            new Feature
+            new()
             {
                 Name = "Column Display",
                 Description = "How to build the item render.",
             },
-            new Feature
+            new()
             {
                 Name = "Row Numbers",
                 Description = "Include a column with the column number.",
             },
-            new Feature
+            new()
             {
                 Name = "Encoding",
                 Description = "Disable encoding to embed raw HTML",
             },
-            new Feature
+            new()
             {
                 Name = "Links",
                 Description = "Create links in item render",
             },
-            new Feature
+            new()
             {
                 Name = "Bullet List",
                 Description = "Render an HTML bullet list",
             },
-            new Feature
+            new()
             {
                 Name = "Enum",
                 Description = "Render an enumerated value as an int, field name, or Display Name.",
             },
-            new Feature
+            new()
             {
                 Name = "Date and Time",
                 Description = "Handle local timezone DateTime.",
             },
-            new Feature
+            new()
             {
                 Name = "Footer",
                 Description = "Add a footer row to the Grid.",
             },
-            new Feature
+            new()
             {
                 Name = "Embedding Grids",
                 Description = "Embed TwoColumnGrids and SimpleGrids inside your grid.  How meta!",
             },
-            new Feature
+            new()
             {
                 Name = "Sorting",
                 Description = "Enable dynamic sorting on based on columns and specify the default sort order.",
             },
-            new Feature
+            new()
             {
                 Name = "Pagination",
                 Description = "Add a Pager to the grid for large data sets.",
             },
-            new Feature
+            new()
             {
                 Name = "Search",
                 Description = "Add custom search capabilities quickly and easily.",
             },
-            new Feature
+            new()
             {
                 Name = "Multiple Grids",
                 Description = "Provide a GridId if you want to paginate or search multiple grids on one page.",
             },
-            new Feature
+            new()
             {
                 Name = "CSS",
                 Description = "Apply CSS classes and styles to the table, header, and rows.",
             },
-            new Feature
+            new()
             {
                 Name = "Row Modifier",
                 Description = "Apply CSS on a row based on criteria.",
             },
-            new Feature
+            new()
             {
                 Name = "Options",
                 Description = "Set some grid options such as maximum rows and the No records message.  Also override partial view with your own.",
             },
-            new Feature
+            new()
             {
                 Name = "AJAX",
                 Description = "Use AJAX for paging and search in the grid.",
             },
-            new Feature
+            new()
             {
                 Name = "Form",
                 Url = "Form",
                 Description = "Use a SimpleGrid as form.  This demonstrates checkbox handling.",
             },
-            new Feature
+            new()
             {
                 Name = "Form2",
                 Url = "Form2",
-                Description = "Use a SimpleGrid as form.  This demonstrates editing models and recieving updated data in your controller.",
+                Description = "Use a SimpleGrid as form.  This demonstrates editing models and receiving updated data in your controller.",
             },
-            new Feature
+            new()
             {
                 Name = "Extensions",
                 Description = "Create your own custom SimpleGrid extension!",
             },
-
-            /*
-            new Feature
-            {
-                Name = "Sample1",
-                Model = "SampleData",
-                Description = "Placeholder.  Working on dates and more complex forms.",
-            },
-            new Feature
-            {
-                Name = "Playground",
-                Url = "Playground",
-                Description = "A sample for me to play around in...",
-            },
-            */
         };
     }
 }

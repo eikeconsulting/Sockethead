@@ -35,6 +35,8 @@ namespace Sockethead.Razor.Forms
         /// </summary>
         public bool ShowValidationSummary { get; set; } = true;
         
-        public bool HideLabels { get; set; } = false;
+        public bool HideLabels { get; set; }
+        
+        public bool HorizontalForm { get; set; }
     }
 }

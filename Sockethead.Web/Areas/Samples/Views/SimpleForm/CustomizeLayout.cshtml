@@ -7,8 +7,8 @@
             .SimpleForm(Model)
             .AddHiddenRowFor(model => model.UserId)
             .AddRowDiv(form => form
-                .AddColDiv(width: 6, form2 => form2.AddRowFor(model => model.First))
-                .AddColDiv(width: 6, form2 => form2.AddRowFor(model => model.Last)))
+                .AddColDiv(width: 4, form2 => form2.AddRowFor(model => model.First))
+                .AddColDiv(width: 8, form2 => form2.AddRowFor(model => model.Last)))
             .AddRowFor(model => model.JobTitle)
             .AddCheckBoxRowFor(model => model.IsAdmin)
             .AddEnumRowFor(model => model.Gender)
@@ -20,9 +20,9 @@
     .SimpleForm(Model)
     .AddHiddenRowFor(model => model.UserId)
     .AddRowDiv(form => form
-        .AddColDiv(width: 6, form2 => form2
+        .AddColDiv(width: 4, form2 => form2
             .AddRowFor(model => model.First))
-        .AddColDiv(width: 6, form2 => form2
+        .AddColDiv(width: 8, form2 => form2
             .AddRowFor(model => model.Last)))
     .AddRowFor(model => model.JobTitle)
     .AddCheckBoxRowFor(model => model.IsAdmin)

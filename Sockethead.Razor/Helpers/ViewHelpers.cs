@@ -14,5 +14,10 @@ namespace Sockethead.Razor.Helpers
             viewResult.ViewData["Title"] = title;
             return viewResult;
         }
+        
+        public static string GetTitle(this ViewResult viewResult)
+        {
+            return viewResult.ViewData["Title"] as string;
+        }
     }
 }

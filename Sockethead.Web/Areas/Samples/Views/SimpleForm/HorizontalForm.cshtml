@@ -1,0 +1,44 @@
+﻿@using Sockethead.Razor.Forms
+@model UserProfile
+
+@{
+    List<SelectListItem> cityList = new List<SelectListItem>
+    {
+        new("San Jose, California", "SJ"), 
+        new("Karachi, Pakistan", "KA"), 
+        new("New York, New York", "NY"), 
+        new("London, England", "LDN")
+    };
+}
+
+<div class="row">
+    <div class="col-md-6">
+        @(await Html
+            .SimpleForm(Model, opt =>
+            {
+                opt.HorizontalForm = true;
+            })
+            .AddRowsForModel()
+            .AddRadioButtonRowFor(model => model.City, cityList)
+            .AddDropDownListRowFor(model => model.City, cityList)
+            .AddListBoxFor(model => model.City, cityList)
+            .RenderAsync())
+    </div>
+    <div class="col-md-6">
+        <pre><code>@@(await Html
+    .SimpleForm(Model, opt =>
+    {
+        opt.HorizontalForm = true;
+    })
+    .AddRowsForModel()
+    .RenderAsync())</code></pre>
+        <p>
+        </p>
+        
+        <br>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

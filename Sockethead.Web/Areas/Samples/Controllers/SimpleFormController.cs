@@ -5,6 +5,7 @@ using Sockethead.Razor.Alert.Extensions;
 using Sockethead.Web.Data;
 using Sockethead.Web.Data.Entities;
 using System.Linq;
+using Newtonsoft.Json;
 using Sockethead.Razor.Helpers;
 using Sockethead.Razor.PRG;
 using Sockethead.Web.Areas.Samples.Utilities;
@@ -30,7 +31,7 @@ namespace Sockethead.Web.Areas.Samples.Controllers
             SampleModel model = SampleDataQuery.First();
             model.View = name;
             
-            return View(viewName: name.Replace(" ", ""), model: model).SetTitle(name);
+            return View(viewName: name.Replace(" ", ""), model: model);
         }
 
         [HttpPost, ValidateAntiForgeryToken]
@@ -43,41 +44,35 @@ namespace Sockethead.Web.Areas.Samples.Controllers
         [HttpGet]
         public IActionResult BasicUsage()
         {
-            return View(
-                new UserProfile
-                {
-                    UserId = Guid.NewGuid(),
-                    First = "John",
-                    Last = "Doe",
-                    JobTitle = "Software Developer",
-                    IsAdmin = true,
-                    Gender = Gender.Male,
-                })
-                .SetTitle("Basic Usage");
+            return View(model: new UserProfile
+            {
+                UserId = Guid.NewGuid(),
+                First = "John",
+                Last = "Doe",
+                JobTitle = "Software Developer",
+                IsAdmin = true,
+                Gender = Gender.Male,
+            });
         }
 
         [HttpPost, ValidateAntiForgeryToken]
         public IActionResult BasicUsage(UserProfile formData)
         {
-            return View(formData)
-                .SetTitle("Basic Usage")
-                .Success($"Successfully submitted form data {formData}.");
+            return View(formData).Success($"Successfully submitted form data {formData}.");
         }
 
         [HttpGet]
         public IActionResult AutoGenerateForm()
         {
-            return View(
-                    new UserProfile
-                    {
-                        UserId = Guid.NewGuid(),
-                        First = "John",
-                        Last = "Doe",
-                        JobTitle = "Software Developer",
-                        IsAdmin = true,
-                        Gender = Gender.Male,
-                    })
-                .SetTitle("Auto Generate Form");
+            return View(model: new UserProfile
+            {
+                UserId = Guid.NewGuid(),
+                First = "John",
+                Last = "Doe",
+                JobTitle = "Software Developer",
+                IsAdmin = true,
+                Gender = Gender.Male,
+            });
         }
 
         [HttpPost, ValidateAntiForgeryToken]
@@ -89,43 +84,39 @@ namespace Sockethead.Web.Areas.Samples.Controllers
             }
 
             if (!ModelState.IsValid)
-            {
-                return View(formData).SetTitle("Auto Generate Form");
-            }
+                return View(formData);
 
-            return View(formData)
-                .SetTitle("Auto Generate Form")
-                .Success($"Successfully submitted form data {formData}.");
+            return View(formData).Success($"Successfully submitted form data {formData}.");
         }
         
         [HttpGet]
         public IActionResult KitchenSink()
         {
-            return View(SampleDataQuery.First()).SetTitle("Kitchen Sink");
+            return View(SampleDataQuery.First());
         }
 
         [HttpPost, ValidateAntiForgeryToken]
         public IActionResult KitchenSink(SampleModel formData)
         {
-            return View(formData).SetTitle("Kitchen Sink").Success($"Successfully submitted form data {formData}.");
+            return View(formData).Success($"Successfully submitted form data {formData}.");
         }
         
         [HttpGet]
         public IActionResult CustomizeLayout()
         {
-            return View(new UserProfile()).SetTitle("Customize Layout");
+            return View(new UserProfile());
         }
 
         [HttpPost, ValidateAntiForgeryToken]
         public IActionResult CustomizeLayout(UserProfile formData)
         {
-            return View(formData).SetTitle("Customize Layout").Success($"Successfully submitted form data {formData}.");
+            return View(formData).Success($"Successfully submitted form data {formData}.");
         }
 
         [HttpGet, RestoreModelState]
         public IActionResult PostRedirectGet()
         {
-            return View(new UserProfile { First = "BogusName", Last = "Smith" }).SetTitle("Post Redirect Get (PRG)");
+            return View(new UserProfile { First = "BogusName", Last = "Smith" });
         }
 
         [HttpPost, ValidateAntiForgeryToken, SaveModelState]
@@ -147,7 +138,7 @@ namespace Sockethead.Web.Areas.Samples.Controllers
         [HttpGet, RestoreModelState]
         public IActionResult CustomizeErrors()
         {
-            return View(new UserProfile { First = "BogusName", Last = "Smith" }).SetTitle("Customize Error Messages");
+            return View(new UserProfile { First = "BogusName", Last = "Smith" });
         }
 
         [HttpPost, ValidateAntiForgeryToken, SaveModelState]
@@ -186,6 +177,36 @@ namespace Sockethead.Web.Areas.Samples.Controllers
         public IActionResult Prompt()
         {
             return View(new PromptExample());
+        }
+
+        [HttpGet]
+        public IActionResult HorizontalForm()
+        {
+            return View(new UserProfile());
+        }
+        
+        [HttpGet, RestoreModelState]
+        public IActionResult DataTypes()
+        {
+            if (TempData.ContainsKey("DataTypesModel"))
+            {
+                ViewBag.Result = TempData["DataTypesModel"];
+                TempData.Remove("DataTypesModel");
+            }
+            
+            return View(new DataTypesModel());
+        }
+
+        [HttpPost, ValidateAntiForgeryToken, SaveModelState]
+        public IActionResult DataTypes(DataTypesModel formData)
+        {
+            TempData["DataTypesModel"] = JsonConvert.SerializeObject(formData, Formatting.Indented);
+            
+            RedirectToActionResult result = RedirectToAction(actionName: nameof(DataTypes));
+            
+            return ModelState.IsValid
+                ? result.Success("Successfully submitted form data. See the bottom of the page for serialized model data.")
+                : result.Error("Error in model data.");
         }
     }
 }

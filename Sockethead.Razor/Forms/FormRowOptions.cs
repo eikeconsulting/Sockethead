@@ -10,6 +10,17 @@ namespace Sockethead.Razor.Forms
         public string Type { get; set; }
         public bool Inline { get; set; }
 
+        public Dictionary<string, object> ExtraAttributes { get; } = new();
+
+        public FormRowOptions()
+        {
+            IsReadOnly = false;
+            IsDisabled = false;
+            CssClass = "form-control";
+            Type = null;
+            Inline = false;
+        }
+        
         public FormRowOptions(
             bool isReadOnly = false, 
             bool isDisabled = false,
@@ -39,6 +50,9 @@ namespace Sockethead.Razor.Forms
             if (!string.IsNullOrEmpty(Type))
                 map["type"] = Type;
 
+            foreach (KeyValuePair<string, object> pair in ExtraAttributes)
+                map[pair.Key] = pair.Value;
+            
             return map;
         }
     }

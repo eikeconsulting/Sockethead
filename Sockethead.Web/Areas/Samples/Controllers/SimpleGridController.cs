@@ -27,8 +27,8 @@ namespace Sockethead.Web.Areas.Samples.Controllers
         
         private string _SetSampleLinks(string name)
         {
-            Feature feature = this.SetSampleLinks(Features, name);
-            return feature == null ? "Movies" : feature.Model;
+            _ = this.SetSampleLinks(Features, name);
+            return "Movies";
         }
 
         [HttpGet]

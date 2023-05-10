@@ -167,8 +167,7 @@ namespace Sockethead.Razor.Helpers
 
         public static Type GetObjectType<TObj>(Expression<Func<TObj, object>> expr)
         {
-            if ((expr.Body.NodeType == ExpressionType.Convert) ||
-                (expr.Body.NodeType == ExpressionType.ConvertChecked))
+            if (expr.Body.NodeType is ExpressionType.Convert or ExpressionType.ConvertChecked)
             {
                 if (expr.Body is UnaryExpression unary)
                     return unary.Operand.Type;
