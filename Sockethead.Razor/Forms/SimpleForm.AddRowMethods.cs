@@ -100,7 +100,8 @@ namespace Sockethead.Razor.Forms
             Resolve(optionsSetter, options);
                 
             return AddControlRowFor(
-                expression:expression, 
+                expression:expression,
+                formRowOptions: options,
                 htmlContent: Html.TextBoxFor(
                     expression: expression, 
                     format: format, 
@@ -113,7 +114,8 @@ namespace Sockethead.Razor.Forms
             int? columns = null,
             Action<FormRowOptions> optionsSetter = null)
         {
-            Dictionary<string, object> attributes = Resolve(optionsSetter).GetHtmlAttributes();
+            FormRowOptions options = Resolve(optionsSetter);
+            Dictionary<string, object> attributes = options.GetHtmlAttributes();
 
             // ReSharper disable PossibleInvalidOperationException
             IHtmlContent content = rows == null && columns == null
@@ -122,6 +124,7 @@ namespace Sockethead.Razor.Forms
             
             return AddControlRowFor(
                 expression: expression,
+                formRowOptions: options,
                 htmlContent: content);
         }
 
@@ -213,7 +216,8 @@ namespace Sockethead.Razor.Forms
             options.CssClass = "custom-select";
 
             return AddControlRowFor(
-                expression: expression, 
+                expression: expression,
+                formRowOptions: options,
                 htmlContent: Html.DropDownListFor(
                     expression: expression, 
                     selectList: selectList, 
@@ -230,6 +234,7 @@ namespace Sockethead.Razor.Forms
 
             return AddControlRowFor(
                 expression: expression, 
+                formRowOptions: options,
                 htmlContent: Html.ListBoxFor(
                     expression: expression, 
                     selectList: selectList, 
@@ -244,34 +249,30 @@ namespace Sockethead.Razor.Forms
             FormRowOptions options = Resolve(optionsSetter); 
             options.CssClass = "form-check-input";
             Dictionary<string, object> htmlAttributes = options.GetHtmlAttributes();
-
-            if (FormOptions.HorizontalForm)
-                AppendHtml("<div class='row'><div class='col-sm-9 offset-sm-3'>");
+            options.FormRowType = FormRowType.Radios;
             
-            foreach (SelectListItem item in selectList)
-            {
-                using IDisposable group = Div($"form-group form-check {(options.Inline ? "form-check-inline" : "")}");
-                
-                AppendHtml(
-                    content: Html.RadioButtonFor(
-                        expression: expression, 
-                        value: item.Value, 
-                        htmlAttributes: htmlAttributes));
-                AppendHtml(
-                    content: Html.LabelFor(
-                        expression: expression, 
-                        labelText: item.Text, 
-                        htmlAttributes: new { @class = "form-check-label" }));
-            }
-            AddValidationMessageFor(expression);
-            
-            if (options.Inline)
-                AppendHtml("<br/>");
-
-            if (FormOptions.HorizontalForm)
-                AppendHtml("</div></div>");
-            
-            return this;
+             return AppendHtml(
+                Html.Partial(
+                    partialViewName: "_SHFormRow", 
+                    model: new FormRowViewModel
+                    {
+                        FormOptions = FormOptions,
+                        FormRowOptions = options,
+                        Label = cssClass => Html.LabelFor(
+                            expression: expression, 
+                            labelText: Html.DisplayNameFor(expression), 
+                            htmlAttributes: new { @class = cssClass }),
+                        SelectListItems = selectList,
+                        RenderSelectListItem = item =>
+                        {
+                            htmlAttributes["id"] = item.Value;
+                            return Html.RadioButtonFor(
+                                expression: expression,
+                                value: item.Value,
+                                htmlAttributes: htmlAttributes);
+                        },
+                        ValidationMessage = Html.ValidationMessageFor(expression, message: null, htmlAttributes: new { @class = "text-danger" }),
+                    }));
         }
         
         public SimpleForm<T> AddCheckBoxRowFor(
@@ -336,34 +337,34 @@ namespace Sockethead.Razor.Forms
             AppendHtml(Html.HiddenFor(expression));
 
         public SimpleForm<T> AddSubmitButtonRow(string label = "Submit", string css = "btn-primary") =>
-            AppendHtml(Html.Partial(
-                partialViewName: "_SHFormSubmitButton", 
-                model: new SubmitButton
-                {
-                    Label = label,
-                    Action = FormOptions.ActionName,
-                    Controller = FormOptions.ControllerName,
-                    Css = css,
-                }));
+            AppendHtml(
+                Html.Partial(
+                    partialViewName: "_SHFormSubmitButton", 
+                    model: new SubmitButton
+                    {
+                        Label = label,
+                        Action = FormOptions.ActionName,
+                        Controller = FormOptions.ControllerName,
+                        Css = css,
+                    }));
 
-        private SimpleForm<T> AddControlRowFor<TResult>(Expression<Func<T, TResult>> expression, IHtmlContent htmlContent)
-        {
-            if (FormOptions.HorizontalForm)
-            {
-                using IDisposable group = Div("form-group form-row");
-                AddLabelFor(expression, cssClass: "col-sm-3 col-form-label d-flex justify-content-end");
-                using IDisposable div = Div("col-sm-9");
-                AppendHtml(htmlContent);
-            }
-            else
-            {
-                using IDisposable group = Div("form-group");
-                AddLabelFor(expression, cssClass: "control-label");
-                AppendHtml(htmlContent);
-                AddValidationMessageFor(expression);
-            }
-
-            return this;
-        }
+        private SimpleForm<T> AddControlRowFor<TResult>(
+            Expression<Func<T, TResult>> expression,
+            FormRowOptions formRowOptions,
+            IHtmlContent htmlContent) =>
+            AppendHtml(
+                Html.Partial(
+                    partialViewName: "_SHFormRow", 
+                    model: new FormRowViewModel
+                    {
+                        FormOptions = FormOptions,
+                        FormRowOptions = formRowOptions,
+                        Label = cssClass => Html.LabelFor(
+                            expression: expression, 
+                            labelText: Html.DisplayNameFor(expression), 
+                            htmlAttributes: new { @class = cssClass }),
+                        Input = htmlContent,
+                        ValidationMessage = Html.ValidationMessageFor(expression, message: null, htmlAttributes: new { @class = "text-danger" }),
+                    }));
     }
 }

@@ -1,0 +1,62 @@
+﻿@using Sockethead.Razor.Forms
+@model FormRowViewModel
+
+@{
+    void RadioInput()
+    {
+        @foreach (SelectListItem item in Model.SelectListItems)
+        {
+            string css = Model.FormRowOptions.Inline ? "form-check-inline" : "";
+            <div class="form-group form-check @css">
+                @Model.RenderSelectListItem(item) <label class="form-check-label" for="@item.Value" >@item.Text</label>
+            </div>
+        }
+    }
+}
+
+@if (Model.FormOptions.HorizontalForm)
+{
+    <div class="form-group form-row">
+        
+        @if (Model.FormRowOptions.FormRowType == FormRowType.Radios)
+        {
+            <legend class='col-form-label col-sm-3 pt-0  d-flex justify-content-end'>
+                @Model.Label(Model.FormOptions.HideLabels ? "sr-only" : "")
+            </legend>
+            <div class='col-sm-9'>
+                @{ RadioInput(); }
+                @Model.ValidationMessage
+            </div>
+        }
+        else
+        {
+            @Model.Label(Model.FormOptions.HideLabels ? "sr-only" : "col-sm-3 col-form-label d-flex justify-content-end")
+            <div class="col-sm-9">
+                @Model.Input
+                @Model.ValidationMessage
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="form-group">
+        @Model.Label(Model.FormOptions.HideLabels ? "sr-only" : "control-label")
+        
+        @if (Model.FormRowOptions.FormRowType == FormRowType.Radios)
+        {
+            @if (Model.FormRowOptions.Inline)
+            {
+                <br/>
+            }
+            
+            RadioInput();
+        }
+        else
+        {
+            @Model.Input
+        }
+        
+        @Model.ValidationMessage
+    </div>
+}

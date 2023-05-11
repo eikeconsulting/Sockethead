@@ -94,10 +94,10 @@ namespace Sockethead.Razor.Forms
         
         private void AddLabelFor<TResult>(Expression<Func<T, TResult>> expression, string cssClass)
         {
-            if (FormOptions.HideLabels)
-                return;
-            string label = Html.DisplayNameFor(expression);
-            AppendHtml(Html.LabelFor(expression, labelText: label, htmlAttributes: new { @class = cssClass }));
+            AppendHtml(Html.LabelFor(
+                expression: expression, 
+                labelText: Html.DisplayNameFor(expression), 
+                htmlAttributes: new { @class = FormOptions.HideLabels ? "sr-only" : cssClass }));
         }
         
         private void AddValidationMessageFor<TResult>(Expression<Func<T, TResult>> expression)
@@ -109,15 +109,15 @@ namespace Sockethead.Razor.Forms
             onBegin: () => AppendHtml($"<div class='{cssClass}'>"), 
             onEnd: () => AppendHtml("</div>"));
 
-        private static T Resolve<T>(Action<T> optionsSetter, T options) where T : new()
+        private static TFormOptions Resolve<TFormOptions>(Action<TFormOptions> optionsSetter, TFormOptions options) where TFormOptions : new()
         {
             optionsSetter?.Invoke(options);
             return options;
         }
         
-        private static T Resolve<T>(Action<T> optionsSetter) where T : new()
+        private static TFormOptions Resolve<TFormOptions>(Action<TFormOptions> optionsSetter) where TFormOptions : new()
         {
-            return Resolve(optionsSetter, new T());
+            return Resolve(optionsSetter, new TFormOptions());
         }
     }
 }

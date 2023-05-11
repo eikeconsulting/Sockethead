@@ -1,16 +1,6 @@
 ﻿@using Sockethead.Razor.Forms
 @model UserProfile
 
-@{
-    List<SelectListItem> cityList = new List<SelectListItem>
-    {
-        new("San Jose, California", "SJ"), 
-        new("Karachi, Pakistan", "KA"), 
-        new("New York, New York", "NY"), 
-        new("London, England", "LDN")
-    };
-}
-
 <div class="row">
     <div class="col-md-6">
         @(await Html
@@ -19,9 +9,12 @@
                 opt.HorizontalForm = true;
             })
             .AddRowsForModel()
-            .AddRadioButtonRowFor(model => model.City, cityList)
-            .AddDropDownListRowFor(model => model.City, cityList)
-            .AddListBoxFor(model => model.City, cityList)
+            .AddEnumRowFor(model => model.Gender)
+            .AddRadioButtonRowFor(model => model.City, ViewBag.CityList as IEnumerable<SelectListItem>)
+            .AddRadioButtonRowFor(model => model.State, ViewBag.StateList as IEnumerable<SelectListItem>, opt => opt.Inline = true)
+            .AddDropDownListRowFor(model => model.Country, ViewBag.CountryList as IEnumerable<SelectListItem>)
+            .AddListBoxFor(model => model.Hobbies, ViewBag.HobbyList as IEnumerable<SelectListItem>)
+            .AddSubmitButtonRow("Save Changes")
             .RenderAsync())
     </div>
     <div class="col-md-6">
@@ -31,6 +24,17 @@
         opt.HorizontalForm = true;
     })
     .AddRowsForModel()
+    .AddEnumRowFor(model => model.Gender)
+    .AddRadioButtonRowFor(model => model.City, 
+        ViewBag.CityList as IEnumerable&lt;SelectListItem>)
+    .AddRadioButtonRowFor(model => model.State, 
+        ViewBag.StateList as IEnumerable&lt;SelectListItem>, 
+            opt => opt.Inline = true)
+    .AddDropDownListRowFor(model => model.Country, 
+        ViewBag.CountryList as IEnumerable&lt;SelectListItem>)
+    .AddListBoxFor(model => model.Hobbies, 
+        ViewBag.HobbyList as IEnumerable&lt;SelectListItem>)
+    .AddSubmitButtonRow("Save Changes")
     .RenderAsync())</code></pre>
         <p>
         </p>
@@ -38,6 +42,14 @@
         <br>
     </div>
 </div>
+
+@if (ViewBag.Result != null)
+{
+    <br/>
+    <h4>Serialized Submitted Form Data</h4>
+    <pre>@ViewBag.Result</pre>
+}
+
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

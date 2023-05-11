@@ -2,8 +2,16 @@
 
 namespace Sockethead.Razor.Forms
 {
+    public enum FormRowType
+    {
+        Generic,
+        Checkbox,
+        Radios,
+    }
+    
     public class FormRowOptions
     {
+        public FormRowType FormRowType { get; set; } = FormRowType.Generic;
         public bool IsReadOnly { get; set; }
         public bool IsDisabled { get; set; }
         internal string CssClass { get; set; }

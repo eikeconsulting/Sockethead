@@ -179,12 +179,43 @@ namespace Sockethead.Web.Areas.Samples.Controllers
             return View(new PromptExample());
         }
 
-        [HttpGet]
+        [HttpGet, RestoreModelState]
         public IActionResult HorizontalForm()
         {
-            return View(new UserProfile());
+            UserProfile model = new();
+            
+            if (TempData.ContainsKey("UserProfile"))
+            {
+                string json = TempData["UserProfile"].ToString();
+                if (json != null)
+                {
+                    model = JsonConvert.DeserializeObject<UserProfile>(json);
+                    ViewBag.Result = json;
+                }
+                TempData.Remove("UserProfile");
+            }
+
+            ViewBag.CityList = UserProfile.CityList;
+            ViewBag.StateList = UserProfile.StateList;
+            ViewBag.CountryList = UserProfile.CountryList;
+            ViewBag.HobbyList = UserProfile.HobbyList;
+            
+            return View(model);
         }
-        
+
+        [HttpPost, ValidateAntiForgeryToken, SaveModelState]
+        public IActionResult HorizontalForm(UserProfile formData)
+        {
+            TempData["UserProfile"] = JsonConvert.SerializeObject(formData, Formatting.Indented);
+            
+            RedirectToActionResult result = RedirectToAction(actionName: nameof(HorizontalForm));
+            
+            return ModelState.IsValid
+                ? result.Success("Successfully submitted form data. See the bottom of the page for serialized model data.")
+                : result.Error("Error in model data.");
+        }
+
+
         [HttpGet, RestoreModelState]
         public IActionResult DataTypes()
         {

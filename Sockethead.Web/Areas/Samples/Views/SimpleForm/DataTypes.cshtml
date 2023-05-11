@@ -2,7 +2,7 @@
 @model DataTypesModel
 
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-5">
         <h4>All Data Types Form</h4>
         @(await Html
             .SimpleForm(Model)
@@ -12,7 +12,7 @@
             .RenderAsync())
         
     </div>
-    <div class="col-md-8">
+    <div class="col-md-7">
         <pre><code>@@(await Html
     .SimpleForm(Model)
     .RegisterEnums&lt;Gender>()
