@@ -6,15 +6,15 @@
         <h4>Basic Usage</h4>
         @(await Html
             .SimpleForm(Model)
-            .AddHiddenRowFor(model => model.Id)
+            .AddHiddenFor(model => model.Id)
             .AddRowsForModel()
-            .AddSubmitButtonRow("Save Changes")
+            .AddSubmitButton("Save Changes")
             .RenderAsync())
     </div>
     <div class="col-md-7">
         <pre><code>@@(await Html
     .SimpleForm(Model)
-    .AddHiddenRowFor(model => model.Id)
+    .AddHiddenFor(model => model.Id)
     .AddRowsForModel()
     .AddSubmitButtonRow("Save Changes")
     .RenderAsync())</code></pre>

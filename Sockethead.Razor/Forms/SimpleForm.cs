@@ -3,24 +3,30 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
- 
+using Sockethead.Razor.Utilities;
+
 namespace Sockethead.Razor.Forms
 {
     public partial class SimpleForm<T> : ISimpleForm where T : class
     {
-        private readonly HtmlContentBuilder Builder = new();
+        public FormOptions FormOptions { get; } = new();
+        private HtmlContentBuilder Builder { get; } = new();
         private IHtmlHelper<T> Html { get; }
-        public FormOptions FormOptions { get; }
         private EnumRegistry<T> EnumRegistry { get; set; }
         
         public SimpleForm(IHtmlHelper<T> html, Action<FormOptions> optionsAction = null)
         {
             Html = html;
-            FormOptions = new FormOptions();
             optionsAction?.Invoke(FormOptions);
         }
 
-        
+        public SimpleForm<T> Options(Action<FormOptions> optionsAction)
+        {
+            optionsAction(FormOptions);
+            return this;
+        }
+
+
         //======================= Enum Support =======================
         
         public SimpleForm<T> RegisterEnums<TEnum1>()

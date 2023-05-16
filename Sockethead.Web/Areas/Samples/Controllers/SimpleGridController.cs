@@ -8,13 +8,14 @@ using System.Collections.Generic;
 using Sockethead.Razor.Alert.Extensions;
 using Sockethead.Web.Areas.Samples.Extensions;
 using Sockethead.Web.Areas.Samples.Utilities;
+using Sockethead.Web.Filters;
 
 namespace Sockethead.Web.Areas.Samples.Controllers
 {
     [Area("Samples")]
-    public class SimpleGridController : Controller
+    public class SimpleGridController : Controller, IFeatureListController
     {
-        static List<Feature> Features => SimpleGridFeatures.Features;
+        public List<Feature> Features => SimpleGridFeatures.Features;
 
         private static IQueryable<SampleModel> SampleDataQuery => SampleData.SampleModels.AsQueryable();
         private static IQueryable<Movie> MovieQuery => SampleData.Movies.AsQueryable();
@@ -27,7 +28,7 @@ namespace Sockethead.Web.Areas.Samples.Controllers
         
         private string _SetSampleLinks(string name)
         {
-            _ = this.SetSampleLinks(Features, name);
+            _ = this.SetSampleLinks(name);
             return "Movies";
         }
 

@@ -35,7 +35,7 @@ namespace Sockethead.Razor.Utilities
 
         /// <summary>
         /// Render a Razor view to a string
-        /// This is useful for construting Emails
+        /// This is useful for constructing Emails
         /// </summary>
         /// <typeparam name="TModel">Type of the Model the Razor view is expecting</typeparam>
         /// <param name="viewName">Name (and path) of the view to be rendered</param>

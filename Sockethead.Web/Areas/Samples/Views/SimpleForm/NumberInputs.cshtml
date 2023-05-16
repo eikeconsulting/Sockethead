@@ -6,12 +6,12 @@
         <h4>Number Inputs</h4>
         @(await Html
             .SimpleForm(Model, opt => opt.ActionName = "Sample")
-            .AddHiddenRowFor(model => model.View)
+            .AddHiddenFor(model => model.View)
             .AddRowFor(model => model.RandomDouble)
             .AddRowFor(model => model.RandomDecimal)
             .AddRowFor(model => model.Float)
             .AddRowFor(model => model.NullableDouble)
-            .AddSubmitButtonRow("Save Changes")
+            .AddSubmitButton("Save Changes")
             .RenderAsync())
     </div>
     <div class="col-md-7">

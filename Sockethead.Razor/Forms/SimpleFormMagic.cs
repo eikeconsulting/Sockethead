@@ -1,8 +1,8 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Runtime.Serialization;
 using Sockethead.Razor.Helpers;
 
 namespace Sockethead.Razor.Forms
@@ -18,9 +18,14 @@ namespace Sockethead.Razor.Forms
             EnumRegistry = enumRegistry;
         }
 
+        private static PropertyInfo[] GetPropertiesOrderedByBaseFirst(Type type) =>
+            type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .OrderBy(p => p.DeclaringType == type ? 1 : 0)
+                .ToArray();
+        
         public void AddRowsForModel()
         {
-            foreach (PropertyInfo pi in typeof(T).GetProperties())
+            foreach (PropertyInfo pi in GetPropertiesOrderedByBaseFirst(typeof(T)))
                 AddRow(ExpressionHelpers.GenerateLambdaExpressionForProperty<T>(pi));
         }
 

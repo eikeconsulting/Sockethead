@@ -28,7 +28,7 @@ namespace Sockethead.Razor.Forms
         {
             // if row is hidden, nothing else matters
             if (expression.GetAttribute<HiddenInputAttribute, T, TResult>() != null)
-                return AddHiddenRowFor(expression);
+                return AddHiddenFor(expression);
             
             // first try to resolve the control based on the DataType Attribute
             switch (expression.GetDataTypeAttribute())
@@ -333,14 +333,14 @@ namespace Sockethead.Razor.Forms
             return this;
         }
  
-        public SimpleForm<T> AddHiddenRowFor<TResult>(Expression<Func<T, TResult>> expression) => 
+        public SimpleForm<T> AddHiddenFor<TResult>(Expression<Func<T, TResult>> expression) => 
             AppendHtml(Html.HiddenFor(expression));
 
-        public SimpleForm<T> AddSubmitButtonRow(string label = "Submit", string css = "btn-primary") =>
+        public SimpleForm<T> AddSubmitButton(string label = "Submit", string css = "btn-primary") =>
             AppendHtml(
                 Html.Partial(
                     partialViewName: "_SHFormSubmitButton", 
-                    model: new SubmitButton
+                    model: new ButtonViewModel
                     {
                         Label = label,
                         Action = FormOptions.ActionName,

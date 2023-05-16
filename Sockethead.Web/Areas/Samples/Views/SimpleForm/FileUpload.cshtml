@@ -6,10 +6,10 @@
         <h4>File Upload</h4>
         @(await Html
             .SimpleForm(Model, opt => opt.ActionName = "Sample")
-            .AddHiddenRowFor(model => model.View)
+            .AddHiddenFor(model => model.View)
             .AddFileUploadRowFor(model => model.File)
             .AddFileUploadRowFor(model => model.MultipleFiles, multiple: true, accept: "image/*")
-            .AddSubmitButtonRow("Upload")
+            .AddSubmitButton("Upload")
             .RenderAsync())
     </div>
     <div class="col-md-7">

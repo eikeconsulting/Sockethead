@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Sockethead.Razor.Forms
+namespace Sockethead.Razor.Utilities
 {
     internal class Scope : IDisposable
     {

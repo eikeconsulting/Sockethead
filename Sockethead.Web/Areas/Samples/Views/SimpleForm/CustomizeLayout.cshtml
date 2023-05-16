@@ -1,24 +1,24 @@
 ﻿@using Sockethead.Razor.Forms
-@model UserProfile
+@model ExtendedUserProfile
 
 <div class="row">
     <div class="col-md-6">
         @(await Html
             .SimpleForm(Model)
-            .AddHiddenRowFor(model => model.UserId)
+            .AddHiddenFor(model => model.UserId)
             .AddRowDiv(form => form
                 .AddColDiv(width: 4, form2 => form2.AddRowFor(model => model.First))
                 .AddColDiv(width: 8, form2 => form2.AddRowFor(model => model.Last)))
             .AddRowFor(model => model.JobTitle)
             .AddCheckBoxRowFor(model => model.IsAdmin)
             .AddEnumRowFor(model => model.Gender)
-            .AddSubmitButtonRow("Save Changes")
+            .AddSubmitButton("Save Changes")
             .RenderAsync())
     </div>
     <div class="col-md-6">
         <pre><code>@@(await Html
     .SimpleForm(Model)
-    .AddHiddenRowFor(model => model.UserId)
+    .AddHiddenFor(model => model.UserId)
     .AddRowDiv(form => form
         .AddColDiv(width: 4, form2 => form2
             .AddRowFor(model => model.First))

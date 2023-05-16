@@ -30,7 +30,7 @@ namespace Sockethead.Razor.PRG
             if (filterContext.Controller is not Controller controller)
                 return;
 
-            var modelState = controller.ViewData.ModelState;
+            ModelStateDictionary modelState = controller.ViewData.ModelState;
             if (modelState.IsValid)
                 return;
 
@@ -56,18 +56,6 @@ namespace Sockethead.Razor.PRG
             if (filterContext.Controller is not Controller controller || !controller.TempData.ContainsKey(Key))
                 return;
 
-            /*
-            IActionResult result = filterContext.Result;
-            if (result is Alerts.AlertDecoratedResult alertResult)
-                result = alertResult.Result;
-            
-            if (result is not ViewResult)
-            {
-                controller.TempData.Remove(Key);
-                return;
-            }
-            */
-             
             string s = controller.TempData[Key].ToString();
             ModelStateDictionary modelState = ModelStateHelpers.DeserializeModelState(s);
             controller.ViewData.ModelState.Merge(modelState);

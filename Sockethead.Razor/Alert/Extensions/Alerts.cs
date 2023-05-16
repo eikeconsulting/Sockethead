@@ -15,8 +15,7 @@ namespace Sockethead.Razor.Alert.Extensions
 
         public static void AddMessage(this ITempDataDictionary tempData, string key, string message)
         {
-            if (tempData[key] == null)
-                tempData[key] = "";
+            tempData[key] ??= "";
             tempData[key] += message;
         }
 

@@ -10,37 +10,37 @@ namespace Sockethead.Razor.PRG
     {
         private class ModelStateTransferValue
         {
-            public string Key { get; set; }
-            public string AttemptedValue { get; set; }
+            public string Key { get; init; }
+            public string AttemptedValue { get; init; }
             public object RawValue { get; set; }
-            public ICollection<string> ErrorMessages { get; set; } = new List<string>();
+            public ICollection<string> ErrorMessages { get; init; } = new List<string>();
         }
 
         public static string SerializeModelState(ModelStateDictionary modelState)
         {
-            var errorList = modelState
+            return JsonConvert.SerializeObject(modelState
                 .Select(kvp => new ModelStateTransferValue
                 {
                     Key = kvp.Key,
                     AttemptedValue = kvp.Value.AttemptedValue,
                     RawValue = kvp.Value.RawValue,
                     ErrorMessages = kvp.Value.Errors.Select(err => err.ErrorMessage).ToList(),
-                });
-
-            return JsonConvert.SerializeObject(errorList);
+                }));
         }
 
         public static ModelStateDictionary DeserializeModelState(string serialisedErrorList)
         {
             var errorList = JsonConvert.DeserializeObject<List<ModelStateTransferValue>>(serialisedErrorList);
-            var modelState = new ModelStateDictionary();
+            ModelStateDictionary modelState = new();
 
-            foreach (var item in errorList)
+            foreach (ModelStateTransferValue item in errorList)
             {
-                item.RawValue = item.RawValue is JArray jArray ? jArray.ToObject<object[]>() : item.RawValue;
+                item.RawValue = item.RawValue is JArray jArray 
+                    ? jArray.ToObject<object[]>() 
+                    : item.RawValue;
                 
                 modelState.SetModelValue(item.Key, item.RawValue, item.AttemptedValue);
-                foreach (var error in item.ErrorMessages)
+                foreach (string error in item.ErrorMessages)
                     modelState.AddModelError(item.Key, error);
             }
 

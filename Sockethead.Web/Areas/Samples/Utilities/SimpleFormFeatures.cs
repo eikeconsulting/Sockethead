@@ -16,8 +16,21 @@ namespace Sockethead.Web.Areas.Samples.Utilities
             {
                 Url = "BasicUsage",
                 Name = "Basic Usage",
-                Description = "A minimal SimpleForm built manually.",
+                Description = "An introduction to SimpleForm.",
             },
+            new()
+            {
+                Url = "ResolveRows",
+                Name = "Resolve Rows",
+                Description = "Let SimpleForm determine the best type for each row based on the decorated fields of the Model.",
+            },
+            new()
+            {
+                Url = "ResolveModel",
+                Name = "Resolve Model",
+                Description = "SimpleForm can build the entire form automatically via Reflection.",
+            },
+            
             new()
             {
                 Url = "HorizontalForm",

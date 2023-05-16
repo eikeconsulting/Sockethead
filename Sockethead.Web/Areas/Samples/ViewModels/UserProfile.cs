@@ -17,20 +17,23 @@ namespace Sockethead.Web.Areas.Samples.ViewModels
         [HiddenInput] public Guid UserId { get; set; } = Guid.NewGuid();
 
         [DisplayName("First Name")]
+        [Display(Prompt = "Enter first name")]
         [Required(ErrorMessage = "We need a first name here")]
         [MaxLength(20, ErrorMessage = "First name is too long...")]
         public string First { get; set; } = "John";
 
-        [Display(Name = "Last Name", Order = 2)]
+        [Display(Name = "Last Name", Prompt = "Enter last name")]
         [MaxLength(20)]
         public string Last { get; set; } = "Doe";
 
-        [Display(Name = "Job Title")] public string JobTitle { get; set; }
+        [Display(Name = "Job Title", Prompt = "Enter job title")] public string JobTitle { get; set; }
 
         [DisplayName("Administrator")] public bool IsAdmin { get; set; }
+    }
 
+    public class ExtendedUserProfile : UserProfile
+    {
         [DisplayName("Nerd")] public bool IsNerd { get; set; } = true;
-        
         public Gender Gender { get; set; }
 
         [DataType(DataType.Date)]

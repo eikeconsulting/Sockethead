@@ -6,9 +6,9 @@
         <h4>Submit Button</h4>
         @(await Html
             .SimpleForm(Model, opt => opt.ActionName = "Sample")
-            .AddHiddenRowFor(model => model.View)
+            .AddHiddenFor(model => model.View)
             .AddRowFor(model => model.First)
-            .AddSubmitButtonRow(label: "Update First Name", css: "btn btn-danger")
+            .AddSubmitButton(label: "Update First Name", css: "btn btn-danger")
             .RenderAsync())
     </div>
     <div class="col-md-7">

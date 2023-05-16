@@ -6,9 +6,9 @@
         <h4>Text Area</h4>
         @(await Html
             .SimpleForm(Model, opt => opt.ActionName = "Sample")
-            .AddHiddenRowFor(model => model.View)
+            .AddHiddenFor(model => model.View)
             .AddRowFor(model => model.FooBarBazBBBlah)
-            .AddSubmitButtonRow("Save Changes")
+            .AddSubmitButton("Save Changes")
             .RenderAsync())
     </div>
     <div class="col-md-7">

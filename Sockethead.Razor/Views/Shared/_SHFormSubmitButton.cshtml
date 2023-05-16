@@ -1,4 +1,4 @@
-﻿@model Sockethead.Razor.Forms.SubmitButton
+﻿@model Sockethead.Razor.Forms.ButtonViewModel
 
 @{
     string css = $"btn {Model.Css}"; 
@@ -6,4 +6,12 @@
     string action = Model.Action ?? ViewContext.RouteData.Values["action"].ToString();
 }
 
-<input type="submit" value="@Model.Label" class="@css" asp-action="@action" asp-controller="@controller" />
+@if (Model.Url != null)
+{
+    <a href="@Model.Url" class="@css" role="button">@Model.Label</a>
+}
+else
+{
+    <input type="submit" value="@Model.Label" class="@css" asp-action="@action" asp-controller="@controller"/>
+}
+&nbsp;

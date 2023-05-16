@@ -4,41 +4,32 @@
 <div class="row">
     <div class="col-md-6">
         @(await Html
-            .SimpleForm(Model, opt =>
-            {
-                opt.ActionName = "BasicUsage";
-                opt.ControllerName = "SimpleForm";
-                opt.FormMethod = FormMethod.Post;
-            })
-            .AddHiddenRowFor(model => model.UserId)
-            .AddRowFor(model => model.First)
-            .AddRowFor(model => model.Last)
-            .AddRowFor(model => model.JobTitle)
+            .SimpleForm(Model)
+            .AddHiddenFor(model => model.UserId)
+            .AddTextBoxRowFor(model => model.First)
+            .AddTextBoxRowFor(model => model.Last)
+            .AddTextBoxRowFor(model => model.JobTitle)
             .AddCheckBoxRowFor(model => model.IsAdmin)
-            .AddEnumRowFor(model => model.Gender)
-            .AddSubmitButtonRow("Save Changes")
             .RenderAsync())
     </div>
     <div class="col-md-6">
         <h4>Razor</h4>
         <pre><code>@@(await Html
-    .SimpleForm(Model, opt =>
-    {
-        opt.ActionName = "BasicUsage";
-        opt.ControllerName = "SimpleForm";
-        opt.FormMethod = FormMethod.Post;
-    })
-    .AddHiddenRowFor(model => model.UserId)
-    .AddRowFor(model => model.First)
-    .AddRowFor(model => model.Last)
-    .AddRowFor(model => model.JobTitle)
+    .SimpleForm(Model)
+    .AddHiddenFor(model => model.UserId)
+    .AddTextBoxRowFor(model => model.First)
+    .AddTextBoxRowFor(model => model.Last)
+    .AddTextBoxRowFor(model => model.JobTitle)
     .AddCheckBoxRowFor(model => model.IsAdmin)
-    .AddEnumRowFor(model => model.Gender)
-    .AddSubmitButtonRow("Save Changes")
     .RenderAsync())</code></pre>
         <p>
+        SimpleForm can quickly create a form from a data model.
+        Here we see you can specify the specific row types you want to use for each property in your model.
+        Each the row is similar to the Html.TextBoxFor() helper, but includes the label and error message
+        in addition to the input control. 
+        <br/><br/>
+        Note that this form does not contain a submit button, we'll cover that later.
         </p>
-        
         <br>
     </div>
 </div>
@@ -47,54 +38,21 @@
         <h4>Model</h4>
         <pre><code>public class UserProfile
 {
-    public Guid UserId { get; set; }
+   public Guid UserId { get; set; } = Guid.NewGuid();
 
-    [DisplayName("First Name")]
-    [Required(ErrorMessage = "We need a first name here")]
-    [MaxLength(20, ErrorMessage = "First name is too long...")]
-    public string First { get; set; }
+   public string First { get; set; } = "John";
 
-    [Display(Name = "Last Name")]
-    [MaxLength(20)]
-    public string Last { get; set; }
+   public string Last { get; set; } = "Doe";
 
-    [Display(Name = "Job Title")]
-    public string JobTitle { get; set; }
+   public string JobTitle { get; set; }
 
-    [DisplayName("Administrator")]
-    public bool IsAdmin { get; set; }
-
-    public Gender Gender { get; set; }
-
-    public override string ToString() => 
-        $"{UserId}: {First} {Last}, {JobTitle}, Is Admin: {IsAdmin}, Gender: {Gender}";
+   public bool IsAdmin { get; set; }
 }</code></pre>
     </div>
     <div class="col-md-6">
         <h4>Controller</h4>
-        <pre><code>[HttpGet]
-public IActionResult BuildForm()
-{
-   return View(
-       new UserProfile
-       {
-            UserId = Guid.NewGuid(),
-            First = "John",
-            Last = "Doe",
-            JobTitle = "Software Developer",
-            IsAdmin = true,
-            Gender = Gender.Male,
-       })
-       .SetTitle("Basic Usage");
-}
-
-[HttpPost, ValidateAntiForgeryToken]
-public IActionResult BuildForm(UserProfile formData)
-{
-   return View(formData)
-        .SetTitle("Basic Usage")
-        .Success($"Successfully submitted form data {formData}.");
-}</code></pre>
+        <pre><code>[HttpGet] 
+public IActionResult BasicUsage() => View(new UserProfile());</code></pre>
     </div>
 </div>
 

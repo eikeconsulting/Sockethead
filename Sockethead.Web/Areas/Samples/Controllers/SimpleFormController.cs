@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Sockethead.Razor.Alert.Extensions;
 using Sockethead.Web.Data;
 using Sockethead.Web.Data.Entities;
 using System.Linq;
 using Newtonsoft.Json;
+using Sockethead.Razor.Forms;
 using Sockethead.Razor.Helpers;
 using Sockethead.Razor.PRG;
 using Sockethead.Web.Areas.Samples.Utilities;
@@ -16,9 +16,9 @@ namespace Sockethead.Web.Areas.Samples.Controllers
 {
     [Area("Samples")]
     [SampleLinksActionFilter]
-    public class SimpleFormController : Controller
+    public class SimpleFormController : Controller, IFeatureListController
     {
-        private static List<Feature> Features => SimpleFormFeatures.Features;
+        public List<Feature> Features => SimpleFormFeatures.Features;
 
         private static IQueryable<SampleModel> SampleDataQuery => SampleData.SampleModels.AsQueryable();
         
@@ -42,82 +42,80 @@ namespace Sockethead.Web.Areas.Samples.Controllers
         }
 
         [HttpGet]
-        public IActionResult BasicUsage()
-        {
-            return View(model: new UserProfile
-            {
-                UserId = Guid.NewGuid(),
-                First = "John",
-                Last = "Doe",
-                JobTitle = "Software Developer",
-                IsAdmin = true,
-                Gender = Gender.Male,
-            });
-        }
-
-        [HttpPost, ValidateAntiForgeryToken]
-        public IActionResult BasicUsage(UserProfile formData)
-        {
-            return View(formData).Success($"Successfully submitted form data {formData}.");
-        }
+        public IActionResult BasicUsage() => View(model: new UserProfile());
 
         [HttpGet]
-        public IActionResult AutoGenerateForm()
-        {
-            return View(model: new UserProfile
-            {
-                UserId = Guid.NewGuid(),
-                First = "John",
-                Last = "Doe",
-                JobTitle = "Software Developer",
-                IsAdmin = true,
-                Gender = Gender.Male,
-            });
-        }
+        public IActionResult ResolveRows() => View(model: new UserProfile());
+
+        [HttpGet]
+        public IActionResult ResolveModel() => View(model: new UserProfile());
+
+        [HttpGet]
+        public IActionResult AutoGenerateForm() => View(model: new UserProfile());
 
         [HttpPost, ValidateAntiForgeryToken]
         public IActionResult AutoGenerateForm(UserProfile formData)
         {
             if (formData.Last == "Doe")
-            {
                 ModelState.AddModelError("Last", "Sorry, we don't accept Doe as a last name.");
-            }
 
             if (!ModelState.IsValid)
-                return View(formData);
+                return View(formData)
+                    .Error("Error in form submission.");
 
-            return View(formData).Success($"Successfully submitted form data {formData}.");
-        }
-        
-        [HttpGet]
-        public IActionResult KitchenSink()
-        {
-            return View(SampleDataQuery.First());
+            /* do actual form processing logic here */
+            
+            return View(formData)
+                .Success($"Successfully submitted form data {formData}.");
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public IActionResult KitchenSink(SampleModel formData)
-        {
-            return View(formData).Success($"Successfully submitted form data {formData}.");
-        }
-        
-        [HttpGet]
-        public IActionResult CustomizeLayout()
-        {
-            return View(new UserProfile());
-        }
+        public IActionResult AutoGenerateForm2(UserProfile formData) =>
+            this.SimpleFormHandler()
+                .OnResult(() => View(viewName: nameof(AutoGenerateForm), model: formData))
+                .OnError(result => result.Error("Error in form submission."))
+                .OnSuccess(result => result.Success($"Successfully submitted form data {formData}."))
+                .ProcessForm(() =>
+                {
+                    if (formData.Last == "Doe")
+                    {
+                        ModelState.AddModelError("Last", "Sorry, we don't accept Doe as a last name.");
+                        //return;
+                    }
+
+                    /* do actual form processing logic here */
+                });
+
 
         [HttpPost, ValidateAntiForgeryToken]
-        public IActionResult CustomizeLayout(UserProfile formData)
-        {
-            return View(formData).Success($"Successfully submitted form data {formData}.");
-        }
+        public IActionResult AutoGenerateForm3(UserProfile formData) =>
+            this.SimpleFormHandler()
+                .OnResult(View(viewName: nameof(AutoGenerateForm), model: formData))
+                .OnError("Error in form submission.")
+                .OnSuccess($"Successfully submitted form data {formData}.")
+                .Validate(v => v
+                    .For("Last")
+                    .Must(formData.Last != "Doe")
+                    .Message("Sorry, we don't accept Doe as a last name."))
+                .ProcessForm(() =>
+                {
+                    /* do actual form processing logic here */
+                });
+        
+        [HttpGet]
+        public IActionResult KitchenSink() => View(SampleDataQuery.First());
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public IActionResult KitchenSink(SampleModel formData) => View(formData).Success($"Successfully submitted form data {formData}.");
+
+        [HttpGet]
+        public IActionResult CustomizeLayout() => View(new ExtendedUserProfile());
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public IActionResult CustomizeLayout(ExtendedUserProfile formData) => View(formData).Success($"Successfully submitted form data {formData}.");
 
         [HttpGet, RestoreModelState]
-        public IActionResult PostRedirectGet()
-        {
-            return View(new UserProfile { First = "BogusName", Last = "Smith" });
-        }
+        public IActionResult PostRedirectGet() => View(new UserProfile { First = "BogusName", Last = "Smith" });
 
         [HttpPost, ValidateAntiForgeryToken, SaveModelState]
         public IActionResult PostRedirectGet(UserProfile formData)
@@ -182,29 +180,29 @@ namespace Sockethead.Web.Areas.Samples.Controllers
         [HttpGet, RestoreModelState]
         public IActionResult HorizontalForm()
         {
-            UserProfile model = new();
+            ExtendedUserProfile model = new();
             
             if (TempData.ContainsKey("UserProfile"))
             {
                 string json = TempData["UserProfile"].ToString();
                 if (json != null)
                 {
-                    model = JsonConvert.DeserializeObject<UserProfile>(json);
+                    model = JsonConvert.DeserializeObject<ExtendedUserProfile>(json);
                     ViewBag.Result = json;
                 }
                 TempData.Remove("UserProfile");
             }
 
-            ViewBag.CityList = UserProfile.CityList;
-            ViewBag.StateList = UserProfile.StateList;
-            ViewBag.CountryList = UserProfile.CountryList;
-            ViewBag.HobbyList = UserProfile.HobbyList;
+            ViewBag.CityList = ExtendedUserProfile.CityList;
+            ViewBag.StateList = ExtendedUserProfile.StateList;
+            ViewBag.CountryList = ExtendedUserProfile.CountryList;
+            ViewBag.HobbyList = ExtendedUserProfile.HobbyList;
             
             return View(model);
         }
 
         [HttpPost, ValidateAntiForgeryToken, SaveModelState]
-        public IActionResult HorizontalForm(UserProfile formData)
+        public IActionResult HorizontalForm(ExtendedUserProfile formData)
         {
             TempData["UserProfile"] = JsonConvert.SerializeObject(formData, Formatting.Indented);
             

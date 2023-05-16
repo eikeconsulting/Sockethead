@@ -1,5 +1,5 @@
 ﻿@using Sockethead.Razor.Forms
-@model UserProfile
+@model ExtendedUserProfile
 
 <div class="row">
     <div class="col-md-6">
@@ -14,7 +14,7 @@
             .AddRadioButtonRowFor(model => model.State, ViewBag.StateList as IEnumerable<SelectListItem>, opt => opt.Inline = true)
             .AddDropDownListRowFor(model => model.Country, ViewBag.CountryList as IEnumerable<SelectListItem>)
             .AddListBoxFor(model => model.Hobbies, ViewBag.HobbyList as IEnumerable<SelectListItem>)
-            .AddSubmitButtonRow("Save Changes")
+            .AddSubmitButton("Save Changes")
             .RenderAsync())
     </div>
     <div class="col-md-6">

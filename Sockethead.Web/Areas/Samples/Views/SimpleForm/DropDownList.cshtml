@@ -10,11 +10,11 @@
         <h4>Drop Down List</h4>
         @(await Html
             .SimpleForm(Model)
-            .AddHiddenRowFor(model => model.View)
+            .AddHiddenFor(model => model.View)
             .AddEnumRowFor(model => model.SampleEnum)
             .AddDropDownListRowFor(model => model.City, cityList)
             .AddListBoxFor(model => model.City, cityList)
-            .AddSubmitButtonRow("Save Changes")
+            .AddSubmitButton("Save Changes")
             .RenderAsync())
     </div>
     <div class="col-md-7">
