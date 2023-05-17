@@ -1,0 +1,51 @@
+﻿@model UserProfile
+
+<div class="row">
+    <div class="col-md-6">
+        @(await Html
+            .SimpleForm(Model)
+            .Options(o => 
+            {
+                o.ActionName = "Options";
+                o.ControllerName = "SimpleForm";
+                o.FormMethod = FormMethod.Post;
+                o.HorizontalForm = true;
+                o.HideLabels = false;
+                o.ShowError = true;
+                o.ErrorMessage = "Oops!  We had a problem processing the form.";
+                o.ShowValidationSummary = true;
+            })
+            .AddRowsForModel()
+            .RenderAsync())
+    </div>
+    <div class="col-md-6">
+        <h4>Razor</h4>
+        <pre><code>@@(await Html
+    .SimpleForm(Model)
+    .Options(o => 
+    {
+        o.ActionName = "Options";
+        o.ControllerName = "SimpleForm";
+        o.FormMethod = FormMethod.Post;
+        o.HorizontalForm = true;
+        o.HideLabels = false;
+        o.ShowError = true;
+        o.ErrorMessage = 
+            "Oops!  We had a problem processing the form.";
+        o.ShowValidationSummary = true;
+    })
+    .AddRowsForModel()
+    .RenderAsync())</code></pre>
+        <p>
+            Here we demonstrate the Options method.  All of the options are show above with their default 
+            or implied values.
+            We will demonstrate these options in other examples.
+            <br/><br/>
+            Note that Options can be called multiple times to change active options during the form building process.
+        </p>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

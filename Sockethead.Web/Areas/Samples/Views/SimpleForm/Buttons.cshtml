@@ -1,0 +1,74 @@
+﻿@model UserProfile
+
+<div class="row">
+    <div class="col-md-6">
+        @(await Html
+            .SimpleForm(Model)
+            .AddRowsForModel()
+            
+            // add a save button and specify the action specifically
+            .AddSubmitButton(
+                label: "Save Changes", 
+                actionName: "Buttons")
+            
+            // add a save button and accept the default action
+            .AddSubmitButton(
+                label: "Save Changes",
+                css: "btn btn-danger")
+            
+            // add a link button to the current page which will reload the page
+            .AddLinkButton(
+                label: "Reset Form", 
+                url: "Buttons", 
+                css: "btn btn-secondary")
+            
+            .RenderAsync())
+    </div>
+    <div class="col-md-6">
+        <h4>Razor</h4>
+        <pre><code>@@(await Html
+    .SimpleForm(Model)
+    .AddRowsForModel()
+    
+    // add a save button and specify the action specifically
+    .AddSubmitButton(
+        label: "Save Changes", 
+        actionName: "Buttons")
+    
+    // add a save button and accept the default action
+    .AddSubmitButton(
+        label: "Save Changes",
+        css: "btn btn-danger")
+    
+    // add a link button to current page to reload
+    .AddLinkButton(
+        label: "Reset Form", 
+        url: "Buttons", 
+        css: "btn btn-secondary")
+    
+    .RenderAsync())</code></pre>
+        <p>
+            Now that we have the form, we can add buttons to submit and reset it.
+            <br/><br/>
+            Additionally, we can style the buttons with custom CSS.
+            <br/><br/>
+            Finally, note that we can display an Alert from the Controller  when the form is submitted.
+        </p>
+        <br>
+        <h4>Controller</h4>
+        <pre><code>[HttpGet]
+public IActionResult Buttons() => View(new UserProfile());
+
+[HttpPost]
+public IActionResult Buttons(UserProfile formData)
+{
+   return View(formData)
+       .Success($"Submitted {formData.First} {formData.Last}.");
+}</code></pre>
+        
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

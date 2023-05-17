@@ -271,7 +271,10 @@ namespace Sockethead.Razor.Forms
                                 value: item.Value,
                                 htmlAttributes: htmlAttributes);
                         },
-                        ValidationMessage = Html.ValidationMessageFor(expression, message: null, htmlAttributes: new { @class = "text-danger" }),
+                        ValidationMessage = Html.ValidationMessageFor(
+                            expression: expression, 
+                            message: null, 
+                            htmlAttributes: new { @class = "text-danger" }),
                     }));
         }
         
@@ -336,18 +339,36 @@ namespace Sockethead.Razor.Forms
         public SimpleForm<T> AddHiddenFor<TResult>(Expression<Func<T, TResult>> expression) => 
             AppendHtml(Html.HiddenFor(expression));
 
-        public SimpleForm<T> AddSubmitButton(string label = "Submit", string css = "btn-primary") =>
+        public SimpleForm<T> AddSubmitButton(
+            string label = "Submit", 
+            string actionName = null, 
+            string controllerName = null, 
+            string css = "btn-primary") =>
             AppendHtml(
                 Html.Partial(
-                    partialViewName: "_SHFormSubmitButton", 
+                    partialViewName: "_SHFormButton", 
                     model: new ButtonViewModel
                     {
                         Label = label,
-                        Action = FormOptions.ActionName,
-                        Controller = FormOptions.ControllerName,
+                        Action = actionName ?? FormOptions.ActionName,
+                        Controller = controllerName ?? FormOptions.ControllerName,
                         Css = css,
                     }));
 
+        public SimpleForm<T> AddLinkButton(
+            string label, 
+            string url, 
+            string css = "btn-primary") =>
+            AppendHtml(
+                Html.Partial(
+                    partialViewName: "_SHFormButton", 
+                    model: new ButtonViewModel
+                    {
+                        Label = label,
+                        Url = url,
+                        Css = css,
+                    }));
+        
         private SimpleForm<T> AddControlRowFor<TResult>(
             Expression<Func<T, TResult>> expression,
             FormRowOptions formRowOptions,

@@ -90,7 +90,7 @@ namespace Sockethead.Razor.Forms
 
         public async Task<IHtmlContent> RenderAsync()
         {
-            return await Html.PartialAsync("_SHSimpleForm", this);
+            return await Html.PartialAsync("_SHForm", this);
         }
 
         public IHtmlContent RenderForm() => Builder;

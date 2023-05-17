@@ -30,13 +30,56 @@ namespace Sockethead.Web.Areas.Samples.Utilities
                 Name = "Resolve Model",
                 Description = "SimpleForm can build the entire form automatically via Reflection.",
             },
-            
+            new()
+            {
+                Url = "Options",
+                Name = "Options",
+                Description = "Control various aspects of SimpleForm via Options.",
+            },
+            new()
+            {
+                Url = "Buttons",
+                Name = "Buttons",
+                Description = "Add Submit and Link buttons to submit and reset a form.",
+            },
+            new()
+            {
+                Url = "PostRedirectGet",
+                Name = "Post Redirect Get (PRG)",
+                Description = "Implement the Post Redirect Get (PRG) pattern to avoid duplicate form submissions."
+            },
+            new()
+            {
+                Url = "HandleErrors",
+                Name = "Handle Form Errors",
+                Description = "Handle errors in a form with the PRG pattern."
+            },
+            new()
+            {
+                Url = "CustomizeErrors1",
+                Name = "Customize Form Error Message",
+                Description = "Override the errors displayed in a form after the postback."
+            },
+            new()
+            {
+                Url = "CustomizeErrors2",
+                Name = "Custom Error Alert",
+                Description = "Disable form level errors and display an error alert at the page level."
+            },
+            new()
+            {
+                Url = "FormHandler",
+                Name = "SimpleForm Handler",
+                Description = "Use SimpleFormHandler in the controller to handle forms (any form)."
+            },
             new()
             {
                 Url = "HorizontalForm",
                 Name = "Horizontal Form",
                 Description = "Labels are on the left instead above fields, creating a more compact form.",
             },
+            
+            
             new()
             {
                 Url = "AutoGenerateForm",
@@ -48,18 +91,6 @@ namespace Sockethead.Web.Areas.Samples.Utilities
                 Url = "CustomizeLayout",
                 Name = "Customize Layout",
                 Description = "Customized the layout with rows and columns in your form.",
-            },
-            new()
-            {
-                Url = "PostRedirectGet",
-                Name = "Post Redirect Get (PRG)",
-                Description = "Implement the Post Redirect Get (PRG) pattern to avoid duplicate form submissions."
-            },
-            new()
-            {
-                Url = "CustomizeErrors",
-                Name = "Customize Error Messages",
-                Description = "Control how to display form validation errors."
             },
             new()
             {
@@ -79,12 +110,6 @@ namespace Sockethead.Web.Areas.Samples.Utilities
                 Url = "KitchenSink",
                 Name = "KitchenSink",
                 Description = "A  SimpleForm, built automatically from a Model.",
-            },
-            new()
-            {
-                //Url = "SubmitButton",
-                Name = "Submit Button",
-                Description = "How to specify what text to render for the submit button and change the css class.",
             },
             new()
             {

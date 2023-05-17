@@ -17,8 +17,13 @@
     .RenderAsync())</code></pre>
         <p>
         </p>
-        
-        <br>
+        This page demonstrates the Post-Redirect-Get (PRG) pattern which prevents the form from getting reposted
+        when the user refreshes the page.  This is accomplished by redirecting to the Get method after the Post method.
+        <br/><br/>
+        We add Controller Action attributes on the Get and Post methods to restore and save the ModelState.
+        Then we make sure to always redirect to the Get method after the Post method completes.  The SaveModelState 
+        attribute will serialize the Model data to TempData and then RestoreModelState attribute will
+        deserialize it to restore the ModelState across the redirect.
     </div>
 </div>
 
@@ -27,26 +32,17 @@
 <div class="row">
     <div class="col-md-12">
         <h4>Controller</h4>
-        <pre><code>[HttpGet, RestoreModelState]
-public IActionResult PostRedirectGet()
-{
-   return View(new UserProfile { First = "BogusName", Last = "Smith" }).SetTitle("Post Redirect Get (PRG)");
-}
+        <pre><code>[HttpGet]
+[RestoreModelState]
+public IActionResult PostRedirectGet() => View(new UserProfile()));
 
-[HttpPost, ValidateAntiForgeryToken, SaveModelState]
+[HttpPost]
+[ValidateAntiForgeryToken]
+[SaveModelState]
 public IActionResult PostRedirectGet(UserProfile formData)
 {
-   RedirectToActionResult result = RedirectToAction(actionName: nameof(PostRedirectGet));
-
-   if (formData.First == "BogusName")
-       ModelState.AddModelError("First", "Sorry, we don't accept BogusName as a first name.");
-
-   if (!ModelState.IsValid)
-       return result;
-
-   // handle form
-
-   return result.Success($"Successfully submitted form data {formData}.");        
+    return RedirectToAction(actionName: nameof(PostRedirectGet))
+        .Success($"Successfully submitted form data.");        
 }</code></pre>
     </div>
 </div>

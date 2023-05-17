@@ -54,7 +54,7 @@ namespace Sockethead.Razor.Forms
 
         public SimpleFormHandler OnSuccess(string message)
         {
-            _onError = result => result.Success(message);
+            _onSuccess = result => result.Success(message);
             return this;
         }
 

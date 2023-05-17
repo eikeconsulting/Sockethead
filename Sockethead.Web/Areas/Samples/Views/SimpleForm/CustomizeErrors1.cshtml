@@ -1,0 +1,73 @@
+﻿@model UserProfile
+
+<div class="row">
+    <div class="col-md-6">
+        @(await Html
+            .SimpleForm(Model, opt => 
+            { 
+                opt.ActionName = "CustomizeErrors";
+                opt.ShowError = true;
+                opt.ErrorMessage = "Please correct the errors in the form below."; 
+                opt.ShowValidationSummary = false; 
+            })
+            .AddRowFor(profile => profile.First)
+            .AddRowFor(profile => profile.Last)
+            .AddSubmitButton("Save Changes")
+            .RenderAsync())
+    </div>
+    <div class="col-md-6">
+        <h4>Razor</h4>
+        <pre><code>@@(await Html
+    .SimpleForm(Model, opt => 
+    { 
+        opt.ShowError = true;
+        opt.ErrorMessage = 
+            "Please correct the errors in the form below."; 
+        opt.ShowValidationSummary = false; 
+    })
+    .AddRowFor(profile => profile.First)
+    .AddRowFor(profile => profile.Last)
+    .AddSubmitButtonRow("Save Changes")
+    .RenderAsync())</code></pre>
+        <p>
+        </p>
+    </div>
+</div>
+
+<hr/>
+
+<div class="row">
+    <div class="col-md-12">
+        <h4>Controller</h4>
+        <pre><code>[HttpGet, RestoreModelState]
+public IActionResult CustomizeErrors1() => View(new UserProfile {First = "BogusName", Last = "Smith"});
+
+[HttpGet, RestoreModelState]
+public IActionResult CustomizeErrors2() => View(new UserProfile {First = "BogusName", Last = "Smith"});
+
+[HttpPost, ValidateAntiForgeryToken, SaveModelState]
+public IActionResult CustomizeErrors(UserProfile formData)
+{
+   string referrer = HttpContext.Request.Headers["Referer"];
+   IActionResult result = Redirect(referrer);
+
+   if (formData.First == "BogusName")
+       ModelState.AddModelError("First", "Sorry, we don't accept BogusName as a first name.");
+
+   if (!ModelState.IsValid)
+   {
+       if (referrer.Contains("CustomizeErrors2"))
+           result = result.Error("My custom error message.");
+       return result;
+   }
+
+   /* do actual form processing logic here */
+
+   return result.Success($"Successfully submitted form data.");        
+}</code></pre>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

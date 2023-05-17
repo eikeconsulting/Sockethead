@@ -1,5 +1,4 @@
-﻿@using Sockethead.Razor.Forms
-@model ExtendedUserProfile
+﻿@model ExtendedUserProfile
 
 <div class="row">
     <div class="col-md-6">
@@ -37,18 +36,62 @@
     .AddSubmitButtonRow("Save Changes")
     .RenderAsync())</code></pre>
         <p>
+            This page demonstrates a few more control types such as Radio Button, Dropdown List, and Listbox
+            which cannot be automatically generated from the model.  Enum also cannot be added automatically unless
+            it is registered.
         </p>
-        
-        <br>
-    </div>
-</div>
-
 @if (ViewBag.Result != null)
 {
     <br/>
     <h4>Serialized Submitted Form Data</h4>
     <pre>@ViewBag.Result</pre>
 }
+    </div>
+</div>
+
+<hr/>
+
+<div class="row">
+    <div class="col-md-12">
+        <h4>Controller</h4>
+        <pre><code>[HttpGet, RestoreModelState]
+public IActionResult HorizontalForm()
+{
+   ExtendedUserProfile model = new();
+   
+   if (TempData.ContainsKey("UserProfile"))
+   {
+       string json = TempData["UserProfile"].ToString();
+       if (json != null)
+       {
+           model = JsonConvert.DeserializeObject&lt;ExtendedUserProfile>(json);
+           ViewBag.Result = json;
+       }
+       TempData.Remove("UserProfile");
+   }
+
+   ViewBag.CityList = ExtendedUserProfile.CityList;
+   ViewBag.StateList = ExtendedUserProfile.StateList;
+   ViewBag.CountryList = ExtendedUserProfile.CountryList;
+   ViewBag.HobbyList = ExtendedUserProfile.HobbyList;
+   
+   return View(model);
+}
+
+[HttpPost, ValidateAntiForgeryToken, SaveModelState]
+public IActionResult HorizontalForm(ExtendedUserProfile formData)
+{
+   TempData["UserProfile"] = JsonConvert.SerializeObject(formData, Formatting.Indented);
+   
+   RedirectToActionResult result = RedirectToAction(actionName: nameof(HorizontalForm));
+   
+   return ModelState.IsValid
+       ? result.Success("Successfully submitted form data. See the bottom of the page for serialized model data.")
+       : result.Error("Error in model data.");
+}</code></pre>
+    </div>
+
+</div>
 
 
 @section Scripts {

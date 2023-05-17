@@ -1,0 +1,59 @@
+﻿@using Sockethead.Razor.Forms
+@model UserProfile
+
+<div class="row">
+    <div class="col-md-6">
+        @(await Html
+            .SimpleForm(Model)
+            .AddRowsForModel()
+            .AddSubmitButton("Save Changes")
+            .RenderAsync())
+    </div>
+    <div class="col-md-6">
+        <h4>Razor</h4>
+        <pre><code>@@(await Html
+    .AddRowsForModel()
+    .AddSubmitButtonRow("Save Changes")
+    .RenderAsync())</code></pre>
+        <p>
+        </p>
+        In this example, we demonstrate how to handle form errors on the server side in the controller while using the 
+        Post Redirect Get (PRG) pattern. 
+        <br>
+    </div>
+</div>
+
+<hr/>
+
+<div class="row">
+    <div class="col-md-12">
+        <h4>Controller</h4>
+        <pre><code>[HttpGet, RestoreModelState]
+public IActionResult HandleErrors() => 
+    View(new UserProfile { First = "BogusName", Last = "Smith" }));
+
+[HttpPost, ValidateAntiForgeryToken, SaveModelState]
+public IActionResult HandleErrors(UserProfile formData)
+{
+    RedirectToActionResult result = 
+        RedirectToAction(actionName: nameof(HandleErrors));
+
+    if (formData.First == "BogusName")
+        ModelState.AddModelError(
+            key: "First", 
+            errorMessage: "Sorry, we don't accept BogusName as a first name.");
+
+    if (!ModelState.IsValid)
+        return result;
+
+    // handle form
+
+    return result
+        .Success($"Successfully submitted form data.");        
+}</code></pre>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

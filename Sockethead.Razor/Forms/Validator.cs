@@ -4,7 +4,7 @@ namespace Sockethead.Razor.Forms
 {
     public class Validator
     {
-        internal bool IsValid { get; private set; }
+        internal bool IsValid { get; private set; } = true;
         internal string Key { get; private set; }
         internal string ErrorMessage { get; private set; }
 
@@ -26,11 +26,7 @@ namespace Sockethead.Razor.Forms
             return this;
         }
 
-        public Validator Must(Func<bool> condition)
-        {
-            IsValid = IsValid && condition();
-            return this;
-        }
+        public Validator Must(Func<bool> condition) => Must(condition());
     }
 }
  

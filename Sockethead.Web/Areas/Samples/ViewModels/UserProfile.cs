@@ -12,6 +12,17 @@ namespace Sockethead.Web.Areas.Samples.ViewModels
         Unknown, Male, Female
     }
 
+    public class UserProfileNoAttributes
+    {
+        public Guid UserId { get; set; } = Guid.NewGuid();
+
+        public string First { get; set; } = "John";
+
+        public string Last { get; set; } = "Doe";
+
+        [DisplayName("Administrator")] public bool IsAdmin { get; set; }
+    }
+    
     public class UserProfile
     {
         [HiddenInput] public Guid UserId { get; set; } = Guid.NewGuid();

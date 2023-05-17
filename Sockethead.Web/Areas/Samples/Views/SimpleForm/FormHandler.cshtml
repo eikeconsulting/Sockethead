@@ -1,0 +1,68 @@
+﻿@model UserProfile
+
+<div class="row">
+    <div class="col-md-6">
+        @(await Html
+            .SimpleForm(Model)
+            .AddRowFor(profile => profile.First)
+            .AddRowFor(profile => profile.Last)
+            .AddSubmitButton("Save Changes")
+            .RenderAsync())
+    </div>
+    <div class="col-md-6">
+        <h4>Razor</h4>
+        <pre><code>@@(await Html
+    .SimpleForm(Model)
+    .AddRowFor(profile => profile.First)
+    .AddRowFor(profile => profile.Last)
+    .AddSubmitButton("Save Changes")
+    .RenderAsync())</code></pre>
+        <p>
+            This page demonstrates the SimpleFormHandler which is accessible via a Controller extension method.
+            SimpleFormHandler provides a fluent syntax for handling forms in a more elegant way than the default
+            ASP.Net pattern of checking ModelState.IsValid and manually adding errors to the ModelState.
+        </p>
+        <div>
+            The Handler allows you to neatly separate:
+            <ol>
+                <li>Form validation logic</li>
+                <li>Form processing logic</li>
+                <li>Request routing logic</li>
+            </ol>
+        </div>
+        <p>
+            You can still mix in legacy code that uses ModelState.IsValid and ModelState.AddModelError() if you need to.
+            If errors are added to ModelState in the ProcessForm() method, they will still be handled properly.
+        </p>
+    </div>
+</div>
+
+
+<hr/>
+
+<div class="row">
+    <div class="col-md-12">
+        <h4>Controller</h4>
+        <pre><code>[HttpGet, RestoreModelState]
+public IActionResult FormHandler() => View(new UserProfile {First = "BogusName", Last = "Smith"});
+
+[HttpPost, ValidateAntiForgeryToken, SaveModelState]
+public IActionResult FormHandler(UserProfile formData) =>
+   this.SimpleFormHandler()
+       .OnResult(RedirectToAction(nameof(FormHandler)))
+       .OnError("My custom error message.")
+       .OnSuccess("Successfully submitted form data.")
+       .Validate(v => v
+           .For("First")
+           .Must(formData.First != "BogusName")
+           .Message("Sorry, we don't accept BogusName as a first name."))
+       .ProcessForm(() =>
+       {
+           /* do actual form processing logic here */
+       });</code></pre>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

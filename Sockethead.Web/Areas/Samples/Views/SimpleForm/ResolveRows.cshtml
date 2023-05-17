@@ -38,28 +38,30 @@
         <h4>Model</h4>
         <pre><code>public class UserProfile
 {
-   [HiddenInput] public Guid UserId { get; set; } = Guid.NewGuid();
+    [HiddenInput] 
+    public Guid UserId { get; set; } = Guid.NewGuid();
 
-   [DisplayName("First Name")]
-   [Display(Prompt = "Enter first name")]
-   [Required(ErrorMessage = "We need a first name here")]
-   [MaxLength(20, ErrorMessage = "First name is too long...")]
-   public string First { get; set; } = "John";
+    [DisplayName("First Name")]
+    [Display(Prompt = "Enter first name")]
+    [Required(ErrorMessage = "We need a first name here")]
+    [MaxLength(20, ErrorMessage = "First name is too long...")]
+    public string First { get; set; } = "John";
 
-   [Display(Name = "Last Name", Prompt = "Enter last name")]
-   [MaxLength(20)]
-   public string Last { get; set; } = "Doe";
+    [Display(Name = "Last Name", Prompt = "Enter last name")]
+    [MaxLength(20)]
+    public string Last { get; set; } = "Doe";
 
-   [Display(Name = "Job Title", Prompt = "Enter job title")] public string JobTitle { get; set; }
+    [Display(Name = "Job Title", Prompt = "Enter job title")] 
+    public string JobTitle { get; set; }
 
-   [DisplayName("Administrator")] public bool IsAdmin { get; set; }
+    [DisplayName("Administrator")] 
+    public bool IsAdmin { get; set; }
 }</code></pre>
     </div>
     <div class="col-md-6">
         <h4>Controller</h4>
         <pre><code>[HttpGet] 
-public IActionResult ResolveRows() => 
-    View(model: new UserProfile());</code></pre>
+public IActionResult ResolveRows() => View(new UserProfile());</code></pre>
     </div>
 </div>
 
