@@ -44,10 +44,6 @@
     <div class="col-md-5">
         @(await Html
             .SimpleForm(Model)
-            .Options(o =>
-            {
-                o.FormRowSize = FormRowSize.Small;
-            })
             .AddRowFor(model => model.First, 
                 optionsSetter: opt => opt.FormRowSize = FormRowSize.Large)
             .AddRowFor(model => model.Last)
