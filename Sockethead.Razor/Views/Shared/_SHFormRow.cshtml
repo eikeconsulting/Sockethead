@@ -2,6 +2,11 @@
 @model FormRowViewModel
 
 @{
+    string labelSizeClass = FormRowOptions.GetFormLabelSizeClass(Model.FormRowOptions.CssClass,
+        Model.FormRowOptions.FormRowSize);
+}
+
+@{
     void RadioInput()
     {
         @foreach (SelectListItem item in Model.SelectListItems)
@@ -30,7 +35,7 @@
         }
         else
         {
-            @Model.Label(Model.FormOptions.HideLabels ? "sr-only" : "col-sm-3 col-form-label d-flex justify-content-end")
+            @Model.Label(Model.FormOptions.HideLabels ? "sr-only" : $"col-sm-3 col-form-label d-flex justify-content-end {labelSizeClass}")
             <div class="col-sm-9">
                 @Model.Input
                 @Model.ValidationMessage
@@ -41,7 +46,7 @@
 else
 {
     <div class="form-group">
-        @Model.Label(Model.FormOptions.HideLabels ? "sr-only" : "control-label")
+        @Model.Label(Model.FormOptions.HideLabels ? "sr-only" : $"control-label {labelSizeClass}")
         
         @if (Model.FormRowOptions.FormRowType == FormRowType.Radios)
         {

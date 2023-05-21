@@ -14,6 +14,7 @@
                 o.ShowError = true;
                 o.ErrorMessage = "Oops!  We had a problem processing the form.";
                 o.ShowValidationSummary = true;
+                o.FormRowSize = FormRowSize.Default;
             })
             .AddRowsForModel()
             .RenderAsync())

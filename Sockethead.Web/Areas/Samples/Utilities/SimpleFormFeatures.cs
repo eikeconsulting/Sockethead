@@ -156,6 +156,12 @@ namespace Sockethead.Web.Areas.Samples.Utilities
                 Name = "File Upload",
                 Description = "Handling file uploads.",
             },
+            new()
+            {
+                Url = "FormSize",
+                Name = "Form Size",
+                Description = "Control the size of the form rows.",
+            },
         };
     }
 }

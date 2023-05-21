@@ -54,6 +54,9 @@ namespace Sockethead.Web.Areas.Samples.Controllers
         public IActionResult Options() => View(model: new UserProfile());
         
         [HttpGet]
+        public IActionResult FormSize() => View(model: new UserProfile());
+        
+        [HttpGet]
         public IActionResult Buttons() => View(model: new UserProfile());
 
         [HttpPost]

@@ -1,0 +1,75 @@
+﻿@model UserProfile
+
+<div class="row">
+    <div class="col-md-5">
+        @(await Html
+            .SimpleForm(Model)
+            .Options(o =>
+            {
+                o.FormRowSize = FormRowSize.Small;
+            })
+            .AddRowsForModel()
+            .RenderAsync())
+        
+        <pre><code>public enum FormRowSize
+{
+    Default,
+    Small,
+    Large
+}</code></pre>
+    </div>
+    <div class="col-md-7">
+        <h4>Razor</h4>
+        <pre><code>@@(await Html
+    .SimpleForm(Model)
+    .Options(o =>
+    {
+        o.FormRowSize = FormRowSize.Small;
+    })
+    .AddRowsForModel()
+    .RenderAsync())</code></pre>
+        <p>
+            Control the size of the form rows by setting the FormRowSize option.  If not specified, then default size is used.
+            Setting this value will override the default size for all rows in the form.
+            <br/><br/>
+            <strong>Note:</strong> The row size setting currently applies to form inputs such as text fields, select menus, and other input 
+            elements supported by Bootstrap. However, please note that the row size setting does not currently affect the 
+            size of radio buttons, checkboxes, and certain other form elements. We'll add support for those elements later.
+        </p>
+    </div>
+</div>
+
+<br/><br/>
+<div class="row">
+    <div class="col-md-5">
+        @(await Html
+            .SimpleForm(Model)
+            .Options(o =>
+            {
+                o.FormRowSize = FormRowSize.Small;
+            })
+            .AddRowFor(model => model.First, 
+                optionsSetter: opt => opt.FormRowSize = FormRowSize.Large)
+            .AddRowFor(model => model.Last)
+            .RenderAsync())
+    </div>
+    <div class="col-md-7">
+        <h4>Razor</h4>
+        <pre><code>@@(await Html
+    .SimpleForm(Model)
+    .AddRowFor(model => model.First, 
+        optionsSetter: opt => opt.FormRowSize = FormRowSize.Large)
+    .AddRowFor(model => model.Last)
+    .RenderAsync())</code></pre>
+        <p>
+            If you do not want to set the size for all rows, you can set the size for each row individually.
+            <br/><br/>
+            <strong>Note:</strong> If you have specified the FormRowSize option in the SimpleFormOptions,
+            then the row size setting for each row will be ignored. 
+        </p>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

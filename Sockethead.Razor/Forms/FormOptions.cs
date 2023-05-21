@@ -38,5 +38,10 @@ namespace Sockethead.Razor.Forms
         public bool HideLabels { get; set; }
         
         public bool HorizontalForm { get; set; }
+        
+        /// <summary>
+        /// The size of the form rows. If not specified, then the default size is used.
+        /// </summary>
+        public FormRowSize FormRowSize { get; set; } = FormRowSize.Default;
     }
 }

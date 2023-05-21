@@ -98,6 +98,8 @@ namespace Sockethead.Razor.Forms
 
             // resolve options after setting type so the caller overrides it
             Resolve(optionsSetter, options);
+            
+            ResolveFormRowSize(options);
                 
             return AddControlRowFor(
                 expression:expression,
@@ -115,6 +117,7 @@ namespace Sockethead.Razor.Forms
             Action<FormRowOptions> optionsSetter = null)
         {
             FormRowOptions options = Resolve(optionsSetter);
+            ResolveFormRowSize(options);
             Dictionary<string, object> attributes = options.GetHtmlAttributes();
 
             // ReSharper disable PossibleInvalidOperationException
@@ -214,6 +217,7 @@ namespace Sockethead.Razor.Forms
         {
             FormRowOptions options = Resolve(optionsSetter);
             options.CssClass = "custom-select";
+            ResolveFormRowSize(options);
 
             return AddControlRowFor(
                 expression: expression,
@@ -231,6 +235,7 @@ namespace Sockethead.Razor.Forms
         {
             FormRowOptions options = Resolve(optionsSetter);
             options.CssClass = "custom-select";
+            ResolveFormRowSize(options);
 
             return AddControlRowFor(
                 expression: expression, 
@@ -387,5 +392,11 @@ namespace Sockethead.Razor.Forms
                         Input = htmlContent,
                         ValidationMessage = Html.ValidationMessageFor(expression, message: null, htmlAttributes: new { @class = "text-danger" }),
                     }));
+
+        private void ResolveFormRowSize(FormRowOptions formRowOptions)
+        {
+            if (FormOptions.FormRowSize != FormRowSize.Default)
+                formRowOptions.FormRowSize = FormOptions.FormRowSize;
+        }
     }
 }
