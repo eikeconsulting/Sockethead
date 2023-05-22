@@ -1,41 +1,38 @@
-﻿@using Sockethead.Razor.Forms
-@using Microsoft.AspNetCore.Html
-@model SampleModel
+﻿@model SampleModel
 
 <div class="row">
-    <div class="col-md-5">
-        <h4>Append Custom HTML</h4>
+    <div class="col-md-4">
         @(await Html
-            .SimpleForm(Model, opt => opt.ActionName = "Sample")
-            .AddHiddenFor(model => model.View)
+            .SimpleForm(Model)
             .AppendHtml(
                 @<div class="form-group">
-                    <label>Append Html - First Name: @Model.First</label>
+                    <label style="background-color: orange">Orange Label</label>
                 </div>
             )
-            .AppendHtmlIf(true,
+            .AppendHtmlIf(new Random().NextDouble() > 0.5,
                 @<div class="form-group">
-                    <label>Append Html if condition is true.</label>
+                    <label>This will show up 50% of the time</label>
                 </div>
             )
-            .AppendHtml("<div class='form-group'>Encoded HTML</div>")
-            .AppendHtml(new HtmlContentBuilder().AppendHtml("<div class='form-group'>Html Content Builder</div>"))
+            .AppendHtml("<div style='background-color: green'>Encoded HTML</div>")
+            .Append("<div>Un-encoded HTML</div>")
             .RenderAsync())
     </div>
-    <div class="col-md-7">
-        <pre><code>@@(await Html.SimpleForm(Model, new FormOptions { ActionName = "Sample" })
+    <div class="col-md-8">
+        <pre><code>@@(await Html
+    .SimpleForm(Model)
     .AppendHtml(
-        @@&lt;div class="form-group"&gt;
-            &lt;label>Append Html - First Name: @@Model.First&lt;/label&gt;
-        &lt;/div&gt;
+        &#64;&lt;div class="form-group">
+            &lt;label style="background-color: orange">Orange Label&lt;/label>
+        &lt;/div>
     )
-    .AppendHtmlIf(true,
-        @@&lt;div class="form-group"&gt;
-            &lt;label&gt;Append Html if condition is true.&lt;/label&gt;
-        &lt;/div&gt;
+    .AppendHtmlIf(new Random().NextDouble() > 0.5,
+        &#64;&lt;div class="form-group">
+            &lt;label>This will show up 50% of the time&lt;/label>
+        &lt;/div>
     )
-    .AppendHtml("&lt;div class='form-group'>Encoded HTML&lt;/div&gt;")
-    .AppendHtml(new HtmlContentBuilder().AppendHtml("&lt;div class='form-group'&gt;Html Content Builder&lt;/div&gt;"))
+    .AppendHtml("&lt;div style='background-color: green'>Encoded HTML&lt;/div>")
+    .Append("&lt;div>Un-encoded HTML&lt;/div>")
     .RenderAsync())
 </code></pre>
         <p>

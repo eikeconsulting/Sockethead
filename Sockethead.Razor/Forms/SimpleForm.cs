@@ -59,7 +59,7 @@ namespace Sockethead.Razor.Forms
         public SimpleForm<T> AddColDiv(int width, Action<SimpleForm<T>> formAction) => AddDiv($"col-{width}", formAction);
 
         public SimpleForm<T> AddColDiv(Action<SimpleForm<T>> formAction) => AddDiv("col", formAction);
-        
+
         public SimpleForm<T> AppendHtml(Func<object, IHtmlContent> contentFunc)
         {
             return AppendHtml(contentFunc(null));
@@ -74,20 +74,22 @@ namespace Sockethead.Razor.Forms
         
         public SimpleForm<T> AppendHtml(IHtmlContent content)
         {
-            _ = Builder
-                .AppendHtml(content)
-                .AppendHtml("\n");
+            _ = Builder.AppendHtml(content);
             return this;
         }
         
         public SimpleForm<T> AppendHtml(string encoded)
         {
-            _ = Builder
-                .AppendHtml(encoded)
-                .AppendHtml("\n");
+            _ = Builder.AppendHtml(encoded);
             return this;
         }
 
+        public SimpleForm<T> Append(string unencoded)
+        {
+            _ = Builder.Append(unencoded);
+            return this;
+        }
+        
         public async Task<IHtmlContent> RenderAsync()
         {
             return await Html.PartialAsync("_SHForm", this);

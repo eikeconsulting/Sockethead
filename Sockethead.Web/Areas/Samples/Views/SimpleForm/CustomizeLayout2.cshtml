@@ -1,0 +1,53 @@
+﻿@model ExtendedUserProfile
+
+<div class="row">
+    <div class="col-md-6">
+        @(await Html
+            .SimpleForm(Model)
+            
+            // add two columns that will be sized evenly
+            .AddRowDiv(form => form
+                .AddColDiv(f => f.AddRowsForModel())
+                .AddColDiv(f => f
+                    .Options(o => o.HorizontalForm = true)
+                    .AddRadioButtonRowFor(model => model.City, 
+                        ViewBag.CityList as IEnumerable<SelectListItem>)
+                    .AddRadioButtonRowFor(model => model.State, 
+                        ViewBag.StateList as IEnumerable<SelectListItem>)
+                    .AddDropDownListRowFor(model => model.Country, 
+                        ViewBag.CountryList as IEnumerable<SelectListItem>)
+                    .AddListBoxRowFor(model => model.Hobbies, 
+                        ViewBag.HobbyList as IEnumerable<SelectListItem>)))
+            .RenderAsync())
+        <br/>
+    </div>
+    <div class="col-md-6">
+        <pre><code>@@(await Html
+    .SimpleForm(Model)
+    
+    // add two columns that will be sized evenly
+    .AddRowDiv(form => form
+        .AddColDiv(f => f.AddRowsForModel())
+        .AddColDiv(f => f
+            .Options(o => o.HorizontalForm = true)
+            .AddRadioButtonRowFor(model => model.City, 
+                ViewBag.CityList as 
+                    IEnumerable&lt;SelectListItem>)
+            .AddRadioButtonRowFor(model => model.State, 
+                ViewBag.StateList as 
+                    IEnumerable&lt;SelectListItem>)
+            .AddDropDownListRowFor(model => model.Country, 
+                ViewBag.CountryList as 
+                    IEnumerable&lt;SelectListItem>)
+            .AddListBoxRowFor(model => model.Hobbies, 
+                ViewBag.HobbyList as 
+                IEnumerable&lt;electListItem>)))
+    .RenderAsync())</code></pre>
+        <p>
+        </p>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

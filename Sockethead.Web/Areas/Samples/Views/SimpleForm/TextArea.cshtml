@@ -1,21 +1,21 @@
-﻿@using Sockethead.Razor.Forms
-@model SampleModel
+﻿@model SampleModel
 
 <div class="row">
     <div class="col-md-5">
         <h4>Text Area</h4>
         @(await Html
-            .SimpleForm(Model, opt => opt.ActionName = "Sample")
-            .AddHiddenFor(model => model.View)
-            .AddRowFor(model => model.FooBarBazBBBlah)
-            .AddSubmitButton("Save Changes")
+            .SimpleForm(Model)
+            .AddRowFor(model => model.MyMultilineText)
+            .AddTextAreaRowFor(model => model.MyMultilineText, rows: 10, columns: 100)
             .RenderAsync())
     </div>
     <div class="col-md-7">
         <pre><code>@@(await Html
-    .SimpleForm(Model, new FormOptions { ActionName = "Sample" })
-    .EditorFor(model => model.FooBarBazBBBlah)
-    .SubmitButton("Save Changes")
+    .SimpleForm(Model)
+    .AddRowFor(model => model.MyMultilineText)
+    .AddTextAreaRowFor(model => model.MyMultilineText, 
+        rows: 10, 
+        columns: 100)
     .RenderAsync())
 </code></pre>
         <p>

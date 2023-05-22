@@ -1,20 +1,44 @@
-﻿@using Sockethead.Razor.Forms
-@model SampleModel
+﻿@model FileUploadViewModel
 
 <div class="row">
     <div class="col-md-5">
-        <h4>File Upload</h4>
         @(await Html
-            .SimpleForm(Model, opt => opt.ActionName = "Sample")
-            .AddHiddenFor(model => model.View)
-            .AddFileUploadRowFor(model => model.File)
-            .AddFileUploadRowFor(model => model.MultipleFiles, multiple: true, accept: "image/*")
+            .SimpleForm(Model)
+            
+            /*
+            .AddFileUploadRowFor(model => model.ImageFile,
+                multiple: false,
+                accept: "image/*")
+            
+            .AddFileUploadRowFor(model => model.MultipleTextFiles, 
+                multiple: true, 
+                accept: "text/*")
+            */
+               .AppendHtml(
+                   @<div class="form-group form-row">
+                       <div class="custom-file">
+                           2
+                       @Html.LabelFor(model => model.ImageFile, new {@class = "control-label "})
+                       @Html.EditorFor(model => model.ImageFile, additionalViewData: new {@class = "form-control"})
+                       </div>
+                       <input type="file" class="form-control" id="customFile"/>
+                   </div>
+                )
+            
             .AddSubmitButton("Upload")
             .RenderAsync())
+        
+        @if (ViewBag.Image != null)
+        {
+            <hr/>
+            <h4>Uploaded Image</h4>
+            <img src="@ViewBag.Image" alt="Uploaded Image" class="img-fluid img-thumbnail"/>
+        }
+        
     </div>
     <div class="col-md-7">
         <pre><code>@@(await Html
-    .SimpleForm(Model, opt => opt.ActionName = "Sample")
+    .SimpleForm(Model)
     .FileUploadEditorFor(model => model.File)
     .FileUploadEditorFor(model => model.MultipleFiles, multiple: true,
         accept: "image/*")
@@ -25,6 +49,9 @@
             The FileUploadEditorFor method will create a file upload input for the specified property.
             You can also optionally pass the accept, multiple and isDisabled parameters to the method to control the behavior of the input.
         </p>
+
+<partial name="_ResultJson"/>        
+        
     </div>
 </div>
 

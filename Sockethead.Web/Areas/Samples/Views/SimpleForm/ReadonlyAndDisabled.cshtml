@@ -1,26 +1,20 @@
-﻿@using Sockethead.Razor.Forms
-@model SampleModel
+﻿@model SampleModel
 
 <div class="row">
     <div class="col-md-5">
-        <h4>Readonly and Disabled</h4>
         @(await Html
-            .SimpleForm(Model, opt => opt.ActionName = "Sample")
-            .AddHiddenFor(model => model.View)
+            .SimpleForm(Model)
             .AddRowFor(model => model.First, opt => opt.IsReadOnly = true)
             .AddRowFor(model => model.Last)
             .AddRowFor(model => model.Disabled, opt=> opt.IsDisabled = true)
-            .AddSubmitButton("Save Changes")
             .RenderAsync())
     </div>
     <div class="col-md-7">
         <pre><code>@@(await Html
-    .SimpleForm(Model, new FormOptions { ActionName = "Sample" })
-    .HiddenFor(model => model.View)
+    .SimpleForm(Model)
     .AddRowFor(model => model.First, opt => opt.IsReadOnly = true)
     .AddRowFor(model => model.Last)
     .AddRowFor(model => model.Disabled, opt=> opt.IsDisabled = true)
-    .SubmitButton("Save Changes")
     .RenderAsync())</code></pre>
         <p>
             You can optionally pass <code>isReadOnly: true</code> or <code>isDisabled: true</code> to render a readonly or disabled field.

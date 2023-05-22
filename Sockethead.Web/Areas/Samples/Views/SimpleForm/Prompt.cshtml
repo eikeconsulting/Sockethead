@@ -1,5 +1,4 @@
-﻿@using Sockethead.Razor.Forms
-@model PromptExample
+﻿@model PromptExample
 
 <div class="row">
     <div class="col-md-6">
@@ -9,15 +8,10 @@
             .RenderAsync())
     </div>
     <div class="col-md-6">
-        <h4>Razor</h4>
         <pre><code>@@(await Html
     .SimpleForm(Model)
     .AddRowsForModel()
     .RenderAsync())</code></pre>
-        <p>
-        </p>
-        
-        <br>
     </div>
 </div>
 
@@ -31,15 +25,10 @@
             .RenderAsync())
     </div>
     <div class="col-md-6">
-        <h4>Razor</h4>
         <pre><code>@@(await Html
     .SimpleForm(Model, opt => opt.HideLabels = true)
     .AddRowsForModel()
     .RenderAsync())</code></pre>
-        <p>
-        </p>
-        
-        <br>
     </div>
 </div>
 
@@ -56,6 +45,11 @@
    [Display(Prompt = "Enter a description")]
    public string Description { get; set; }
 }</code></pre>
+    </div>
+    <div class="col-md-6">
+        <p>
+            By applying the <code>DisplayAttribute.Prompt</code> to a property, we can specify placeholder text.
+        </p>
     </div>
 
 </div>

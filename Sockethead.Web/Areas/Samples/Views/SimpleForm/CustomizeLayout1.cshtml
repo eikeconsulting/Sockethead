@@ -1,0 +1,50 @@
+﻿@model ExtendedUserProfile
+
+<div class="row">
+    <div class="col-md-5">
+        @(await Html
+            .SimpleForm(Model)
+            .RegisterEnums<Gender>()
+            .AddHiddenFor(model => model.UserId)
+            
+            // add two columns that will be sized evenly
+            .AddRowDiv(form => form
+                .AddColDiv(f => f.AddRowFor(model => model.First))
+                .AddColDiv(f => f.AddRowFor(model => model.Last)))
+            
+            // add two columns with specific widths (8 and 4)
+            .AddRowDiv(form => form
+                .AddColDiv(width: 8, f => f.AddRowFor(model => model.JobTitle))
+                .AddColDiv(width: 4, f => f.AddRowFor(model => model.Gender)))
+            
+            .AddRowFor(model => model.IsAdmin)
+            .RenderAsync())
+    </div>
+    <div class="col-md-7">
+        <pre><code>@@(await Html
+    .SimpleForm(Model)
+    .RegisterEnums&lt;Gender>()
+    .AddHiddenFor(model => model.UserId)
+    
+    // add two columns that will be sized evenly
+    .AddRowDiv(form => form
+        .AddColDiv(f => f.AddRowFor(model => model.First))
+        .AddColDiv(f => f.AddRowFor(model => model.Last)))
+    
+    // add two columns with specific widths (8 and 4)
+    .AddRowDiv(form => form
+        .AddColDiv(width: 8, f => f.AddRowFor(model => model.JobTitle))
+        .AddColDiv(width: 4, f => f.AddRowFor(model => model.Gender)))
+    
+    .AddRowFor(model => model.IsAdmin)
+    .RenderAsync())</code></pre>
+        <p>
+        We can control the layout of the columnar layout of the form by added rows and columns via 
+        the SimpleForm fluent API.
+        </p>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

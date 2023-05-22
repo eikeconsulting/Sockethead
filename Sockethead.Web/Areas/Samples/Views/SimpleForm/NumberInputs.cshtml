@@ -1,27 +1,24 @@
-﻿@using Sockethead.Razor.Forms
-@model SampleModel
+﻿@model SampleModel
 
 <div class="row">
     <div class="col-md-5">
         <h4>Number Inputs</h4>
         @(await Html
             .SimpleForm(Model, opt => opt.ActionName = "Sample")
-            .AddHiddenFor(model => model.View)
             .AddRowFor(model => model.RandomDouble)
             .AddRowFor(model => model.RandomDecimal)
             .AddRowFor(model => model.Float)
             .AddRowFor(model => model.NullableDouble)
-            .AddSubmitButton("Save Changes")
             .RenderAsync())
     </div>
     <div class="col-md-7">
+        <h4>Razor</h4>
         <pre><code>@@(await Html
     .SimpleForm(Model, new FormOptions { ActionName = "Sample" })
-    .EditorFor(model => model.RandomDouble)
-    .EditorFor(model => model.RandomDecimal)
-    .EditorFor(model => model.Float)
-    .EditorFor(model => model.NullableDouble)
-    .SubmitButton("Save Changes")
+    .AddRowFor(model => model.RandomDouble)
+    .AddRowFor(model => model.RandomDecimal)
+    .AddRowFor(model => model.Float)
+    .AddRowFor(model => model.NullableDouble)
     .RenderAsync())
 </code></pre>
         <p>

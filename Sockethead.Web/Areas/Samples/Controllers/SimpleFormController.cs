@@ -1,9 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using Microsoft.AspNetCore.Mvc;
 using Sockethead.Razor.Alert.Extensions;
 using Sockethead.Web.Data;
 using Sockethead.Web.Data.Entities;
 using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Sockethead.Razor.Forms;
 using Sockethead.Razor.Helpers;
@@ -11,6 +14,7 @@ using Sockethead.Razor.PRG;
 using Sockethead.Web.Areas.Samples.Utilities;
 using Sockethead.Web.Areas.Samples.ViewModels;
 using Sockethead.Web.Filters;
+using System;
 
 namespace Sockethead.Web.Areas.Samples.Controllers
 {
@@ -29,16 +33,7 @@ namespace Sockethead.Web.Areas.Samples.Controllers
         public IActionResult Sample(string name)
         {
             SampleModel model = SampleDataQuery.First();
-            model.View = name;
-            
             return View(viewName: name.Replace(" ", ""), model: model);
-        }
-
-        [HttpPost, ValidateAntiForgeryToken]
-        public IActionResult Sample(SampleModel formData)
-        {
-            return View(viewName: formData.View.Replace(" ", ""), formData)
-                .Success($"Form submitted successfully.");
         }
 
         [HttpGet]
@@ -140,7 +135,7 @@ namespace Sockethead.Web.Areas.Samples.Controllers
                 });
         
         [HttpGet, RestoreModelState]
-        public IActionResult HorizontalForm()
+        public IActionResult SelectionControls()
         {
             ExtendedUserProfile model = new();
             
@@ -164,89 +159,67 @@ namespace Sockethead.Web.Areas.Samples.Controllers
         }
 
         [HttpPost, ValidateAntiForgeryToken, SaveModelState]
-        public IActionResult HorizontalForm(ExtendedUserProfile formData)
+        public IActionResult SelectionControls(ExtendedUserProfile formData)
         {
             TempData["UserProfile"] = JsonConvert.SerializeObject(formData, Formatting.Indented);
             
-            RedirectToActionResult result = RedirectToAction(actionName: nameof(HorizontalForm));
-            
-            return ModelState.IsValid
-                ? result.Success("Successfully submitted form data. See the bottom of the page for serialized model data.")
-                : result.Error("Error in model data.");
+            return this.SimpleFormHandler()
+                .OnResult(RedirectToAction(nameof(SelectionControls)))
+                .OnSuccess("Successfully submitted form data. See the bottom of the page for serialized model data.")
+                .OnError("Error in model data.")
+                .ProcessForm();
         }        
 
-        //=============== TOSS =================
-        
-        [HttpGet]
-        public IActionResult AutoGenerateForm() => View(model: new UserProfile());
-
-        [HttpPost, ValidateAntiForgeryToken]
-        public IActionResult AutoGenerateForm(UserProfile formData)
+        private void PopulateSelectionControls()
         {
-            if (formData.First == "BogusName")
-                ModelState.AddModelError("First", "Sorry, we don't accept BogusName as a first name.");
-
-            if (!ModelState.IsValid)
-                return View(formData)
-                    .Error("Error in form submission.");
-
-            /* do actual form processing logic here */
-            
-            return View(formData)
-                .Success($"Successfully submitted form data.");
+            ViewBag.CityList = ExtendedUserProfile.CityList;
+            ViewBag.StateList = ExtendedUserProfile.StateList;
+            ViewBag.CountryList = ExtendedUserProfile.CountryList;
+            ViewBag.HobbyList = ExtendedUserProfile.HobbyList;
+        }
+        
+        public IActionResult HorizontalForm()
+        {
+            PopulateSelectionControls();
+           
+            return View(new ExtendedUserProfile());
         }
 
-        [HttpPost, ValidateAntiForgeryToken]
-        public IActionResult AutoGenerateForm2(UserProfile formData) =>
-            this.SimpleFormHandler()
-                .OnResult(() => View(viewName: nameof(AutoGenerateForm), model: formData))
-                .OnError(result => result.Error("Error in form submission."))
-                .OnSuccess(result => result.Success($"Successfully submitted form data {formData}."))
-                .ProcessForm(() =>
-                {
-                    if (formData.Last == "Doe")
-                    {
-                        ModelState.AddModelError("Last", "Sorry, we don't accept Doe as a last name.");
-                        //return;
-                    }
+        public IActionResult MixedLayoutForm()
+        {
+            PopulateSelectionControls();
+            
+            return View(new ExtendedUserProfile());
+        }
 
-                    /* do actual form processing logic here */
-                });
+        [HttpGet]
+        public IActionResult RegisterEnums() => View(model: new ExtendedUserProfile());
 
+        [HttpGet]
+        public IActionResult CustomizeLayout1() => View(new ExtendedUserProfile());
 
-        [HttpPost, ValidateAntiForgeryToken]
-        public IActionResult AutoGenerateForm3(UserProfile formData) =>
-            this.SimpleFormHandler()
-                .OnResult(View(viewName: nameof(AutoGenerateForm), model: formData))
-                .OnError("Error in form submission.")
-                .OnSuccess($"Successfully submitted form data {formData}.")
-                .Validate(v => v
-                    .For("Last")
-                    .Must(formData.Last != "Doe")
-                    .Message("Sorry, we don't accept Doe as a last name."))
-                .ProcessForm(() =>
-                {
-                    /* do actual form processing logic here */
-                });
+        [HttpGet]
+        public IActionResult CustomizeLayout2()
+        {
+            PopulateSelectionControls();
+            
+            return View(new ExtendedUserProfile());
+        }
+
+        [HttpGet]
+        public IActionResult Prompt() => View(new PromptExample());
+
         
+        //=============== TOSS =================
+        
+        /*
         [HttpGet]
         public IActionResult KitchenSink() => View(SampleDataQuery.First());
 
         [HttpPost, ValidateAntiForgeryToken]
-        public IActionResult KitchenSink(SampleModel formData) => View(formData).Success($"Successfully submitted form data {formData}.");
-
-        [HttpGet]
-        public IActionResult CustomizeLayout() => View(new ExtendedUserProfile());
-
-        [HttpPost, ValidateAntiForgeryToken]
-        public IActionResult CustomizeLayout(ExtendedUserProfile formData) => View(formData).Success($"Successfully submitted form data {formData}.");
-
-        [HttpGet]
-        public IActionResult Prompt() => View(new PromptExample());
-        
-
-
-
+        public IActionResult KitchenSink(SampleModel formData) => 
+            View(formData).Success($"Successfully submitted form data {formData}.");
+        */
 
         [HttpGet, RestoreModelState]
         public IActionResult DataTypes()
@@ -261,15 +234,42 @@ namespace Sockethead.Web.Areas.Samples.Controllers
         }
 
         [HttpPost, ValidateAntiForgeryToken, SaveModelState]
-        public IActionResult DataTypes(DataTypesModel formData)
+        public IActionResult DataTypes(DataTypesModel formData) =>
+            this.SimpleFormHandler()
+                .OnResult(() => 
+                { 
+                    TempData["DataTypesModel"] = JsonConvert.SerializeObject(formData, Formatting.Indented);
+                    return RedirectToAction(actionName: nameof(DataTypes)); 
+                })
+                .OnSuccess("Successfully submitted form data. See the bottom of the page for serialized model data.")
+                .OnError("Error in model data.")
+                .ProcessForm();
+
+
+        [HttpGet]
+        public IActionResult FileUpload()
         {
-            TempData["DataTypesModel"] = JsonConvert.SerializeObject(formData, Formatting.Indented);
+            return View(new FileUploadViewModel());
+        }
+        
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> FileUpload(FileUploadViewModel formData)
+        {
+            IActionResult result = View(new FileUploadViewModel());
+
+            ViewBag.Result = JsonConvert.SerializeObject(formData, Formatting.Indented);
             
-            RedirectToActionResult result = RedirectToAction(actionName: nameof(DataTypes));
-            
-            return ModelState.IsValid
-                ? result.Success("Successfully submitted form data. See the bottom of the page for serialized model data.")
-                : result.Error("Error in model data.");
+            IFormFile image = formData.ImageFile;
+
+            if (image.Length > 0)
+            {
+                await using Stream fileStream = image.OpenReadStream();
+                byte[] bytes = new byte[image.Length];
+                _ = await fileStream.ReadAsync(bytes.AsMemory(0, (int) image.Length));
+                ViewBag.Image = $"data:image/png;base64,{Convert.ToBase64String(bytes)}";
+            }
+
+            return result.Success("Boom");
         }
     }
 }

@@ -224,7 +224,7 @@ namespace Sockethead.Razor.Forms
                     htmlAttributes: options.GetHtmlAttributes()));
         }
 
-        public SimpleForm<T> AddListBoxFor<TResult>(
+        public SimpleForm<T> AddListBoxRowFor<TResult>(
             Expression<Func<T, TResult>> expression,
             IEnumerable<SelectListItem> selectList, 
             Action<FormRowOptions> optionsSetter = null)
@@ -336,6 +336,38 @@ namespace Sockethead.Razor.Forms
             return this;
         }
  
+        public SimpleForm<T> AddFileUploadRowFor2<TResult>(
+            Expression<Func<T, TResult>> expression,
+            bool multiple = false, 
+            string accept = "", 
+            Action<FormRowOptions> optionsSetter = null)
+        {
+            FormRowOptions options = Resolve(optionsSetter);
+            
+            options.CssClass = "custom-file-input";
+            options.Type = "file";
+            
+            Dictionary<string, object> htmlAttributes = options.GetHtmlAttributes();
+           
+            if (multiple)
+                htmlAttributes["multiple"] = "multiple";
+            
+            if (!string.IsNullOrEmpty(accept))
+                htmlAttributes["accept"] = accept;
+            
+            using IDisposable group = Div("form-group form-row");
+            using IDisposable div = Div("custom-file");
+            AppendHtml(Html.TextBoxFor(
+                expression: expression, 
+                htmlAttributes: htmlAttributes));
+            AddLabelFor(
+                expression: expression, 
+                cssClass: "custom-file-label");
+            AddValidationMessageFor(expression: expression);
+            
+            return this;
+        }
+
         public SimpleForm<T> AddHiddenFor<TResult>(Expression<Func<T, TResult>> expression) => 
             AppendHtml(Html.HiddenFor(expression));
 

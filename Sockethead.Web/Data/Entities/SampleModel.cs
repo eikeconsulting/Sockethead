@@ -33,7 +33,7 @@ namespace Sockethead.Web.Data.Entities
 
         public string JobTitle { get; set; }
 
-        //[DataType(DataType.Date)]
+        [Display(Name = "Random Date")]
         public DateTime RandomDate { get; set; } = GetRandomDate();
 
         [Display(Order = 5)]
@@ -41,6 +41,9 @@ namespace Sockethead.Web.Data.Entities
 
         public SampleEnum SampleEnum { get; set; } = GetRandomEnum();
 
+        [DataType(DataType.MultilineText)]
+        public string MyMultilineText { get; set; }
+        
         [DataType(DataType.MultilineText)]
         public string FooBarBazBBBlah { get; set; }
 
@@ -60,6 +63,7 @@ namespace Sockethead.Web.Data.Entities
 
         private static SampleEnum GetRandomEnum() => (SampleEnum)Random.Next((int)SampleEnum.Zero, (int)SampleEnum.Two + 2);
 
+        [Display(Name = "Random Date Only")]
         [DataType(DataType.Date)]
         public DateTime RandomDateOnly { get; set; } = GetRandomDate();
         
@@ -82,8 +86,6 @@ namespace Sockethead.Web.Data.Entities
         public string OtherCity { get; set; }
         
         public string Disabled { get; set; } = "I'm disabled";
-        public string View { get; set; }
-        
         public IFormFile File { get; set; }
         public List<IFormFile> MultipleFiles { get; set; } 
 

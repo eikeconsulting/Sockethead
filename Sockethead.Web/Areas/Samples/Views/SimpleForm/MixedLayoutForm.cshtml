@@ -3,11 +3,15 @@
 <div class="row">
     <div class="col-md-6">
         @(await Html
-            .SimpleForm(Model, opt =>
-            {
-                opt.HorizontalForm = true;
-            })
+            .SimpleForm(Model)
+            
+            // start with a vertical form
+            .Options(opt => opt.HorizontalForm = false)
             .AddRowsForModel()
+            .AppendHtml("<hr/>")
+            
+            // switch to a horizontal form
+            .Options(opt => opt.HorizontalForm = true)
             .AddEnumRowFor(model => model.Gender)
             .AddRadioButtonRowFor(model => model.City, ViewBag.CityList as IEnumerable<SelectListItem>)
             .AddRadioButtonRowFor(model => model.State, ViewBag.StateList as IEnumerable<SelectListItem>, opt => opt.Inline = true)
@@ -17,11 +21,15 @@
     </div>
     <div class="col-md-6">
         <pre><code>@@(await Html
-    .SimpleForm(Model, opt =>
-    {
-        opt.HorizontalForm = true;
-    })
+    .SimpleForm(Model)
+
+    // start with a vertical form
+    .Options(opt => opt.HorizontalForm = false)
     .AddRowsForModel()
+    .AppendHtml("&lt;hr/>")
+    
+    // switch to a horizontal form
+    .Options(opt => opt.HorizontalForm = true)
     .AddEnumRowFor(model => model.Gender)
     .AddRadioButtonRowFor(model => model.City, 
         ViewBag.CityList as IEnumerable&lt;SelectListItem>)
@@ -32,9 +40,10 @@
         ViewBag.CountryList as IEnumerable&lt;SelectListItem>)
     .AddListBoxRowFor(model => model.Hobbies, 
         ViewBag.HobbyList as IEnumerable&lt;SelectListItem>)
+
     .RenderAsync())</code></pre>
         <p>
-            This page demonstrates the same controls as the previous page, but with the HorizontalForm option set to true.
+            This page demonstrates mixing layout in a single form.
         </p>
 <partial name="_ResultJson"/>        
     </div>

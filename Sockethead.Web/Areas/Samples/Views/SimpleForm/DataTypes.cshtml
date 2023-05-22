@@ -1,5 +1,4 @@
-﻿@using Sockethead.Razor.Forms
-@model DataTypesModel
+﻿@model DataTypesModel
 
 <div class="row">
     <div class="col-md-5">
@@ -13,6 +12,10 @@
         
     </div>
     <div class="col-md-7">
+        <p>
+            The following page demonstrates all of the DataTypes that can be automatically generated.
+            Note that this does not include SelectList or MultiSelectList types, which must be created manually.
+        </p>
         <pre><code>@@(await Html
     .SimpleForm(Model)
     .RegisterEnums&lt;Gender>()
@@ -86,16 +89,42 @@
 }</code></pre>
         <p>
         </p>
+
+<partial name="_ResultJson"/>        
+        
     </div>
 </div>
 
-        
-@if (ViewBag.Result != null)
+<hr/>
+<div class="row">
+    <div class="col-md-12">
+        <h4>Controller</h4>
+        <pre><code>[HttpGet, RestoreModelState]
+public IActionResult DataTypes()
 {
-    <br/>
-    <h4>Serialized Submitted Form Data</h4>
-    <pre>@ViewBag.Result</pre>
+    if (TempData.ContainsKey("DataTypesModel"))
+    {
+        ViewBag.Result = TempData["DataTypesModel"];
+        TempData.Remove("DataTypesModel");
+    }
+   
+    return View(new DataTypesModel());
 }
+
+[HttpPost, ValidateAntiForgeryToken, SaveModelState]
+public IActionResult DataTypes(DataTypesModel formData) =>
+    this.SimpleFormHandler()
+        .OnResult(() => 
+        { 
+            TempData["DataTypesModel"] = JsonConvert.SerializeObject(formData, Formatting.Indented);
+            return RedirectToAction(actionName: nameof(DataTypes)); 
+        })
+        .OnSuccess("Successfully submitted form data. See the bottom of the page for serialized model data.")
+        .OnError("Error in model data.")
+        .ProcessForm();
+}</code></pre>
+    </div>
+</div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

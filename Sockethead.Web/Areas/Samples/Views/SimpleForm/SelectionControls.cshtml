@@ -1,0 +1,156 @@
+﻿@model ExtendedUserProfile
+
+<div class="row">
+    <div class="col-md-6">
+        @(await Html
+            .SimpleForm(Model)
+            .AddRowsForModel()
+            .AddEnumRowFor(model => model.Gender)
+            .AddRadioButtonRowFor(model => model.City, ViewBag.CityList as IEnumerable<SelectListItem>)
+            .AddRadioButtonRowFor(model => model.State, ViewBag.StateList as IEnumerable<SelectListItem>, opt => opt.Inline = true)
+            .AddDropDownListRowFor(model => model.Country, ViewBag.CountryList as IEnumerable<SelectListItem>)
+            .AddListBoxRowFor(model => model.Hobbies, ViewBag.HobbyList as IEnumerable<SelectListItem>)
+            .AddSubmitButton("Save Changes")
+            .RenderAsync())
+    </div>
+    <div class="col-md-6">
+        <pre><code>@@(await Html
+    .SimpleForm(Model)
+    .AddRowsForModel()
+
+    // enums will be in a dropdown list by default
+    .AddEnumRowFor(model => model.Gender)
+
+    // radio buttons for a list of cities
+    .AddRadioButtonRowFor(model => model.City, 
+        ViewBag.CityList as IEnumerable&lt;SelectListItem>)
+
+    // radio buttons for states, but list them inline
+    .AddRadioButtonRowFor(model => model.State, 
+        ViewBag.StateList as IEnumerable&lt;SelectListItem>, 
+            opt => opt.Inline = true)
+
+    // dropdown list for a list of countries
+    .AddDropDownListRowFor(model => model.Country, 
+        ViewBag.CountryList as IEnumerable&lt;SelectListItem>)
+
+    // listbox for hobbies, allowing multiple selections
+    .AddListBoxRowFor(model => model.Hobbies, 
+        ViewBag.HobbyList as IEnumerable&lt;SelectListItem>)
+
+    .AddSubmitButtonRow("Save Changes")
+    .RenderAsync())</code></pre>
+        <p>
+            This page demonstrates a few more control types such as Radio Button, Dropdown List, and Listbox
+            which cannot be automatically generated from the model.  Enum also cannot be added automatically unless
+            it is registered.
+        </p>
+<partial name="_ResultJson"/>        
+    </div>
+</div>
+
+<hr/>
+
+<div class="row">
+    <div class="col-md-12">
+        <h4>Controller</h4>
+        <pre><code>[HttpGet, RestoreModelState]
+public IActionResult SelectionControls()
+{
+   ExtendedUserProfile model = new();
+   
+   if (TempData.ContainsKey("UserProfile"))
+   {
+       string json = TempData["UserProfile"].ToString();
+       if (json != null)
+       {
+           model = JsonConvert.DeserializeObject&lt;ExtendedUserProfile>(json);
+           ViewBag.Result = json;
+       }
+       TempData.Remove("UserProfile");
+   }
+
+   ViewBag.CityList = ExtendedUserProfile.CityList;
+   ViewBag.StateList = ExtendedUserProfile.StateList;
+   ViewBag.CountryList = ExtendedUserProfile.CountryList;
+   ViewBag.HobbyList = ExtendedUserProfile.HobbyList;
+   
+   return View(model);
+}
+
+[HttpPost, ValidateAntiForgeryToken, SaveModelState]
+public IActionResult SelectionControls(ExtendedUserProfile formData)
+{
+    TempData["UserProfile"] = JsonConvert.SerializeObject(formData, Formatting.Indented);
+    
+    return this.SimpleFormHandler()
+        .OnResult(RedirectToAction(nameof(SelectionControls)))
+        .OnSuccess("Successfully submitted form data. See the bottom of the page for serialized model data.")
+        .OnError("Error in model data.")
+        .ProcessForm();
+}</code></pre>
+        <br/>
+    </div>
+    <div class="col-md-12">
+        <h4>Model</h4>
+        <pre><code>public class ExtendedUserProfile : UserProfile
+{
+    [DisplayName("Nerd")] public bool IsNerd { get; set; } = true;
+    public Gender Gender { get; set; }
+
+    [DataType(DataType.Date)]
+    public DateTime BirthDate { get; set; } = new(year: 1970, month: 4, day: 1);
+    
+    public decimal Weight { get; set; } = 175.5m;
+    
+    [ScaffoldColumn(false)] public string City { get; set; } = "SJ";
+    [ScaffoldColumn(false)] public string State { get; set; } = "CA";
+
+    [ScaffoldColumn(false)] public string Country { get; set; } = "USA";
+    
+    [ScaffoldColumn(false)] public string[] Hobbies { get; set; }
+
+    public override string ToString() =>
+        $"{UserId}: {First} {Last}, {JobTitle}, Is Admin: {IsAdmin}, Gender: {Gender}";
+
+    public static readonly List&lt;SelectListItem> CityList = new()
+    {
+        new("Chicago", "CHI"),
+        new("Karachi", "KA"),
+        new("London", "LDN"),
+        new("New York", "NY"),
+        new("San Jose", "SJ"),
+    };
+
+    public static readonly List&lt;SelectListItem> StateList = new()
+    {
+        new("California", "CA"),
+        new("Florida", "FLA"),
+        new("Illinois", "ILL"),
+        new("New York", "NY"),
+    };
+    
+    public static readonly List&lt;SelectListItem> CountryList = new()
+    {
+        new("United States of America", "USA"),
+        new("England", "ENG"),
+        new("France", "FRA"),
+        new("Pakistan", "PAK"),
+    };
+    
+    public static readonly List&lt;SelectListItem> HobbyList = new()
+    {
+        new("Handball", "Handball"),
+        new("Golf", "Golf"),
+        new("Tennis", "Tennis"),
+        new("Fishing", "Fishing"),
+        new("Video Games", "Video Games"),
+    };
+}</code></pre>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
