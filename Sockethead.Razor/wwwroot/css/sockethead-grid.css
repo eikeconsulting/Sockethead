@@ -1,0 +1,435 @@
+/*
+ * Sockethead Grid - Modern Theme
+ * Framework-agnostic styles for SimpleGrid
+ *
+ * Usage: Add to your layout:
+ *   <link rel="stylesheet" href="~/_content/Sockethead.Razor/css/sockethead-grid.css" />
+ *
+ * Then apply the theme:
+ *   Html.SimpleGrid(Model).Theme(GridTheme.Modern)...
+ */
+
+/* ============================================
+   Container
+   ============================================ */
+
+.sh-grid-container {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+}
+
+/* ============================================
+   Table
+   ============================================ */
+
+.sh-grid {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+/* ============================================
+   Header
+   ============================================ */
+
+.sh-grid-head th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    padding: 0.875rem 1rem;
+    text-align: left;
+    border-bottom: 2px solid #e5e7eb;
+    white-space: nowrap;
+    position: relative;
+}
+
+/* ============================================
+   Sort controls
+   ============================================ */
+
+.sh-sort-link {
+    color: #6b7280;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    transition: color 0.15s ease;
+}
+
+.sh-sort-link:hover {
+    color: #111827;
+    text-decoration: none;
+}
+
+.sh-sort-arrow {
+    font-size: 0.55rem;
+    color: #d1d5db;
+    line-height: 1;
+}
+
+.sh-sort-asc,
+.sh-sort-desc {
+    color: #111827;
+    font-size: 0.6rem;
+}
+
+/* ============================================
+   Body / Rows
+   ============================================ */
+
+.sh-grid td {
+    padding: 0.875rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid #f3f4f6;
+    color: #374151;
+    vertical-align: middle;
+}
+
+.sh-grid tbody tr {
+    transition: background-color 0.1s ease;
+}
+
+.sh-grid tbody tr:hover {
+    background-color: #f9fafb;
+}
+
+.sh-grid tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* ============================================
+   No records
+   ============================================ */
+
+.sh-no-records {
+    text-align: center;
+    color: #9ca3af;
+    padding: 2.5rem 1rem !important;
+    font-style: italic;
+}
+
+/* ============================================
+   Pager
+   ============================================ */
+
+.sh-pager {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    border-top: 1px solid #f3f4f6;
+    font-size: 0.8rem;
+    color: #6b7280;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.sh-pager-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.sh-pager-total {
+    font-weight: 500;
+    color: #374151;
+}
+
+.sh-pager-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.sh-pager-rpp {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.8rem;
+}
+
+.sh-pager-rpp-label {
+    color: #6b7280;
+    margin-right: 0.15rem;
+}
+
+.sh-pager-rpp-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.2rem 0.5rem;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    color: #374151;
+    text-decoration: none;
+    font-size: 0.75rem;
+    transition: all 0.15s ease;
+    background: #fff;
+}
+
+.sh-pager-rpp-link:hover {
+    background-color: #f3f4f6;
+    border-color: #9ca3af;
+    text-decoration: none;
+    color: #111827;
+}
+
+.sh-pager-buttons {
+    display: flex;
+    gap: 2px;
+}
+
+.sh-pager-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    color: #374151;
+    text-decoration: none;
+    font-size: 1rem;
+    line-height: 1;
+    transition: all 0.15s ease;
+    background: #fff;
+}
+
+.sh-pager-btn:hover:not(.disabled) {
+    background-color: #f3f4f6;
+    border-color: #9ca3af;
+    text-decoration: none;
+    color: #111827;
+}
+
+.sh-pager-btn.disabled {
+    opacity: 0.35;
+    pointer-events: none;
+    cursor: default;
+}
+
+/* ============================================
+   Search
+   ============================================ */
+
+.sh-search-form {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.sh-search-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.sh-search-input {
+    flex: 1;
+    min-width: 180px;
+    max-width: 320px;
+    padding: 0.45rem 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    color: #374151;
+    background: #fff;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.sh-search-input:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
+}
+
+.sh-search-input::placeholder {
+    color: #9ca3af;
+}
+
+.sh-search-select {
+    padding: 0.45rem 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    color: #374151;
+    background: #fff;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.15s ease;
+}
+
+.sh-search-select:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
+}
+
+/* ============================================
+   Buttons
+   ============================================ */
+
+.sh-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.45rem 1rem;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+    line-height: 1.5;
+}
+
+.sh-btn:hover {
+    text-decoration: none;
+}
+
+.sh-btn-primary {
+    background-color: #4f46e5;
+    color: #fff;
+    border-color: #4f46e5;
+}
+
+.sh-btn-primary:hover {
+    background-color: #4338ca;
+    border-color: #4338ca;
+    color: #fff;
+}
+
+.sh-btn-secondary {
+    background-color: #fff;
+    color: #374151;
+    border-color: #d1d5db;
+}
+
+.sh-btn-secondary:hover {
+    background-color: #f3f4f6;
+    border-color: #9ca3af;
+    color: #111827;
+}
+
+/* ============================================
+   Action links (for use in grid cells)
+   ============================================ */
+
+.sh-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.sh-actions a {
+    color: #4f46e5;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.8rem;
+    transition: color 0.15s ease;
+}
+
+.sh-actions a:hover {
+    color: #4338ca;
+    text-decoration: underline;
+}
+
+/* ============================================
+   Badges (for use in grid cells)
+   ============================================ */
+
+.sh-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.15rem 0.55rem;
+    border-radius: 9999px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    line-height: 1.5;
+}
+
+.sh-badge-success {
+    background-color: #dcfce7;
+    color: #166534;
+}
+
+.sh-badge-warning {
+    background-color: #fef9c3;
+    color: #854d0e;
+}
+
+.sh-badge-danger {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+.sh-badge-info {
+    background-color: #dbeafe;
+    color: #1e40af;
+}
+
+/* ============================================
+   Row modifiers
+   ============================================ */
+
+.sh-row-warning {
+    background-color: #fffbeb !important;
+}
+
+.sh-row-warning:hover {
+    background-color: #fef3c7 !important;
+}
+
+.sh-row-danger {
+    background-color: #fef2f2 !important;
+}
+
+.sh-row-danger:hover {
+    background-color: #fee2e2 !important;
+}
+
+.sh-row-success {
+    background-color: #f0fdf4 !important;
+}
+
+.sh-row-success:hover {
+    background-color: #dcfce7 !important;
+}
+
+/* ============================================
+   Responsive
+   ============================================ */
+
+@media (max-width: 768px) {
+    .sh-grid-container {
+        border-radius: 0;
+        box-shadow: none;
+        border-top: 1px solid #e5e7eb;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .sh-grid-head th,
+    .sh-grid td {
+        padding: 0.625rem 0.75rem;
+    }
+
+    .sh-pager {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .sh-search-input {
+        min-width: 120px;
+    }
+}
