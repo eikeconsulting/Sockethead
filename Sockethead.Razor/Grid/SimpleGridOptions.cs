@@ -19,16 +19,24 @@ namespace Sockethead.Razor.Grid
         /// May optionally include HTML (i.e. this won't get encoded)
         /// </summary>
         public string NoMatchingRecordsHtml { get; set; } = "No matching records.";
+
+        /// <summary>
+        /// The visual theme for the grid.
+        /// None = existing Bootstrap behavior, Modern = framework-agnostic clean theme.
+        /// </summary>
+        public GridTheme Theme { get; set; } = GridTheme.None;
     }
 
     public class GridCssOptions
     {
+        public CssBuilder Container { get; } = new CssBuilder();
         public CssBuilder Table { get; } = new CssBuilder().AddClass("table");
         public CssBuilder Header { get; } = new CssBuilder();
         public CssBuilder Row { get; } = new CssBuilder();
 
         public void ClearAll()
         {
+            Container.Clear();
             Table.Clear();
             Header.Clear();
             Row.Clear();
