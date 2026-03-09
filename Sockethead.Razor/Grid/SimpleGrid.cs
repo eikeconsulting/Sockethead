@@ -370,10 +370,10 @@ namespace Sockethead.Razor.Grid
                 _themeApplied = true;
 
                 // Swap view names to modern partials
-                SimpleGridOptions.GridViewName = "_SHGridModern";
-                SimpleGridOptions.TableViewName = "_SHGridTableModern";
-                SimpleGridOptions.SearchViewName = "_SHGridSearchModern";
-                PagerOptions.PagerViewName = "_SHPagerModern";
+                SimpleGridOptions.GridViewName = "Modern/_SHGrid";
+                SimpleGridOptions.TableViewName = "Modern/_SHGridTable";
+                SimpleGridOptions.SearchViewName = "Modern/_SHGridSearch";
+                PagerOptions.PagerViewName = "Modern/_SHPager";
 
                 // Only clear the Table default ("table" class), preserve user-added CSS on other elements
                 CssOptions.Table.Clear();
