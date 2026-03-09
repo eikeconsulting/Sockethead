@@ -4,7 +4,7 @@
     <input type="hidden" asp-for="RedirectUrl" />
     <input type="hidden" asp-for="GridId" />
     <div class="sh-search-controls">
-        <label class="sr-only" for="Query">Search</label>
+        <label class="sh-visually-hidden" for="Query">Search</label>
         <input type="text" class="sh-search-input" asp-for="Query" placeholder="Search..." aria-label="Search">
         @if (Model.SearchFilterNames.Count > 1)
         {

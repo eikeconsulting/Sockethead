@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
@@ -20,30 +21,27 @@ namespace Sockethead.Razor.Css
 
         public CssBuilder RemoveClass(string cssClass)
         {
-            // Handle entries that contain multiple space-separated classes
-            // e.g. RemoveClass("table") on entry "table-striped table-sm table" removes only
-            // the exact token "table", leaving "table-striped table-sm"
             for (int i = CssClasses.Count - 1; i >= 0; i--)
             {
                 string entry = CssClasses[i];
+
+                // Exact match — remove the whole entry
                 if (entry == cssClass)
                 {
                     CssClasses.RemoveAt(i);
                     continue;
                 }
 
-                // If the entry contains spaces, split and filter out the target class
-                if (entry.Contains(' '))
+                // Multi-class entry (e.g. "table-striped table-sm table"):
+                // split on any whitespace, remove matching tokens, rejoin
+                string[] parts = entry.Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length > 1)
                 {
-                    string[] parts = entry.Split(' ');
                     string filtered = string.Join(" ", parts.Where(p => p != cssClass));
-                    if (filtered != entry)
-                    {
-                        if (string.IsNullOrWhiteSpace(filtered))
-                            CssClasses.RemoveAt(i);
-                        else
-                            CssClasses[i] = filtered;
-                    }
+                    if (filtered.Length == 0)
+                        CssClasses.RemoveAt(i);
+                    else if (filtered != entry)
+                        CssClasses[i] = filtered;
                 }
             }
 
