@@ -19,7 +19,7 @@
 <table @Html.Raw(Model.Css.TableCss)>
     @if (Model.IsHeaderEnabled)
     {
-    <thead class="sh-grid-head">
+    <thead class="sh-grid-head SimpleGridSortNav">
         <tr @Html.Raw(Model.Css.HeaderCss)>
             @foreach (var col in Model.Columns)
             {
