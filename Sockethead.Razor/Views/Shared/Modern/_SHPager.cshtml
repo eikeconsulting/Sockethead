@@ -1,6 +1,7 @@
 @model Sockethead.Razor.Pager.PagerModel
 @{
     string IsDisabled(string s) => string.IsNullOrEmpty(s) ? "disabled" : "";
+    string AriaDisabled(string s) => string.IsNullOrEmpty(s) ? "true" : "false";
 }
 <nav aria-label="Pager" class="sh-pager SimpleGridPagination">
     <div class="sh-pager-info">
@@ -22,10 +23,10 @@
             </div>
         }
         <div class="sh-pager-buttons">
-            <a class="sh-pager-btn @IsDisabled(Model.FirstUrl)" href="@Model.FirstUrl" title="First">&#171;</a>
-            <a class="sh-pager-btn @IsDisabled(Model.PrevUrl)" href="@Model.PrevUrl" title="Previous">&#8249;</a>
-            <a class="sh-pager-btn @IsDisabled(Model.NextUrl)" href="@Model.NextUrl" title="Next">&#8250;</a>
-            <a class="sh-pager-btn @IsDisabled(Model.LastUrl)" href="@Model.LastUrl" title="Last">&#187;</a>
+            <a class="sh-pager-btn @IsDisabled(Model.FirstUrl)" href="@Model.FirstUrl" title="First" aria-label="First page" aria-disabled="@AriaDisabled(Model.FirstUrl)">&#171;</a>
+            <a class="sh-pager-btn @IsDisabled(Model.PrevUrl)" href="@Model.PrevUrl" title="Previous" aria-label="Previous page" aria-disabled="@AriaDisabled(Model.PrevUrl)">&#8249;</a>
+            <a class="sh-pager-btn @IsDisabled(Model.NextUrl)" href="@Model.NextUrl" title="Next" aria-label="Next page" aria-disabled="@AriaDisabled(Model.NextUrl)">&#8250;</a>
+            <a class="sh-pager-btn @IsDisabled(Model.LastUrl)" href="@Model.LastUrl" title="Last" aria-label="Last page" aria-disabled="@AriaDisabled(Model.LastUrl)">&#187;</a>
         </div>
     </div>
 </nav>

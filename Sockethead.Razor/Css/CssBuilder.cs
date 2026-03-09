@@ -18,6 +18,12 @@ namespace Sockethead.Razor.Css
             return this;
         }
 
+        public CssBuilder RemoveClass(string cssClass)
+        {
+            CssClasses.Remove(cssClass);
+            return this;
+        }
+
         public CssBuilder Clear()
         {
             CssClasses.Clear();

@@ -375,8 +375,8 @@ namespace Sockethead.Razor.Grid
                 SimpleGridOptions.SearchViewName = "Modern/_SHGridSearch";
                 PagerOptions.PagerViewName = "Modern/_SHPager";
 
-                // Only clear the Table default ("table" class), preserve user-added CSS on other elements
-                CssOptions.Table.Clear();
+                // Remove the default "table" class, preserve any user-added CSS
+                CssOptions.Table.RemoveClass("table");
                 CssOptions.Table.AddClass("sh-grid");
                 CssOptions.Container.AddClass("sh-grid-container");
             }
