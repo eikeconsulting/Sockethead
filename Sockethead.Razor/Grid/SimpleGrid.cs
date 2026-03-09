@@ -315,10 +315,13 @@ namespace Sockethead.Razor.Grid
         /// Apply a visual theme to the grid.
         /// GridTheme.Modern provides a clean, framework-agnostic look.
         /// Requires adding sockethead-grid.css to your layout.
+        /// Call this early in the chain — view names and CSS set here can be
+        /// overridden by subsequent Options(), Css(), or AddPager() calls.
         /// </summary>
         public SimpleGrid<T> Theme(GridTheme theme)
         {
             SimpleGridOptions.Theme = theme;
+            ApplyTheme();
             return this;
         }
 
@@ -360,9 +363,6 @@ namespace Sockethead.Razor.Grid
             return Sort<T>.ApplySorts(sorts, query);
         }
 
-        /// <summary>
-        /// Render the Grid!
-        /// </summary>
         private void ApplyTheme()
         {
             if (SimpleGridOptions.Theme == GridTheme.Modern && !_themeApplied)
@@ -384,8 +384,6 @@ namespace Sockethead.Razor.Grid
 
         public SimpleGridViewModel PrepareRender()
         {
-            ApplyTheme();
-
             IQueryable<T> query = BuildQuery() ?? new List<T>().AsQueryable();
 
             int totalRecords = query.Count();

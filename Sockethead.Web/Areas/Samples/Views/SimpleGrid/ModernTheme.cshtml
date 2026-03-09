@@ -22,7 +22,7 @@
         .Sortable())
     .AddColumn(col => col
         .Header("Genre")
-        .DisplayAs(m => $"<span class='sh-badge sh-badge-info'>{m.Genre}</span>")
+        .DisplayAs(m => $"<span class='sh-badge sh-badge-info'>{System.Net.WebUtility.HtmlEncode(m.Genre)}</span>")
         .Encoded(false)
         .SortableBy(m => m.Genre))
     .AddColumnFor(m => m.Released)
@@ -50,7 +50,7 @@
     .AddColumn(col => col.For(m => m.Director).Sortable())
     .AddColumn(col => col
         .Header("Genre")
-        .DisplayAs(m => $"&lt;span class='sh-badge sh-badge-info'&gt;{m.Genre}&lt;/span&gt;")
+        .DisplayAs(m => $"&lt;span class='sh-badge sh-badge-info'&gt;{WebUtility.HtmlEncode(m.Genre)}&lt;/span&gt;")
         .Encoded(false)
         .SortableBy(m => m.Genre))
     .AddColumnFor(m => m.Released)

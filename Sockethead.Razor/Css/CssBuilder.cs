@@ -20,7 +20,33 @@ namespace Sockethead.Razor.Css
 
         public CssBuilder RemoveClass(string cssClass)
         {
-            CssClasses.Remove(cssClass);
+            // Handle entries that contain multiple space-separated classes
+            // e.g. RemoveClass("table") on entry "table-striped table-sm table" removes only
+            // the exact token "table", leaving "table-striped table-sm"
+            for (int i = CssClasses.Count - 1; i >= 0; i--)
+            {
+                string entry = CssClasses[i];
+                if (entry == cssClass)
+                {
+                    CssClasses.RemoveAt(i);
+                    continue;
+                }
+
+                // If the entry contains spaces, split and filter out the target class
+                if (entry.Contains(' '))
+                {
+                    string[] parts = entry.Split(' ');
+                    string filtered = string.Join(" ", parts.Where(p => p != cssClass));
+                    if (filtered != entry)
+                    {
+                        if (string.IsNullOrWhiteSpace(filtered))
+                            CssClasses.RemoveAt(i);
+                        else
+                            CssClasses[i] = filtered;
+                    }
+                }
+            }
+
             return this;
         }
 
