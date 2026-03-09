@@ -384,6 +384,10 @@ namespace Sockethead.Razor.Grid
 
         public SimpleGridViewModel PrepareRender()
         {
+            // Ensure theme is applied even if set via Options(o => o.Theme = ...)
+            // instead of Theme(). No-op if already applied via Theme().
+            ApplyTheme();
+
             IQueryable<T> query = BuildQuery() ?? new List<T>().AsQueryable();
 
             int totalRecords = query.Count();
