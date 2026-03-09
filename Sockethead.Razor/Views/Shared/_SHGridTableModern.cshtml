@@ -1,0 +1,50 @@
+@using Sockethead.Razor.Grid
+@model SimpleGridViewModel
+@{
+    string RenderLabel(ColumnHeader cl)
+    {
+        if (cl.SortUrl == null)
+            return cl.Display;
+
+        string arrow = cl.CurrentSortOrder switch
+        {
+            SortOrder.Ascending => "<span class='sh-sort-arrow sh-sort-asc'>&#9650;</span>",
+            SortOrder.Descending => "<span class='sh-sort-arrow sh-sort-desc'>&#9660;</span>",
+            _ => "<span class='sh-sort-arrow'>&#9650;&#9660;</span>"
+        };
+
+        return $"<a class='sh-sort-link' href='{cl.SortUrl}'>{cl.Display}{arrow}</a>";
+    }
+}
+<table @Html.Raw(Model.Css.TableCss)>
+    @if (Model.IsHeaderEnabled)
+    {
+    <thead class="sh-grid-head">
+        <tr @Html.Raw(Model.Css.HeaderCss)>
+            @foreach (var col in Model.Columns)
+            {
+                <th @Html.Raw(col.HeaderCss)>@Html.Raw(RenderLabel(col.HeaderDetails))</th>
+            }
+        </tr>
+    </thead>
+    }
+    <tbody>
+        @if (Model.Rows.Any())
+        {
+            @foreach (object row in Model.Rows)
+            {
+                <tr @Html.Raw(Model.Css.RowCss) @Html.Raw(Model.GetRowCss(row))>
+                    @foreach (var col in Model.Columns)
+                    {
+                        <td @Html.Raw(col.ItemCss)>@Html.Raw(col.DisplayRender(row))</td>
+                    }
+                </tr>
+            }
+            @Html.Raw(Model.FooterHtml)
+        }
+        else
+        {
+            <tr><td colspan="@Model.Columns.Count()" class="sh-no-records">@Html.Raw(Model.Options.NoMatchingRecordsHtml)</td></tr>
+        }
+    </tbody>
+</table>
