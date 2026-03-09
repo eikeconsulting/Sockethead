@@ -369,11 +369,15 @@ namespace Sockethead.Razor.Grid
             {
                 _themeApplied = true;
 
-                // Swap view names to modern partials
-                SimpleGridOptions.GridViewName = "Modern/_SHGrid";
-                SimpleGridOptions.TableViewName = "Modern/_SHGridTable";
-                SimpleGridOptions.SearchViewName = "Modern/_SHGridSearch";
-                PagerOptions.PagerViewName = "Modern/_SHPager";
+                // Only swap view names if they haven't been customized by the caller
+                if (SimpleGridOptions.GridViewName == "_SHGrid")
+                    SimpleGridOptions.GridViewName = "Modern/_SHGrid";
+                if (SimpleGridOptions.TableViewName == "_SHGridTable")
+                    SimpleGridOptions.TableViewName = "Modern/_SHGridTable";
+                if (SimpleGridOptions.SearchViewName == "_SHGridSearch")
+                    SimpleGridOptions.SearchViewName = "Modern/_SHGridSearch";
+                if (PagerOptions.PagerViewName == "_SHPager")
+                    PagerOptions.PagerViewName = "Modern/_SHPager";
 
                 // Remove the default "table" class, preserve any user-added CSS
                 CssOptions.Table.RemoveClass("table");
