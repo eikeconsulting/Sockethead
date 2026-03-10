@@ -1,7 +1,6 @@
-﻿using System;
-using System.IO;
+using System;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Sockethead.EFCore.AuditLogging;
 using Sockethead.Web.Data;
@@ -11,35 +10,42 @@ namespace Sockethead.Test.Common
     public class TestsFixture : IDisposable
     {
         private ServiceProvider ServiceProvider { get; }
-    
+        private SqliteConnection AuditLogConnection { get; }
+        private SqliteConnection DefaultConnection { get; }
+
         public T GetService<T>() => ServiceProvider.GetRequiredService<T>();
 
         public TestsFixture()
         {
-            IConfiguration config = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.test.json", optional: false, reloadOnChange: true)
-                .Build();
+            // SQLite in-memory databases require the connection to stay open
+            AuditLogConnection = new SqliteConnection("DataSource=:memory:");
+            AuditLogConnection.Open();
 
-            // ToDo: Move the below DI to a common place
+            DefaultConnection = new SqliteConnection("DataSource=:memory:");
+            DefaultConnection.Open();
+
             ServiceProvider = new ServiceCollection()
-                .AddSingleton(config)
                 .AddDbContext<AuditLogDbContext>(options =>
-                    options.UseSqlServer(
-                        config.GetConnectionString("AuditLogConnection")))
+                    options.UseSqlite(AuditLogConnection))
                 .AddDbContext<ApplicationDbContext>(options =>
-                    options.UseSqlServer(
-                        config.GetConnectionString("DefaultConnection")))
+                    options.UseSqlite(DefaultConnection))
                 .AddScoped<AuditLogGenerator>()
                 .AddScoped<AuditLogger>()
                 .AddScoped<MyRepo>()
                 .AddLogging()
                 .BuildServiceProvider();
+
+            // Create the schemas
+            using var scope = ServiceProvider.CreateScope();
+            scope.ServiceProvider.GetRequiredService<AuditLogDbContext>().Database.EnsureCreated();
+            scope.ServiceProvider.GetRequiredService<ApplicationDbContext>().Database.EnsureCreated();
         }
-    
+
         public void Dispose()
         {
             ServiceProvider.Dispose();
+            AuditLogConnection.Dispose();
+            DefaultConnection.Dispose();
 
             GC.SuppressFinalize(this);
         }
