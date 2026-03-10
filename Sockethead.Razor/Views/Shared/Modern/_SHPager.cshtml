@@ -19,38 +19,24 @@
             </div>
         }
         <div class="sh-pager-buttons">
-            @if (string.IsNullOrEmpty(Model.FirstUrl))
-            {
-                <span class="sh-pager-btn disabled" aria-disabled="true" aria-label="First page" title="First">&#171;</span>
-            }
-            else
-            {
-                <a class="sh-pager-btn" href="@Model.FirstUrl" aria-label="First page" title="First">&#171;</a>
-            }
-            @if (string.IsNullOrEmpty(Model.PrevUrl))
-            {
-                <span class="sh-pager-btn disabled" aria-disabled="true" aria-label="Previous page" title="Previous">&#8249;</span>
-            }
-            else
-            {
-                <a class="sh-pager-btn" href="@Model.PrevUrl" aria-label="Previous page" title="Previous">&#8249;</a>
-            }
-            @if (string.IsNullOrEmpty(Model.NextUrl))
-            {
-                <span class="sh-pager-btn disabled" aria-disabled="true" aria-label="Next page" title="Next">&#8250;</span>
-            }
-            else
-            {
-                <a class="sh-pager-btn" href="@Model.NextUrl" aria-label="Next page" title="Next">&#8250;</a>
-            }
-            @if (string.IsNullOrEmpty(Model.LastUrl))
-            {
-                <span class="sh-pager-btn disabled" aria-disabled="true" aria-label="Last page" title="Last">&#187;</span>
-            }
-            else
-            {
-                <a class="sh-pager-btn" href="@Model.LastUrl" aria-label="Last page" title="Last">&#187;</a>
-            }
+            @{ PagerBtn(Model.FirstUrl, "&#171;", "First page"); }
+            @{ PagerBtn(Model.PrevUrl, "&#8249;", "Previous page"); }
+            @{ PagerBtn(Model.NextUrl, "&#8250;", "Next page"); }
+            @{ PagerBtn(Model.LastUrl, "&#187;", "Last page"); }
         </div>
     </div>
 </nav>
+
+@functions {
+    void PagerBtn(string url, string symbol, string ariaLabel)
+    {
+        if (string.IsNullOrEmpty(url))
+        {
+            WriteLiteral($"<span class=\"sh-pager-btn disabled\" aria-disabled=\"true\" aria-label=\"{ariaLabel}\" title=\"{ariaLabel}\">{symbol}</span>\n");
+        }
+        else
+        {
+            WriteLiteral($"<a class=\"sh-pager-btn\" href=\"{url}\" aria-label=\"{ariaLabel}\" title=\"{ariaLabel}\">{symbol}</a>\n");
+        }
+    }
+}

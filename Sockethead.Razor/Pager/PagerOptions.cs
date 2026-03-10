@@ -2,7 +2,9 @@
 {
     public class PagerOptions
     {
-        public string PagerViewName { get; set; } = "_SHPager";
+        public const string DefaultPagerViewName = "_SHPager";
+
+        public string PagerViewName { get; set; } = DefaultPagerViewName;
 
         public bool Enabled { get; set; } = false;
         public int RowsPerPage { get; set; } = 20;

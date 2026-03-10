@@ -174,7 +174,10 @@
     background: #fff;
 }
 
-.sh-pager-rpp-link:hover {
+/* Shared hover state for interactive controls */
+.sh-pager-rpp-link:hover,
+.sh-pager-btn:hover:not(.disabled),
+.sh-btn-secondary:hover {
     background-color: #f3f4f6;
     border-color: #9ca3af;
     text-decoration: none;
@@ -200,13 +203,6 @@
     line-height: 1;
     transition: all 0.15s ease;
     background: #fff;
-}
-
-.sh-pager-btn:hover:not(.disabled) {
-    background-color: #f3f4f6;
-    border-color: #9ca3af;
-    text-decoration: none;
-    color: #111827;
 }
 
 .sh-pager-btn.disabled {
@@ -245,7 +241,8 @@
     transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.sh-search-input:focus {
+.sh-search-input:focus,
+.sh-search-select:focus {
     border-color: #6366f1;
     box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
 }
@@ -264,11 +261,6 @@
     outline: none;
     cursor: pointer;
     transition: border-color 0.15s ease;
-}
-
-.sh-search-select:focus {
-    border-color: #6366f1;
-    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
 }
 
 /* ============================================
@@ -311,12 +303,6 @@
     background-color: #fff;
     color: #374151;
     border-color: #d1d5db;
-}
-
-.sh-btn-secondary:hover {
-    background-color: #f3f4f6;
-    border-color: #9ca3af;
-    color: #111827;
 }
 
 /* ============================================

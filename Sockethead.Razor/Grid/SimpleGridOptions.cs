@@ -4,9 +4,13 @@ namespace Sockethead.Razor.Grid
 {
     public class SimpleGridOptions
     {
-        public string GridViewName { get; set; } = "_SHGrid";
-        public string SearchViewName { get; set; } = "_SHGridSearch";
-        public string TableViewName { get; set; } = "_SHGridTable";
+        public const string DefaultGridViewName = "_SHGrid";
+        public const string DefaultSearchViewName = "_SHGridSearch";
+        public const string DefaultTableViewName = "_SHGridTable";
+
+        public string GridViewName { get; set; } = DefaultGridViewName;
+        public string SearchViewName { get; set; } = DefaultSearchViewName;
+        public string TableViewName { get; set; } = DefaultTableViewName;
 
         /// <summary>
         /// Maximum number of rows to render at one time
