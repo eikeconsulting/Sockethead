@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFrameworks>net6.0;net8.0;net10.0</TargetFrameworks>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Version>0.0.1</Version>
@@ -12,7 +12,5 @@
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
-  
-
 
 </Project>

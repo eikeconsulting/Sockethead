@@ -1,13 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFrameworks>net6.0;net8.0;net10.0</TargetFrameworks>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Version>0.1.6</Version>
     <Authors>Randall Eike</Authors>
     <Company>Eike Consulting, LLC</Company>
-    <Description>Razor Utilities for .Net Core 5.
+    <Description>Razor Utilities for ASP.NET Core.
 </Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/eikeconsulting/Sockethead</PackageProjectUrl>
@@ -26,14 +26,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="System.Linq.Expressions" Version="4.3.0" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Mvc\" />
   </ItemGroup>
-  
-
 
 </Project>

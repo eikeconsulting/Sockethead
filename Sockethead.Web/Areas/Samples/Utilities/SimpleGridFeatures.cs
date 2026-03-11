@@ -74,7 +74,7 @@ namespace Sockethead.Web.Areas.Samples.Utilities
             },
             new Feature
             {
-                Name = "Date and Time",
+                Name = "Date And Time",
                 Description = "Handle local timezone DateTime.",
             },
             new Feature
@@ -124,7 +124,7 @@ namespace Sockethead.Web.Areas.Samples.Utilities
             },
             new Feature
             {
-                Name = "AJAX",
+                Name = "Ajax",
                 Description = "Use AJAX for paging and search in the grid.",
             },
             new Feature
