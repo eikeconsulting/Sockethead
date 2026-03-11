@@ -21,7 +21,7 @@ namespace Sockethead.Razor.Helpers
                 var type = value.GetType();
                 return type?
                     .GetMember(s)?
-                    .First()?
+                    .FirstOrDefault()?
                     .GetCustomAttribute<DisplayAttribute>()?
                     .Name
                     ?? Enum.GetName(type, value);
