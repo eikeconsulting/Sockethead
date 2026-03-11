@@ -1,0 +1,138 @@
+@model IQueryable<Movie>
+
+<p>
+    The Modern theme provides a clean, framework-agnostic look with card-style container,
+    refined headers, hover states, and self-contained pager and search styling.
+    No Bootstrap table classes required.
+</p>
+
+<h4>Full Example</h4>
+<p>Apply the theme, then configure sorting, paging, search, and columns as needed:</p>
+
+@(await Html
+    .SimpleGrid(Model)
+    .Theme(GridTheme.Modern)
+    .Sortable()
+    .DefaultSortBy(m => m.Name)
+    .AddColumn(col => col
+        .For(m => m.Name)
+        .Sortable())
+    .AddColumn(col => col
+        .For(m => m.Director)
+        .Sortable())
+    .AddColumn(col => col
+        .Header("Genre")
+        .DisplayAs(m => $"<span class='sh-badge sh-badge-info'>{System.Net.WebUtility.HtmlEncode(m.Genre)}</span>")
+        .Encoded(false)
+        .SortableBy(m => m.Genre))
+    .AddColumnFor(m => m.Released)
+    .AddSearch("Name", (source, query) =>
+        source.Where(m => m.Name.Contains(query, System.StringComparison.OrdinalIgnoreCase)))
+    .AddSearch("Director", (source, query) =>
+        source.Where(m => m.Director != null && m.Director.Contains(query, System.StringComparison.OrdinalIgnoreCase)))
+    .AddPager(options =>
+    {
+        options.RowsPerPage = 5;
+        options.DisplayPagerBottom = true;
+        options.DisplayTotal = true;
+        options.RowsPerPageOptions = new[] { 5, 10, 20 };
+    })
+    .RenderAsync())
+
+<br />
+
+<pre><code>@@(await Html
+    .SimpleGrid(Model)
+    .Theme(GridTheme.Modern)
+    .Sortable()
+    .DefaultSortBy(m => m.Name)
+    .AddColumn(col => col.For(m => m.Name).Sortable())
+    .AddColumn(col => col.For(m => m.Director).Sortable())
+    .AddColumn(col => col
+        .Header("Genre")
+        .DisplayAs(m => $"&lt;span class='sh-badge sh-badge-info'&gt;{WebUtility.HtmlEncode(m.Genre)}&lt;/span&gt;")
+        .Encoded(false)
+        .SortableBy(m => m.Genre))
+    .AddColumnFor(m => m.Released)
+    .AddSearch("Name", ...)
+    .AddSearch("Director", ...)
+    .AddPager(options => { ... })
+    .RenderAsync())</code></pre>
+
+<br />
+
+<h4>Row Modifiers</h4>
+<p>Highlight rows based on conditions:</p>
+
+@(await Html
+    .SimpleGrid(Model)
+    .Theme(GridTheme.Modern)
+    .AddColumnsForModel()
+    .Sortable()
+    .DefaultSortBy(m => m.Name)
+    .AddRowModifier(
+        m => m.Released.HasValue && m.Released.Value < 1980,
+        css => css.AddClass("sh-row-warning"))
+    .RenderAsync())
+
+<br />
+
+<pre><code>@@(await Html
+    .SimpleGrid(Model)
+    .Theme(GridTheme.Modern)
+    .AddColumnsForModel()
+    .Sortable()
+    .DefaultSortBy(m => m.Name)
+    .AddRowModifier(
+        m => m.Released.HasValue && m.Released.Value &lt; 1980,
+        css => css.AddClass("sh-row-warning"))
+    .RenderAsync())</code></pre>
+
+<br />
+
+<h4>Side by Side: Classic vs Modern</h4>
+<div class="row">
+    <div class="col-md-6">
+        <h5>Classic (default)</h5>
+        @(await Html
+            .SimpleGrid(Model.Take(5))
+            .AddColumnsForModel()
+            .AddCssClass("table-striped table-bordered table-sm")
+            .Sortable()
+            .RenderAsync())
+    </div>
+    <div class="col-md-6">
+        <h5>Modern Theme</h5>
+        @(await Html
+            .SimpleGrid(Model.Take(5))
+            .Theme(GridTheme.Modern)
+            .AddColumnsForModel()
+            .Sortable()
+            .RenderAsync())
+    </div>
+</div>
+
+<br />
+
+<h4>CSS Classes Available</h4>
+@{
+    var cssClasses = new List<Dictionary<string, string>>
+    {
+        new() { ["Class"] = "sh-badge sh-badge-success", ["Usage"] = "Green badge", ["Preview"] = "<span class='sh-badge sh-badge-success'>Active</span>" },
+        new() { ["Class"] = "sh-badge sh-badge-warning", ["Usage"] = "Yellow badge", ["Preview"] = "<span class='sh-badge sh-badge-warning'>Pending</span>" },
+        new() { ["Class"] = "sh-badge sh-badge-danger", ["Usage"] = "Red badge", ["Preview"] = "<span class='sh-badge sh-badge-danger'>Disabled</span>" },
+        new() { ["Class"] = "sh-badge sh-badge-info", ["Usage"] = "Blue badge", ["Preview"] = "<span class='sh-badge sh-badge-info'>Info</span>" },
+        new() { ["Class"] = "sh-row-warning", ["Usage"] = "Yellow row highlight (use with AddRowModifier)", ["Preview"] = "" },
+        new() { ["Class"] = "sh-row-danger", ["Usage"] = "Red row highlight", ["Preview"] = "" },
+        new() { ["Class"] = "sh-row-success", ["Usage"] = "Green row highlight", ["Preview"] = "" },
+        new() { ["Class"] = "sh-actions", ["Usage"] = "Flex container for action links in a cell", ["Preview"] = "<div class='sh-actions'><a href='#'>Edit</a><a href='#'>Delete</a></div>" },
+    };
+}
+
+@(await Html
+    .SimpleGrid(cssClasses)
+    .Theme(GridTheme.Modern)
+    .AddColumn(col => col.Header("Class").DisplayAs(d => $"<code>{d["Class"]}</code>").Encoded(false))
+    .AddColumn(col => col.Header("Usage").DisplayAs(d => d["Usage"]))
+    .AddColumn(col => col.Header("Preview").DisplayAs(d => d["Preview"]).Encoded(false))
+    .RenderAsync())

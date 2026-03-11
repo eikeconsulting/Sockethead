@@ -1,9 +1,6 @@
-﻿@model Sockethead.Razor.Pager.PagerModel
-@{ 
+@model Sockethead.Razor.Pager.PagerModel
+@{
     string IsDisabled(string s) => string.IsNullOrEmpty(s) ? "disabled" : "";
-
-    //Model.TotalItems = 12345;
-    //Model.RowsPerPageLinks = new[] { 20, 50, 100, 1000 };
  }
 <nav aria-label="Pager" class="SimpleGridPagination">
     @if (Model.TotalItems.HasValue)

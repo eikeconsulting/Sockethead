@@ -41,6 +41,7 @@ namespace Sockethead.Razor.Grid
         private bool IsSortable { get; set; } = false;
         private bool IsHeaderEnabled { get; set; } = true;
         private string FooterHtml { get; set; }
+        private bool _themeApplied = false;
 
         private class RowModifier
         {
@@ -310,6 +311,20 @@ namespace Sockethead.Razor.Grid
             return this;
         }
 
+        /// <summary>
+        /// Apply a visual theme to the grid.
+        /// GridTheme.Modern provides a clean, framework-agnostic look.
+        /// Requires adding sockethead-grid.css to your layout.
+        /// Call this early in the chain — view names and CSS set here can be
+        /// overridden by subsequent Options(), Css(), or AddPager() calls.
+        /// </summary>
+        public SimpleGrid<T> Theme(GridTheme theme)
+        {
+            SimpleGridOptions.Theme = theme;
+            ApplyTheme();
+            return this;
+        }
+
         public SimpleGrid<T> Footer(string footerHtml)
         {
             FooterHtml = footerHtml;
@@ -348,21 +363,46 @@ namespace Sockethead.Razor.Grid
             return Sort<T>.ApplySorts(sorts, query);
         }
 
-        /// <summary>
-        /// Render the Grid!
-        /// </summary>
+        private void ApplyTheme()
+        {
+            if (SimpleGridOptions.Theme == GridTheme.Modern && !_themeApplied)
+            {
+                _themeApplied = true;
+
+                // Only swap view names if they haven't been customized by the caller
+                if (SimpleGridOptions.GridViewName == Grid.SimpleGridOptions.DefaultGridViewName)
+                    SimpleGridOptions.GridViewName = "Modern/_SHGrid";
+                if (SimpleGridOptions.TableViewName == Grid.SimpleGridOptions.DefaultTableViewName)
+                    SimpleGridOptions.TableViewName = "Modern/_SHGridTable";
+                if (SimpleGridOptions.SearchViewName == Grid.SimpleGridOptions.DefaultSearchViewName)
+                    SimpleGridOptions.SearchViewName = "Modern/_SHGridSearch";
+                if (PagerOptions.PagerViewName == Pager.PagerOptions.DefaultPagerViewName)
+                    PagerOptions.PagerViewName = "Modern/_SHPager";
+
+                // Remove the default "table" class, preserve any user-added CSS
+                CssOptions.Table.RemoveClass("table");
+                CssOptions.Table.AddClass("sh-grid");
+                CssOptions.Container.AddClass("sh-grid-container");
+            }
+        }
+
         public SimpleGridViewModel PrepareRender()
         {
+            // Ensure theme is applied even if set via Options(o => o.Theme = ...)
+            // instead of Theme(). No-op if already applied via Theme().
+            ApplyTheme();
+
             IQueryable<T> query = BuildQuery() ?? new List<T>().AsQueryable();
 
             int totalRecords = query.Count();
-            PagerOptions.Enabled = PagerOptions.Enabled && 
+            PagerOptions.Enabled = PagerOptions.Enabled &&
                 (PagerOptions.RowsPerPage < totalRecords || !PagerOptions.HideIfTooFewRows);
 
             var vm = new SimpleGridViewModel
             {
                 Css = new GridCssViewModel
                 {
+                    ContainerCss = CssOptions.Container.ToString(),
                     TableCss = CssOptions.Table.ToString(),
                     HeaderCss = CssOptions.Header.ToString(),
                     RowCss = CssOptions.Row.ToString(),
@@ -452,19 +492,19 @@ namespace Sockethead.Razor.Grid
         public IHtmlContent Render()
         {
             var vm = PrepareRender();
-            return Html.Partial(partialViewName: "_SHGrid", model: vm);
+            return Html.Partial(partialViewName: SimpleGridOptions.GridViewName, model: vm);
         }
 
         public async Task<IHtmlContent> RenderAsync()
         {
             var vm = PrepareRender();
-            return await Html.PartialAsync(partialViewName: "_SHGrid", model: vm);
+            return await Html.PartialAsync(partialViewName: SimpleGridOptions.GridViewName, model: vm);
         }
 
         public string RenderToString()
         {
             var vm = PrepareRender();
-            return Html.RenderPartialToString(partialViewName: "_SHGrid", model: vm);
+            return Html.RenderPartialToString(partialViewName: SimpleGridOptions.GridViewName, model: vm);
         }
     }
 }

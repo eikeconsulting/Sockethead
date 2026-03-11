@@ -15,6 +15,5 @@ namespace Sockethead.Razor.Pager
         public int? TotalItems { get; set; }
 
         public Dictionary<int, string> RowsPerPageLinks { get; set; }
-
     }
 }

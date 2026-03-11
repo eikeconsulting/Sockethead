@@ -37,6 +37,7 @@ namespace Sockethead.Razor.Grid
 
     public class GridCssViewModel
     {
+        public string ContainerCss { get; set; }
         public string TableCss { get; set; }
         public string HeaderCss { get; set; }
         public string RowCss { get; set; }

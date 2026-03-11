@@ -4,9 +4,13 @@ namespace Sockethead.Razor.Grid
 {
     public class SimpleGridOptions
     {
-        public string GridViewName { get; set; } = "_SHGrid";
-        public string SearchViewName { get; set; } = "_SHGridSearch";
-        public string TableViewName { get; set; } = "_SHGridTable";
+        public const string DefaultGridViewName = "_SHGrid";
+        public const string DefaultSearchViewName = "_SHGridSearch";
+        public const string DefaultTableViewName = "_SHGridTable";
+
+        public string GridViewName { get; set; } = DefaultGridViewName;
+        public string SearchViewName { get; set; } = DefaultSearchViewName;
+        public string TableViewName { get; set; } = DefaultTableViewName;
 
         /// <summary>
         /// Maximum number of rows to render at one time
@@ -19,16 +23,24 @@ namespace Sockethead.Razor.Grid
         /// May optionally include HTML (i.e. this won't get encoded)
         /// </summary>
         public string NoMatchingRecordsHtml { get; set; } = "No matching records.";
+
+        /// <summary>
+        /// The visual theme for the grid.
+        /// None = existing Bootstrap behavior, Modern = framework-agnostic clean theme.
+        /// </summary>
+        public GridTheme Theme { get; set; } = GridTheme.None;
     }
 
     public class GridCssOptions
     {
+        public CssBuilder Container { get; } = new CssBuilder();
         public CssBuilder Table { get; } = new CssBuilder().AddClass("table");
         public CssBuilder Header { get; } = new CssBuilder();
         public CssBuilder Row { get; } = new CssBuilder();
 
         public void ClearAll()
         {
+            Container.Clear();
             Table.Clear();
             Header.Clear();
             Row.Clear();

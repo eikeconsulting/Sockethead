@@ -1,0 +1,24 @@
+@model Sockethead.Razor.Grid.SimpleGridSearchViewModel
+@{
+    string prefix = string.IsNullOrEmpty(Model.GridId) ? "" : Model.GridId + "_";
+    string queryId = prefix + "Query";
+    string searchNdxId = prefix + "SearchNdx";
+}
+<form class="sh-search-form" method="post" asp-area="Sockethead" asp-controller="SimpleGrid" asp-action="SearchHandler">
+    <input type="hidden" asp-for="RedirectUrl" />
+    <input type="hidden" asp-for="GridId" />
+    <div class="sh-search-controls">
+        <label class="sh-visually-hidden" for="@queryId">Search</label>
+        <input type="text" class="sh-search-input" id="@queryId" name="Query" value="@Model.Query" placeholder="Search..." aria-label="Search">
+        @if (Model.SearchFilterNames.Count > 1)
+        {
+            <select class="sh-search-select" id="@searchNdxId" name="SearchNdx" asp-items="Model.SearchFilterNames"></select>
+        }
+        else
+        {
+            <input type="hidden" name="SearchNdx" value="1" />
+        }
+        <button type="submit" class="sh-btn sh-btn-primary">Search</button>
+        <a class="sh-btn sh-btn-secondary" href="@Model.RedirectUrl">Clear</a>
+    </div>
+</form>

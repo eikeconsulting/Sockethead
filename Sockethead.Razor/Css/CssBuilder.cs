@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
@@ -15,6 +16,35 @@ namespace Sockethead.Razor.Css
         public CssBuilder AddStyle(string cssStyle)
         {
             CssStyles.Add(cssStyle);
+            return this;
+        }
+
+        public CssBuilder RemoveClass(string cssClass)
+        {
+            for (int i = CssClasses.Count - 1; i >= 0; i--)
+            {
+                string entry = CssClasses[i];
+
+                // Exact match — remove the whole entry
+                if (entry == cssClass)
+                {
+                    CssClasses.RemoveAt(i);
+                    continue;
+                }
+
+                // Multi-class entry (e.g. "table-striped table-sm table"):
+                // split on any whitespace, remove matching tokens, rejoin
+                string[] parts = entry.Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length > 1)
+                {
+                    string filtered = string.Join(" ", parts.Where(p => p != cssClass));
+                    if (filtered.Length == 0)
+                        CssClasses.RemoveAt(i);
+                    else if (filtered != entry)
+                        CssClasses[i] = filtered;
+                }
+            }
+
             return this;
         }
 

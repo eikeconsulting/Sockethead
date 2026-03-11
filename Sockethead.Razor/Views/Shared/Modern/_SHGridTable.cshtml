@@ -8,18 +8,18 @@
 
         string arrow = cl.CurrentSortOrder switch
         {
-            SortOrder.Ascending => "&#8593;",  // up arrow
-            SortOrder.Descending => "&#8595;", // down arrow
-            _ => ""
+            SortOrder.Ascending => "<span class='sh-sort-arrow sh-sort-asc'>&#9650;</span>",
+            SortOrder.Descending => "<span class='sh-sort-arrow sh-sort-desc'>&#9660;</span>",
+            _ => "<span class='sh-sort-arrow'>&#9650;&#9660;</span>"
         };
 
-        return $"<a href='{cl.SortUrl}'>{cl.Display}</a>{arrow}";
+        return $"<a class='sh-sort-link' href='{cl.SortUrl}'>{cl.Display}{arrow}</a>";
     }
 }
 <table @Html.Raw(Model.Css.TableCss)>
     @if (Model.IsHeaderEnabled)
     {
-    <thead class="SimpleGridSortNav">
+    <thead class="sh-grid-head SimpleGridSortNav">
         <tr @Html.Raw(Model.Css.HeaderCss)>
             @foreach (var col in Model.Columns)
             {
@@ -44,7 +44,7 @@
         }
         else
         {
-            <tr><td colspan="@Model.Columns.Count()" class="text-center">@Html.Raw(Model.Options.NoMatchingRecordsHtml)</td></tr>
+            <tr><td colspan="@Model.Columns.Count()" class="sh-no-records">@Html.Raw(Model.Options.NoMatchingRecordsHtml)</td></tr>
         }
     </tbody>
 </table>

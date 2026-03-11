@@ -144,6 +144,11 @@ namespace Sockethead.Web.Areas.Samples.Utilities
                 Name = "Extensions",
                 Description = "Create your own custom SimpleGrid extension!",
             },
+            new Feature
+            {
+                Name = "Modern Theme",
+                Description = "A clean, framework-agnostic theme. No Bootstrap required!",
+            },
 
             /*
             new Feature
