@@ -5,7 +5,10 @@
         {
             <span class="sh-pager-total">@Model.TotalItems.Value.ToString("N0") records</span>
         }
-        <span class="sh-pager-pages">Page @Model.CurrentPage of @Model.TotalPages</span>
+        @if (!Model.HideNavigation)
+        {
+            <span class="sh-pager-pages">Page @Model.CurrentPage of @Model.TotalPages</span>
+        }
     </div>
     <div class="sh-pager-controls">
         @if (Model.RowsPerPageLinks != null)
@@ -18,12 +21,15 @@
                 }
             </div>
         }
+        @if (!Model.HideNavigation)
+        {
         <div class="sh-pager-buttons">
             @{ PagerBtn(Model.FirstUrl, "&#171;", "First page"); }
             @{ PagerBtn(Model.PrevUrl, "&#8249;", "Previous page"); }
             @{ PagerBtn(Model.NextUrl, "&#8250;", "Next page"); }
             @{ PagerBtn(Model.LastUrl, "&#187;", "Last page"); }
         </div>
+        }
     </div>
 </nav>
 
