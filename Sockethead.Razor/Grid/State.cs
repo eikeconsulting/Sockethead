@@ -96,7 +96,8 @@ namespace Sockethead.Razor.Grid
                 [Fields.SearchNdxName] = null,
             };
 
-        public PagerModel BuildPagerModel(int totalRecords, bool displayTotal, int rowsPerPage, int[] rowsPerPageOptions)
+        public PagerModel BuildPagerModel(int totalRecords, bool displayTotal, int rowsPerPage, int[] rowsPerPageOptions,
+            bool hideNavigation = false)
         {
             int totalPages = (int)System.Math.Ceiling(totalRecords / (float)rowsPerPage);
             if (totalPages < 1)
@@ -110,6 +111,7 @@ namespace Sockethead.Razor.Grid
                 LastUrl = PageNum < totalPages ? BuildPageUrl(totalPages) : null,
                 CurrentPage = PageNum,
                 TotalPages = totalPages,
+                HideNavigation = hideNavigation,
             };
 
             if (displayTotal)

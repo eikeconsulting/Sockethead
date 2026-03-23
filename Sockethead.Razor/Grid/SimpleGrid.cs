@@ -395,8 +395,8 @@ namespace Sockethead.Razor.Grid
             IQueryable<T> query = BuildQuery() ?? new List<T>().AsQueryable();
 
             int totalRecords = query.Count();
-            PagerOptions.Enabled = PagerOptions.Enabled &&
-                (PagerOptions.RowsPerPage < totalRecords || !PagerOptions.HideIfTooFewRows);
+            bool hideNavigation = PagerOptions.HideIfTooFewRows &&
+                totalRecords <= (State.RowsPerPage ?? PagerOptions.RowsPerPage);
 
             var vm = new SimpleGridViewModel
             {
@@ -421,7 +421,8 @@ namespace Sockethead.Razor.Grid
                         totalRecords: totalRecords,
                         displayTotal: PagerOptions.DisplayTotal,
                         rowsPerPage: State.RowsPerPage ?? PagerOptions.RowsPerPage,
-                        rowsPerPageOptions: PagerOptions.RowsPerPageOptions)
+                        rowsPerPageOptions: PagerOptions.RowsPerPageOptions,
+                        hideNavigation: hideNavigation)
                     : null,
 
                 // build search view model
