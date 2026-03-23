@@ -20,6 +20,7 @@
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <StaticWebAssetsEnabled>true</StaticWebAssetsEnabled>
+    <StaticWebAssetsFingerprintContent>false</StaticWebAssetsFingerprintContent>
   </PropertyGroup>
 
   <ItemGroup>

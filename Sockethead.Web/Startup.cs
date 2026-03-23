@@ -68,7 +68,10 @@ namespace Sockethead.Web
             }
 
             app.UseHttpsRedirection();
-            app.UseStaticFiles();
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = env.WebRootFileProvider
+            });
 
             app.UseRouting();
 
@@ -77,6 +80,7 @@ namespace Sockethead.Web
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapStaticAssets();
                 endpoints.MapRazorPages();
 
                 endpoints.MapControllerRoute(
