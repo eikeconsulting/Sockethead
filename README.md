@@ -1,11 +1,16 @@
-﻿# Sockethead .Net Core Utilities
+﻿# Sockethead .NET Utilities
 
-Welcome to Sockethead.  This is a collection of .Net Core utilities build for .Net 5.
+Welcome to Sockethead. This is a collection of .NET utilities for ASP.NET Core.
+
+## LLM Documentation
+
+- [llms.txt](https://sockethead.azurewebsites.net/llms.txt) — Overview for LLMs
+- [llms-full.txt](https://sockethead.azurewebsites.net/llms-full.txt) — Full documentation for LLMs
 
 ## Sockethead.Razor
 A library of Razor utilities.
 
-See the [Sockethead Demo Site](https://sockethead.azurewebsites.net/) 
+See the [Sockethead Demo Site](https://sockethead.azurewebsites.net/)
 for usage examples and documentation of the SimpleGrid and TwoColumnGrid.
 
 ### Installation

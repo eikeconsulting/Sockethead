@@ -1,0 +1,41 @@
+# Sockethead
+
+> A collection of .NET utilities for ASP.NET Core including grid controls, audit logging, and common extensions.
+
+Sockethead is a set of NuGet packages for ASP.NET Core developers. The primary package, Sockethead.Razor, provides SimpleGrid and TwoColumnGrid controls for rendering data in MVC Razor views with sorting, paging, search, theming, and extensive customization. Sockethead.EFCore provides Entity Framework Core audit logging. Sockethead.Common provides utility extensions.
+
+## Packages
+
+- [Sockethead.Razor](https://www.nuget.org/packages/Sockethead.Razor): Razor grid controls, alerts, client time, PRG support, diagnostics
+- [Sockethead.EFCore](https://www.nuget.org/packages/Sockethead.EFCore): Entity Framework Core audit logging with cleanup policies
+- [Sockethead.Common](https://www.nuget.org/packages/Sockethead.Common): Queryable, string, collection, JSON, date extensions
+
+## Links
+
+- [Demo Site](https://sockethead.azurewebsites.net/Samples/Home/Dashboard)
+- [GitHub Repository](https://github.com/eikeconsulting/Sockethead)
+- [Full Documentation for LLMs](https://sockethead.azurewebsites.net/llms-full.txt)
+
+## Target Frameworks
+
+Library projects multi-target `net6.0`, `net8.0`, and `net10.0`. Sockethead.Common also supports `netstandard2.1`.
+
+## Quick Start
+
+Install:
+```
+PM> Install-Package Sockethead.Razor
+```
+
+Add to ViewImports.cshtml:
+```csharp
+@using Sockethead.Razor.Grid;
+```
+
+Render a grid:
+```csharp
+@(await Html
+    .SimpleGrid(Model)
+    .AddColumnsForModel()
+    .RenderAsync())
+```
