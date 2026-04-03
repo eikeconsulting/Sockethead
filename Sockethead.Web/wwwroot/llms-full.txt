@@ -527,13 +527,6 @@ return View().Success("My cool success message!");
 
 HTML helper that outputs DateTime as `<time>` tags for client-side timezone conversion.
 
-### TinyTable
-
-Render a `Dictionary<string, object>` as a Bootstrap table:
-```csharp
-<partial name="_TinyTable" model="yourDictionary" />
-```
-
 ### RazorViewRenderer
 
 Render Razor views to strings (useful for email generation):

@@ -69,11 +69,6 @@ should be included in the main layout page to make this render correctly:
     </script>
 
 
-### TinyTable
-TinyTable takes a Dictionary<string, object> and renders a pretty Bootstrap Table:
-
-    <partial name="_TinyTable" model="<your dictionary>" />
-
 ### RazorViewRenderer (for Email Generation)
 Namespace: Sockethead.Razor.Utilities
 
