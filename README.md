@@ -1,11 +1,8 @@
 ﻿# Sockethead .NET Utilities
 
+[![llms.txt](https://img.shields.io/badge/llms.txt-available-blue)](https://sockethead.azurewebsites.net/llms.txt)
+
 Welcome to Sockethead. This is a collection of .NET utilities for ASP.NET Core.
-
-## LLM Documentation
-
-- [llms.txt](https://sockethead.azurewebsites.net/llms.txt) — Overview for LLMs
-- [llms-full.txt](https://sockethead.azurewebsites.net/llms-full.txt) — Full documentation for LLMs
 
 ## Sockethead.Razor
 A library of Razor utilities.
