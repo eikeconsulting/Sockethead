@@ -1,0 +1,746 @@
+# Sockethead — Full Documentation
+
+> A collection of .NET utilities for ASP.NET Core including grid controls, audit logging, and common extensions.
+
+## Overview
+
+Sockethead is a set of NuGet packages for ASP.NET Core developers:
+
+- **Sockethead.Razor** — SimpleGrid and TwoColumnGrid controls, alerts, client time rendering, PRG support, diagnostics
+- **Sockethead.EFCore** — Entity Framework Core audit logging with configurable cleanup policies
+- **Sockethead.Common** — Queryable, string, collection, JSON, and date extension methods
+
+All library projects multi-target `net6.0`, `net8.0`, and `net10.0`. Sockethead.Common also supports `netstandard2.1`.
+
+---
+
+# Sockethead.Razor
+
+## Installation
+
+```
+PM> Install-Package Sockethead.Razor
+```
+
+Optionally add to `ViewImports.cshtml`:
+```csharp
+@using Sockethead.Razor.Grid;
+```
+
+No JavaScript or CSS includes are necessary for the classic theme. The Modern theme includes its own self-contained CSS.
+
+## SimpleGrid
+
+SimpleGrid is an ASP.NET Core Grid Control that renders `IQueryable<T>` data as HTML tables with sorting, paging, search, theming, and extensive customization.
+
+### Basic Usage
+
+Model:
+```csharp
+public class Movie
+{
+    [Display(Order = 2)]
+    public string Name { get; set; }
+
+    [Display(Name = "Movie Director", Order = 1)]
+    public string Director { get; set; }
+
+    [DisplayName("Movie Genre")]
+    public string Genre { get; set; }
+
+    [Display(AutoGenerateField = true)]
+    public int? Released { get; set; }
+
+    [Display(AutoGenerateField = false)]
+    public ICollection<CastMember> Cast { get; set; }
+}
+```
+
+View:
+```csharp
+@model IQueryable<Movie>
+
+@(await Html
+    .SimpleGrid(Model)
+    .AddColumnsForModel()
+    .RenderAsync())
+```
+
+Controller:
+```csharp
+[HttpGet]
+public IActionResult BasicUsage()
+{
+    return View(SampleData.Movies.AsQueryable());
+}
+```
+
+### Column Selection
+
+Automatically select columns from model properties (respects `[Display(AutoGenerateField = false)]`):
+```csharp
+.AddColumnsForModel()
+```
+
+Select specific columns:
+```csharp
+.AddColumnFor(movie => movie.Name)
+.AddColumnFor(movie => movie.Director)
+.AddColumn(col => col.For(movie => movie.Genre))
+```
+
+`AddColumnFor` is shortcut syntax for `AddColumn` followed by `For`.
+
+Remove columns:
+```csharp
+.RemoveColumn(1)            // by zero-based index
+.RemoveColumn("Released")   // by column header
+```
+
+### Column Ordering
+
+Order columns using `[Display(Order = N)]` attribute:
+```csharp
+.AddColumnsForModel()
+.OrderColumns()
+```
+
+Only works on columns added via `AddColumnsForModel()`.
+
+### Column Headers
+
+Headers are resolved in this order: 1) `[Display(Name = "...")]`, 2) `[DisplayName("...")]`, 3) Property name.
+
+```csharp
+.AddColumn(col => col.For(movie => movie.Name))                           // from expression
+.AddColumn(col => col.HeaderFor(movie => movie.Director).DisplayAs(...))  // explicit expression
+.AddColumn(col => col.Header("GENRE").DisplayAs(movie => movie.Genre))    // explicit string
+```
+
+Hide all headers:
+```csharp
+.NoHeaders()
+```
+
+### Column Display
+
+```csharp
+.AddColumn(col => col.For(movie => movie.Name))                                    // standard
+.AddColumn(col => col.For(movie => movie.Genre).DisplayAs(movie => movie.Genre.ToUpper()))  // transform
+.AddColumn(col => col.Header("Director").DisplayAs(movie => $"Directed by {movie.Director}"))
+.AddColumn(col => col.Display("static value"))                                      // static
+```
+
+Display as bullet list:
+```csharp
+.AddColumn(col => col.Header("Cast").DisplayAsList(movie => movie.Cast))
+```
+
+### HTML Encoding
+
+Encoding is enabled by default. Disable to render raw HTML:
+```csharp
+.AddColumn(col => col.For(movie => movie.Name).Encoded(false))
+```
+
+### Links
+
+```csharp
+.AddColumn(col => col
+    .For(movie => movie.Name)
+    .LinkTo(model => $"https://example.com/search?q={WebUtility.UrlEncode(model.Name)}"))
+
+.AddColumn(col => col
+    .Display("Details")
+    .LinkTo(
+        linkBuilder: model => $"/details/{model.Id}",
+        target: "_blank",
+        css: css => css.AddClass("btn btn-sm btn-primary")))
+```
+
+### Sorting
+
+Enable sorting for the entire grid, then configure per-column:
+```csharp
+@(await Html
+    .SimpleGrid(Model)
+    .AddColumnFor(movie => movie.Name)                                          // sortable by default with For()
+    .AddColumn(col => col.For(movie => movie.Released).Sortable(false))         // disable sort
+    .AddColumn(col => col.Header("Sort by Released")
+        .DisplayAs(movie => movie.Director)
+        .SortableBy(movie => movie.Released))                                   // sort by different field
+    .DefaultSortBy(movie => movie.Name, SortOrder.Descending)                   // initial sort
+    .Sortable()                                                                 // enable grid sorting
+    .RenderAsync())
+```
+
+Adding `Sortable(true)` or `SortableBy(...)` to a column has no effect unless the entire grid is `.Sortable()`.
+
+### Pagination
+
+```csharp
+.AddPager(options =>
+{
+    options.RowsPerPage = 5;
+    options.DisplayPagerTop = true;
+    options.DisplayPagerBottom = true;
+    options.DisplayTotal = true;
+    options.RowsPerPageOptions = new[] { 5, 10, 20, 50, 100 };
+})
+```
+
+Pager position shortcuts: `options.Top()`, `options.Botttom()`, `options.TopAndBottom()`.
+
+When `HideIfTooFewRows` is true (default) and all rows fit on one page, navigation buttons are hidden but the total count and rows-per-page selector remain visible.
+
+### Search
+
+Each `AddSearch` call adds a filter to the search dropdown:
+```csharp
+.AddSearch("Movie Name",
+    (source, query) => source.Where(m => m.Name.Contains(query, StringComparison.OrdinalIgnoreCase)))
+
+.AddSearch("Genre",
+    (source, query) => source.Where(m => m.Genre.Contains(query, StringComparison.OrdinalIgnoreCase)))
+```
+
+### Multiple Grids
+
+Pass a unique grid ID to support independent grids on the same page:
+```csharp
+@(await Html.SimpleGrid(Model, "Grid1")
+    .AddColumnFor(movie => movie.Name)
+    .AddPager(options => options.RowsPerPage = 3)
+    .RenderAsync())
+```
+
+### CSS
+
+Apply CSS at column level and grid level:
+```csharp
+.AddColumn(col => col.For(movie => movie.Director)
+    .Css(elements => elements.Item.AddStyle("background-color:yellow")))
+
+.Css(elements =>
+{
+    elements.Table.AddClass("table-striped table-hover table-bordered");
+    elements.Row.AddStyle("color: green");
+    elements.Header.AddStyle("color: blue");
+})
+```
+
+### Row Modifiers
+
+Apply CSS to rows based on conditions:
+```csharp
+.AddRowModifier(
+    movie => movie.Director.Contains("James"),
+    css => css.AddStyle("background-color:red"))
+```
+
+### Options
+
+```csharp
+.Options(options =>
+{
+    options.MaxRows = 100;
+    options.NoMatchingRecordsHtml = "No records found.";
+    // Override partial views:
+    // options.TableViewName = "...";
+    // options.SearchViewName = "...";
+    // options.GridViewName = "...";
+})
+```
+
+### Modern Theme
+
+Framework-agnostic theme with self-contained CSS. No Bootstrap required.
+
+```csharp
+@(await Html
+    .SimpleGrid(Model)
+    .Theme(GridTheme.Modern)
+    .Sortable()
+    .DefaultSortBy(m => m.Name)
+    .AddColumn(col => col.For(m => m.Name).Sortable())
+    .AddColumn(col => col.For(m => m.Director).Sortable())
+    .AddColumn(col => col
+        .Header("Genre")
+        .DisplayAs(m => $"<span class='sh-badge sh-badge-info'>{WebUtility.HtmlEncode(m.Genre)}</span>")
+        .Encoded(false)
+        .SortableBy(m => m.Genre))
+    .AddColumnFor(m => m.Released)
+    .AddSearch("Name", (source, query) =>
+        source.Where(m => m.Name.Contains(query, StringComparison.OrdinalIgnoreCase)))
+    .AddPager(options =>
+    {
+        options.RowsPerPage = 5;
+        options.DisplayPagerBottom = true;
+        options.DisplayTotal = true;
+        options.RowsPerPageOptions = new[] { 5, 10, 20 };
+    })
+    .RenderAsync())
+```
+
+Modern theme CSS classes:
+
+| Class | Usage |
+|-------|-------|
+| `sh-badge sh-badge-success` | Green badge |
+| `sh-badge sh-badge-warning` | Yellow badge |
+| `sh-badge sh-badge-danger` | Red badge |
+| `sh-badge sh-badge-info` | Blue badge |
+| `sh-row-warning` | Yellow row highlight (use with AddRowModifier) |
+| `sh-row-danger` | Red row highlight |
+| `sh-row-success` | Green row highlight |
+| `sh-actions` | Flex container for action links in a cell |
+
+### AJAX Support
+
+Main view:
+```csharp
+@Html.SimpleGridAjax(
+    partialViewEndpoint: "/Samples/SimpleGrid/PartialGrid",
+    id: "Grid1",
+    displaySearchField: true)
+```
+
+Partial view:
+```csharp
+@(await Html
+    .SimpleGrid(Model)
+    .AddColumnsForModel()
+    .Sortable()
+    .AddPager(options =>
+    {
+        options.RowsPerPage = 10;
+        options.RowsPerPageOptions = new[] { 3, 5, 10, 50 };
+    })
+    .AddSearch("Name", (source, query) => source.Where(movie => movie.Name.Contains(query)))
+    .Options(options => { options.SearchViewName = null; })
+    .RenderAsync())
+```
+
+Controller:
+```csharp
+[HttpGet]
+public PartialViewResult PartialGrid()
+    => PartialView("_PartialGrid", MovieQuery);
+```
+
+### Forms with SimpleGrid
+
+Checkbox selection:
+```csharp
+<form method="post">
+    @(await Html.SimpleGrid(Model.Take(5))
+        .AddColumn(col => col
+            .HeaderCheckboxAll("Names")
+            .DisplayAs(model => $"<input name='Names' type='checkbox' value='{model.Name}' />")
+            .Encoded(false))
+        .AddColumnsForModel()
+        .RenderAsync())
+    <button class="btn btn-primary">Submit</button>
+</form>
+```
+
+### Embedding Grids
+
+Embed TwoColumnGrid inside SimpleGrid:
+```csharp
+.AddColumn(col => col.Header("Movie").TwoColumnGrid(model => model))
+```
+
+Embed SimpleGrid inside SimpleGrid:
+```csharp
+.AddColumn(col => col.For(movie => movie.Cast)
+    .SimpleGrid(
+        movie => movie.Cast?.AsQueryable(),
+        grid => grid.AddColumnsForModel()))
+```
+
+### DateTime Handling
+
+`For()`, `DisplayExpression()`, and `ClientTime()` output `System.DateTime` as HTML `<time>` tags for client-side timezone conversion. Use `DisplayAs()` for raw output.
+
+```csharp
+.AddColumn(col => col.For(sample => sample.RandomDate).Header("For"))      // <time> tag
+.AddColumn(col => col.DisplayAs(sample => sample.RandomDate).Header("Raw")) // raw string
+.AddColumn(col => col.ClientTime(sample => sample.RandomDate).Header("Client")) // <time> tag
+```
+
+JavaScript for conversion:
+```javascript
+$("time").each(function (elem) {
+    var utctimeval = $(this).html();
+    var date = new Date(utctimeval);
+    $(this).html(date.toLocaleString());
+});
+```
+
+### Enum Handling
+
+`For()` and `DisplayExpression()` automatically use `[Display(Name = "...")]` on enum values:
+```csharp
+public enum SampleEnum
+{
+    [Display(Name = "Zilch")]
+    Zero,
+    One,
+    Two,
+}
+```
+
+### Footer
+
+```csharp
+.Footer($"<tr><td colspan='2'>Average</td><td>{(int)Model.Average(m => m.Released)}</td></tr>")
+```
+
+### Custom Extensions
+
+Create reusable extensions for SimpleGrid or ColumnBuilder:
+```csharp
+public static SimpleGrid<T> MyFavoriteGridStuff<T>(this SimpleGrid<T> grid) where T : class
+    => grid
+        .Css(elements => elements.Table.AddClass("table-striped"))
+        .AddPager(options =>
+        {
+            options.TopAndBottom();
+            options.RowsPerPage = 5;
+            options.RowsPerPageOptions = new[] { 5, 10, 25 };
+        });
+
+public static ColumnBuilder<T> MyGoogleSearchButton<T>(
+    this ColumnBuilder<T> col, string text, Func<T, string> queryBuilder) where T : class
+    => col
+        .Display(text)
+        .LinkTo(
+            linkBuilder: model => $"https://www.google.com/search?q={WebUtility.UrlEncode(queryBuilder(model))}",
+            target: "_blank",
+            css: css => css.AddClass("btn btn-primary"));
+```
+
+---
+
+## TwoColumnGrid
+
+A two-column grid for rendering description lists (label-value pairs).
+
+### Basic Usage
+
+```csharp
+@(Html.TwoColumnGrid().AddRowsForModel(movie).Render())
+```
+
+### Adding Rows
+
+From model (all properties):
+```csharp
+.AddRowsForModel(movie)
+```
+
+Specific properties:
+```csharp
+.AddRowsForModel(movie, builder => builder
+    .AddRowFor(model => model.Name)
+    .AddRowFor(model => model.Genre)
+    .AddRowFor(model => model.Director))
+```
+
+Arbitrary rows:
+```csharp
+.AddRow("Label", "Value")
+.AddRows(new Dictionary<string, object>
+{
+    ["One"] = 1,
+    ["Two"] = "Two",
+    ["Now"] = DateTime.Now,
+})
+```
+
+### Row Processor
+
+Transform rows:
+```csharp
+.AddRowProcessor(kvp =>
+{
+    if (kvp.Key == "Name") return new KeyValuePair<string, string>();
+    return new KeyValuePair<string, string>(kvp.Key, kvp.Value.ToUpper());
+})
+```
+
+### CSS
+
+```csharp
+.Css(elements =>
+{
+    elements.ClearAll();
+    elements.Table.AddClass("table table-sm");
+    elements.Row.AddStyle("font-style:italic");
+    elements.Label.AddStyle("width: 200px;");
+    elements.Item.AddStyle("color:blue");
+})
+```
+
+### Options
+
+```csharp
+.Options(options =>
+{
+    options.AllowDuplicates = false;                              // filter duplicate rows
+    options.TwoColumnGridStyle = TwoColumnGridStyle.DescriptionList; // render as <dl> instead of <table>
+})
+```
+
+### Embedding
+
+Embed TwoColumnGrid in TwoColumnGrid:
+```csharp
+.AddTwoColumnGrid(label: "Nested", gridBuilder: grid => grid.AddRowsForModel(movie))
+```
+
+Embed SimpleGrid in TwoColumnGrid:
+```csharp
+.AddSimpleGrid(label: "Grid", model: movies.Take(3), gridBuilder: grid => grid.AddColumnsForModel())
+```
+
+---
+
+## Other Razor Utilities
+
+### Alerts
+
+Add alerts to MVC pages from the controller:
+
+Layout:
+```csharp
+<partial name="_Alerts" />
+```
+
+Controller:
+```csharp
+return View().Success("My cool success message!");
+```
+
+### Client Time
+
+HTML helper that outputs DateTime as `<time>` tags for client-side timezone conversion.
+
+### TinyTable
+
+Render a `Dictionary<string, object>` as a Bootstrap table:
+```csharp
+<partial name="_TinyTable" model="yourDictionary" />
+```
+
+### RazorViewRenderer
+
+Render Razor views to strings (useful for email generation):
+```csharp
+services.AddScoped<IRazorViewRenderer, RazorViewRenderer>();
+
+string html = await renderer.RenderViewToStringAsync("Email/TestEmail", "Model data");
+```
+
+### Post-Redirect-Get (PRG) Support
+
+Attributes to serialize ModelState to TempData across redirects:
+```csharp
+[HttpGet, RestoreModelState]
+public IActionResult SomeEndpoint(int id) { ... }
+
+[HttpPost, ValidateAntiForgeryToken, SaveModelState]
+public IActionResult SomeEndpoint(SomeModel model)
+{
+    var result = RedirectToAction(nameof(SomeEndpoint), new { id = model.Id });
+    if (!ModelState.IsValid)
+        return result.Error("Error Saving Response.");
+    return result.Success("Successfully did it!");
+}
+```
+
+### Diagnostics
+
+- `Html.BuildTime` — returns the project build timestamp
+- `[TimeTracker]` attribute — adds a StopWatch to the HTTP context for page execution timing
+
+---
+
+# Sockethead.EFCore
+
+## Installation
+
+```
+PM> Install-Package Sockethead.EFCore
+```
+
+## Audit Logging
+
+Track all database changes by capturing Entity Framework Core change tracker entries and committing them to separate audit log tables.
+
+### Setup
+
+1. Add connection string:
+```json
+"ConnectionStrings": {
+    "DefaultConnection": "<your connection>",
+    "AuditLogConnection": "<audit log connection>"
+}
+```
+
+2. Register DI:
+```csharp
+services.AddDbContext<AuditLogDbContext>(options =>
+    options.UseSqlServer(
+        Configuration.GetConnectionString("AuditLogConnection"),
+        b => b.MigrationsAssembly("<your assembly namespace>")));
+```
+
+3. Add and run migrations:
+```
+add-migration -context AuditLogDbContext -name AuditLog -OutputDir "AuditLog/Migrations"
+update-database -context AuditLogDbContext
+```
+
+4. Create a repo class:
+```csharp
+public class MyRepo : AuditedRepo<ApplicationDbContext>
+{
+    public MyRepo(ApplicationDbContext db, AuditLogger auditLogger)
+        : base(db, auditLogger) { }
+}
+```
+
+5. Register services:
+```csharp
+services
+    .AddScoped<AuditLogGenerator>()
+    .AddScoped<AuditLogger>()
+    .AddScoped<MyRepo>();
+```
+
+### Usage
+
+Use `MyRepo` instead of `ApplicationDbContext`. Call `CommitAsync` instead of `SaveChangesAsync`:
+```csharp
+await myRepo.CommitAsync(auditMetaData, policy);
+```
+
+### Audit Log Insertion Policy
+
+Control which tables and properties are logged:
+```csharp
+var policy = new AuditLogInsertionPolicy
+{
+    IncludeTables = new[] { "Table1", "Table2" },
+    SensitiveProperties = new[] { "Table1.Property1", "Table2.Property2" }
+};
+```
+
+- `IncludeTables`: null = all tables, empty array = no tables
+- `SensitiveProperties`: properties excluded from audit log entries
+
+### Audit Log Cleanup
+
+Background service for periodic cleanup:
+```csharp
+services.RegisterAuditLogCleanerBackgroundService(
+    auditLogCleanupPolicy: new AuditLogCleanupPolicy
+    {
+        TimeWindow = TimeSpan.FromDays(30),
+        ThresholdValue = 1000000,
+        ExcludeTables = new[] { "User" }
+    },
+    auditLogCleanupSettings: new AuditLogCleanupSettings
+    {
+        BatchSize = 500,
+        CleanupInterval = TimeSpan.FromHours(1)
+    },
+    auditLogCleanupActionHandler: new MyCleanupHandler()
+);
+```
+
+- `TimeWindow`: delete records older than this duration
+- `ThresholdValue`: keep only the latest N records
+- Both set: keep latest N records AND purge records older than TimeWindow
+- Default (neither set): 30-day time window
+- `ExcludeTables`: exempt specific tables from cleanup
+- `IAuditLogCleanupActionHandler`: optional handler for processing deleted logs (e.g., archiving)
+
+### Soft Delete
+
+Entities implementing `ISoftDeleteEntity` are automatically soft-deleted (set `IsDeleted = true`) instead of being removed from the database.
+
+---
+
+# Sockethead.Common
+
+## Installation
+
+```
+PM> Install-Package Sockethead.Common
+```
+
+## Queryable Extensions
+
+- `If` — conditionally transform a queryable
+- `WhereIf` — conditionally apply a predicate
+- `Paginate` — paginate by zero-indexed page number and page size
+- `IgnoreQueryFiltersIf` — conditionally ignore query filters
+- `ForEachInChunks` / `ForEachInChunksAsync` — process in batches
+- `ChunkAsync` — break into smaller lists asynchronously
+- `ForEachInChunksForShrinkingListAsync` — process a shrinking result set
+- `ShrinkingListChunker` — process queryable whose results change per chunk
+
+## String Extensions
+
+- `ToInt32OrDefault` — parse int with fallback
+- `Truncate` — truncate to max length
+- `StripAccentsFromUnicodeCharacters` — remove diacritics
+- `ToEnum` — parse string to enum with default
+
+## Collection Extensions
+
+- `EmptyIfNull` — return empty collection if null
+
+## JSON Extensions
+
+- `ToJson` — serialize to indented camelCase JSON
+- `Deserialize` — deserialize JSON string to object
+
+## Object Extensions
+
+- `ToDictionary<T>` — convert object to dictionary
+- `ToBase64` / `FromBase64` — Base64 encode/decode objects
+
+## Dictionary Extensions
+
+- `Accumulate` — accumulate values with custom function
+- `AccumulateSum` — accumulate decimal sums
+- `ToObject` — convert dictionary to typed object
+
+## Date Extensions
+
+- `GetDateRange` — generate daily date range
+- `GetMonthRange` — generate monthly date range
+- `GetYearRange` — generate yearly date range
+
+## Random Extensions
+
+- `NextForTimes` — generate N random integers
+- `UniqueNextForTimes` — generate N unique random integers
+
+---
+
+# License
+
+[MIT](https://opensource.org/licenses/MIT)
+
+# Links
+
+- Demo Site: https://sockethead.azurewebsites.net/Samples/Home/Dashboard
+- GitHub: https://github.com/eikeconsulting/Sockethead
+- NuGet (Razor): https://www.nuget.org/packages/Sockethead.Razor
+- NuGet (EFCore): https://www.nuget.org/packages/Sockethead.EFCore
+- NuGet (Common): https://www.nuget.org/packages/Sockethead.Common
